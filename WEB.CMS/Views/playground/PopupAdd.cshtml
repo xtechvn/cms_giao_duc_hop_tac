@@ -1,0 +1,290 @@
+﻿@using Entities.Models
+@using Entities.ViewModels.PlaygroundDetai
+@using Entities.ViewModels.ApiSever
+@{
+    var SERVICE_TYPE = (List<AllCode>)ViewBag.SERVICE_TYPE;
+    var suggestionlist = (List<ProductCategoryViewModel>)ViewBag.suggestionlist;
+    var PlaygroundDetail = (PlaygroundDetaiViewModel)ViewBag.PlaygroundDetail;
+    var ListAttachFile = (List<AttachFile>)ViewBag.ListAttachFile;
+    Layout = null;
+
+}
+@model List<AttachFile>
+<style>
+    .select2-selection__choice {
+        white-space: pre-line;
+    }
+</style>
+@if (PlaygroundDetail == null)
+{
+
+<div class="modal-dialog" style="max-width: 800px">
+    <div class="modal-content">
+        <!-- Modal body -->
+        <div class="modal-body">
+
+            <form id="form-playground" onsubmit="return false">
+                <input id="id" value="0" style="display:none" />
+                <div class="form-default">
+                    <div class="form-group">
+                        <label class="lbl">Tên địa điểm <span class="obligatory">*</span></label>
+                        @*<div class="wrap_input">
+                <select class="form-control select2 js-example-basic-multiple Code" style="width: 100% !important;" name="Code" id="Code">
+                </select>
+            </div>*@
+                        <div class="wrap_input">
+                            <select class="form-control Code" id="Code" name="Code" style="width:100% !important">
+                                <option value="">Chọn địa điểm</option>
+                                @if (suggestionlist != null)
+                                {
+                                    foreach (var item in suggestionlist)
+                                    {
+                                        <option value="@item.code">@item.name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="wrap_input error_Code" style="display:none;">
+                            <p class="txt_error error error_Code_p" style="font-size:11px;color:red;"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl">Dịch vụ <span class="obligatory">*</span></label>
+                        <div class="wrap_input">
+                            <select class="form-control select2" id="ServiceType" name="ServiceType">
+                                <option value="">Chọn loại dịch vụ</option>
+                                @if (SERVICE_TYPE != null)
+                                {
+                                    foreach (var item in SERVICE_TYPE)
+                                    {
+                                        <option value="@item.CodeValue">@item.Description</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="mb20">
+                        <label class="lbl">Ảnh địa điểm</label>
+                        @*<div class="border bg-white mb20">
+                            <div class="attachment-file-block border pd10">
+                            </div>
+                        </div>*@
+                        <div class="form-default3 border bg-white mb20">
+                            <div class="row row_min">
+                                <div class="form-group col-12">
+                                    <label class="border flex align-center justify-center pd10 mb15 blue" style="margin-left: 30%;">
+                                        <input class="mfp-hide" type="file" name="ImageData" onchange="_Play_ground.OnAddImage()" multiple />
+                                        <i class="fa fa-cloud-upload" style="font-size:40px;"></i> <span class="ml10" style="font-size:15px;">Click để tải ảnh lên</span>
+                                    </label>
+                                    <div class="row list-choose" id="grid_image_preview" style="width:100%;">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="lbl">Bài viết liên quan</label>
+                            <div class="wrap_input">
+                                <select class="select2 js-example-basic-multiple NewsId" onchange="_Play_ground.LinkDetailShow()" multiple id="NewsId" style="width: 100%; border-bottom: 1px solid #ccc !important;" name="NewsId">
+                                </select>
+                                <br />
+                                <a id="Link-detail" target="Chi tiết bài viết" style="display:none"><p style="color: #007bff;"> Link Detail</p> </a>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="lbl mt0">Trạng thái</label>
+                            <div class="wrap_input flex">
+                                <label class="radio radio-block">
+                                    <input type="radio" name="optradio" checked="checked" value="0">
+                                    <span class="checkmark"></span>
+                                    Kích hoạt
+                                </label>
+                                <label class="radio radio-block ml-4">
+                                    <input type="radio" name="optradio" value="1">
+                                    <span class="checkmark"></span>
+                                    Khóa tạm dừng
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group align-right mt20 block">
+                            <button type="submit" class="btn btn-default bg-main" id="Luu" onclick="_Play_ground.Summitplayground()"><i class="fa fa-floppy-o"></i>Thêm mới</button>
+                            <button type="submit" class="btn btn-default cancel" onclick="$.magnificPopup.close();"><i class="fa fa-minus-circle"></i>Bỏ qua</button>
+                        </div>
+                    </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">  _Play_ground.FileAttachment();</script>
+<script type="text/javascript">_Play_ground.GetSuggest()</script>
+
+}
+else
+{
+<div class="modal-dialog" style="max-width: 800px">
+    <div class="modal-content">
+        <!-- Modal body -->
+        <div class="modal-body">
+
+            <form id="form-playground" onsubmit="return false">
+                <input id="id" value="@PlaygroundDetail.Id" style="display:none" />
+                <div class="form-default">
+                    <div class="form-group">
+                        <label class="lbl">Tên địa điểm <span class="obligatory">*</span></label>
+                        <div class="wrap_input">
+
+                            <select class="form-control select2 Code" style="width: 100% !important;" name="Code" id="Code">
+
+                                <option value="">Chọn địa điểm</option>
+                                @if (suggestionlist != null)
+                                {
+                                    foreach (var item in suggestionlist)
+                                    {
+                                        if (item.code == @PlaygroundDetail.Code)
+                                        {
+                                            <option selected="selected" value="@PlaygroundDetail.Code">@PlaygroundDetail.LocationName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.code">@item.name</option>
+                                        }
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl">Dịch vụ <span class="obligatory">*</span></label>
+                        <div class="wrap_input">
+                            <select class="form-control select2" name="ServiceType" id="ServiceType">
+                                <option selected value="">Chọn loại dịch vụ</option>
+                                @if (SERVICE_TYPE != null)
+                                {
+                                    foreach (var item in SERVICE_TYPE)
+                                    {
+                                        if (item.CodeValue == PlaygroundDetail.ServiceType)
+                                        {
+                                            <option selected="selected" value="@item.CodeValue">@item.Description</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.CodeValue">@item.Description</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="mb20">
+                        <label class="lbl">Ảnh địa điểm</label>
+                        @*<div class="border bg-white mb20">
+                            <div class="attachment-file-block border pd10">
+                            </div>
+                        </div>*@
+                        <div class="form-default3 border bg-white mb20">
+                            <div class="row row_min">
+                                <div class="form-group col-12">
+                                    <label class="border flex align-center justify-center pd10 mb15 blue" style="margin-left: 30%;">
+                                        <input class="mfp-hide" type="file" name="ImageData" onchange="_Play_ground.OnAddImage()" multiple />
+                                        <i class="fa fa-cloud-upload" style="font-size:40px;"></i> <span class="ml10" style="font-size:15px;">Click để tải ảnh lên</span>
+                                    </label>
+                                    <div class="row list-choose" id="grid_image_preview" style="width:100%;">
+                                        @if (ListAttachFile != null && ListAttachFile.Count>0)
+                                        {
+                                            foreach (var url in ListAttachFile)
+                                            {
+                                                <div class="col-md-3 col-6 mb10 image_preview">
+                                                    <div class="choose-ava">
+                                                        <img class="img_other" src="@(ViewBag.domain + url.Path)">
+                                                        <button type="button" class="delete" onclick="this.closest('.image_preview').remove();">×</button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl">Bài viết liên quan</label>
+                        <div class="wrap_input">
+                            <select class="select2 js-example-basic-multiple NewsId" onchange="_Play_ground.LinkDetailShow()" multiple id="NewsId" style="width: 100%; border-bottom: 1px solid #ccc !important;" name="NewsId">
+                                @if (PlaygroundDetail.NewsId != 0)
+                                {
+                                    <option value="@PlaygroundDetail.NewsId" selected="selected">@PlaygroundDetail.Title</option>
+                                }
+
+                            </select>
+                            <br />
+                            <a id="Link-detail" target="Chi tiết bài viết"style="display:none"><p style="color: #007bff;"> Link Detail</p> </a>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl mt0">Trạng thái</label>
+                        <div class="wrap_input flex">
+                            @if (PlaygroundDetail.Status == 0)
+                            {
+                                <label class="radio radio-block">
+
+                                    <input type="radio" name="optradio" checked="checked" value="0">
+                                    <span class="checkmark"></span>
+                                    Kích hoạt
+                                </label>
+                                <label class="radio radio-block ml-4">
+                                    <input type="radio" name="optradio" value="1">
+                                    <span class="checkmark"></span>
+                                    Khóa tạm dừng
+                                </label>
+                            }
+                            else
+                            {
+                                <label class="radio radio-block">
+
+                                    <input type="radio" name="optradio" value="0">
+                                    <span class="checkmark"></span>
+                                    Kích hoạt
+                                </label>
+                                <label class="radio radio-block ml-4">
+                                    <input type="radio" name="optradio" checked="checked" value="1">
+                                    <span class="checkmark"></span>
+                                    Khóa tạm dừng
+                                </label>
+                            }
+
+                        </div>
+                    </div>
+
+
+                    <div class="form-group align-right mt20 block">
+                        <button  type="submit" class="btn btn-default bg-main" id="Delete" onclick="_Play_ground.Deleteplayground(@PlaygroundDetail.Id)"><i class="fa fa-floppy-o"></i>Xóa</button>
+                        <button  type="submit" class="btn btn-default bg-main" id="Luu" onclick="_Play_ground.Summitplayground()"><i class="fa fa-floppy-o"></i>Lưu</button>
+                        <button type="submit" class="btn btn-default cancel" onclick="$.magnificPopup.close();"><i class="fa fa-minus-circle"></i>Bỏ qua</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<script>
+  
+    _Play_ground.FileAttachment();
+    _Play_ground.GetSuggest();
+    _Play_ground.LinkDetailShow();
+</script>
+}
+
+
+

@@ -1,0 +1,339 @@
+﻿@using Entities.ViewModels
+@using Utilities.Contants
+@using Entities.ViewModels.Report
+@model GenericViewModel<ListDetailRevenueByDepartmentViewModel>
+@{ int index = 0;
+
+                if (Model != null && Model.ListData != null && Model.ListData.Count > 0)
+                {
+                    index = (Model.CurrentPage - 1) * Model.PageSize;
+                } }
+@if (Model.ListData == null || Model.ListData.Count <= 0)
+{
+<div class="search-null center mb40">
+    <div class="mb24">
+        <img src="/images/graphics/icon-search.png" alt="">
+    </div>
+    <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+    <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+</div> }
+else
+{
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding  table-scroll table-report">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="width: 50px;">STT</th>
+                    <th rowspan="2" style="width: 140px; width:20%">Nhân viên</th>
+                    <th rowspan="2" style="width: 75px;text-align:right; ">Số lượng đơn hàng</th>
+                    <th colspan="2" style="text-align:center">Tổng doanh thu (có VAT)</th>
+                    <th rowspan="2" style="width: 100px; text-align: right;">Hoa hồng CTV</th>
+                    <th rowspan="2" style="width: 100px; text-align: right;">Lợi nhuận (có VAT)</th>
+                    <th rowspan="2" style="width: 50px;">Tỷ suất</th>
+                    @if (ViewBag.ServiceType == null)
+                    {
+                        <th colspan="3" style="text-align:center">Khách sạn (chưa VAT)</th>
+                        <th colspan="3" style="text-align:center">Vé máy bay  (chưa VAT)</th>
+                        <th colspan="3" style="text-align:center">Tour du lịch (chưa VAT)</th>
+                        <th colspan="3" style="text-align:center">Dịch vụ khác (chưa VAT)</th>
+                        <th colspan="3" style="text-align:center">VinWonder (chưa VAT)</th>
+                    }
+                    else
+                    {
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.VINHotelRent).ToString()))
+                        {
+                            <th colspan="3" style="text-align:center">Khách sạn (chưa VAT)</th>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.FlyingTicket).ToString()))
+                        {
+                            <th colspan="3" style="text-align:center">Vé máy bay  (chưa VAT)</th>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.Tourist).ToString()))
+                        {
+                            <th colspan="3" style="text-align:center">Tour du lịch (chưa VAT)</th>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.Other).ToString()) || ViewBag.ServiceType.Contains(((int)ServicesType.VehicleRent).ToString()))
+                        {
+                            <th colspan="3" style="text-align:center">Dịch vụ khác (chưa VAT)</th>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.VinWonder).ToString()))
+                        {
+                            <th colspan="3" style="text-align:center">VinWonder (chưa VAT)</th>
+                        }
+                    }
+                    <th colspan="3" style="text-align:center">Tổng tính lương (chưa VAT)</th>
+
+                </tr>
+                <tr>
+                    <th style="width: 100px; text-align: right;">Giá thu khách hàng</th>
+                    <th style="width: 100px; text-align: right;">Giá thanh toán NCC</th>
+
+
+                    @if (ViewBag.ServiceType == null)
+                    {
+                        <th style="width: 100px; text-align: right;">Doanh thu</th>
+                        <th style="width: 100px; text-align: right;">Giá vốn</th>
+                        <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+
+                        <th style="width: 100px; text-align: right;">Doanh thu</th>
+                        <th style="width: 100px; text-align: right;">Giá vốn</th>
+                        <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+
+                        <th style="width: 100px; text-align: right;">Doanh thu</th>
+                        <th style="width: 100px; text-align: right;">Giá vốn</th>
+                        <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+
+                        <th style="width: 100px; text-align: right;">Doanh thu</th>
+                        <th style="width: 100px; text-align: right;">Giá vốn</th>
+                        <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+
+
+                        <th style="width: 100px; text-align: right;">Doanh thu</th>
+                        <th style="width: 100px; text-align: right;">Giá vốn</th>
+                        <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+                    }
+                    else
+                    {
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.VINHotelRent).ToString()))
+                        {
+                            <th style="width: 100px; text-align: right;">Doanh thu</th>
+                            <th style="width: 100px; text-align: right;">Giá vốn</th>
+                            <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.FlyingTicket).ToString()))
+                        {
+                            <th style="width: 100px; text-align: right;">Doanh thu</th>
+                            <th style="width: 100px; text-align: right;">Giá vốn</th>
+                            <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.Tourist).ToString()))
+                        {
+                            <th style="width: 100px; text-align: right;">Doanh thu</th>
+                            <th style="width: 100px; text-align: right;">Giá vốn</th>
+                            <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.Other).ToString()) || ViewBag.ServiceType.Contains(((int)ServicesType.VehicleRent).ToString()))
+                        {
+                            <th style="width: 100px; text-align: right;">Doanh thu</th>
+                            <th style="width: 100px; text-align: right;">Giá vốn</th>
+                            <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.VinWonder).ToString()))
+                        {
+                            <th style="width: 100px; text-align: right;">Doanh thu</th>
+                            <th style="width: 100px; text-align: right;">Giá vốn</th>
+                            <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+                        }
+                    }
+
+
+                    <th style="width: 100px; text-align: right;">Doanh thu</th>
+                    <th style="width: 100px; text-align: right;">Giá vốn</th>
+                    <th style="width: 100px; text-align: right;">Lợi nhuận</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ListData)
+                {
+                <tr style=" color: var(--green);" data-parent-departmentid="@(++index)">
+                    <td>@(index)</td>
+                    <td style="font-weight: bold"><a class="list-expand" style="color: var(--green);">@item.DepartmentName  &nbsp;&nbsp; <i class=" fa fa-plus" style="color: blue;"></i></a></td>
+                    <td style="text-align: right; font-weight: bold">@item.ParentDepartmentTotalOrder</td>
+                    <td style="text-align: right; font-weight: bold">@item.ParentDepartmentAmount.ToString("N0")</td>
+                    <td style="text-align: right; font-weight: bold">@item.ParentDepartmentPrice.ToString("N0")</td>
+                    <td style="text-align: right; font-weight: bold">@item.ParentDepartmentComission.ToString("N0")</td>
+                    <td style="text-align: right; font-weight: bold">@item.ParentDepartmentProfit.ToString("N0")</td>
+                    <td style="font-weight: bold">@(double.IsNaN(item.ParentDepartmentPercent) ? "0": item.ParentDepartmentPercent.ToString("N2"))% </td>
+                    @if (ViewBag.ServiceType == null)
+                    {
+                      
+                             <td style="text-align: right; font-weight: bold">@item.DepartmentHotelBookingAmount.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentHotelBookingPrice.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentHotelBookingProfit.ToString("N0")</td>
+
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentFlyBookingAmount.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentFlyBookingPrice.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentFlyBookingProfit.ToString("N0")</td>
+
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentTourAmount.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentTourPrice.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentTourProfit.ToString("N0")</td>
+
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentOtherBookingAmount.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentOtherBookingPrice.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentOtherBookingProfit.ToString("N0")</td>
+
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentVinWonderAmount.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentVinWonderPrice.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentVinWonderProfit.ToString("N0")</td>
+
+
+                    }
+                    else
+                    {
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.VINHotelRent).ToString()))
+                        {
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentHotelBookingAmount.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentHotelBookingPrice.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentHotelBookingProfit.ToString("N0")</td>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.FlyingTicket).ToString()))
+                        {
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentFlyBookingAmount.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentFlyBookingPrice.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentFlyBookingProfit.ToString("N0")</td>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.Tourist).ToString()))
+                        {
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentTourAmount.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentTourPrice.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentTourProfit.ToString("N0")</td>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.Other).ToString()) || ViewBag.ServiceType.Contains(((int)ServicesType.VehicleRent).ToString()))
+                        {
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentOtherBookingAmount.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentOtherBookingPrice.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentOtherBookingProfit.ToString("N0")</td>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.VinWonder).ToString()))
+                        {
+
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentVinWonderAmount.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentVinWonderPrice.ToString("N0")</td>
+                            <td style="text-align: right; font-weight: bold">@item.DepartmentVinWonderProfit.ToString("N0")</td>
+                        }
+                    }
+                     
+                    <td style="text-align: right; font-weight: bold">@item.ParentDepartmentAmountVat.ToString("N0")</td>
+                    <td style="text-align: right; font-weight: bold ">@item.ParentDepartmentPriceVat.ToString("N0")</td>
+                    <td style="text-align: right; font-weight: bold">@item.ParentDepartmentProfitVat.ToString("N0")</td>
+               
+                </tr>
+                @if (item.listReportDepartment != null && item.listReportDepartment.Count > 0)
+                {
+
+                  @foreach (var i in item.listReportDepartment)
+                   {
+            <tr  class="expand-item" data-parent-departmentid="@index" style="display:none;">
+                <td></td>
+                <td style="padding-left: 1%;">@i.UserName: @i.FullName</td>
+                <td style="text-align: right;"><a class="blue" href="javascript:;" onclick="_ReportDepartment.OpenPopup(@i.DepartmentId,@i.UserId)">@i.TotalOrder </a></td>
+                <td style="text-align: right;">@i.Amount.ToString("N0")</td>
+                <td style="text-align: right;">@i.Price.ToString("N0")</td>
+                <td style="text-align: right;">@i.Comission.ToString("N0")</td>
+                <td style="text-align: right;">@i.Profit.ToString("N0")</td>
+                <td>@i.Percent.ToString("N2")% </td>
+                       @if (ViewBag.ServiceType == null)
+                    {
+                        <td style="text-align: right;">@i.HotelBookingAmount.ToString("N0")</td>
+                        <td style="text-align: right;">@i.HotelBookingPrice.ToString("N0")</td>
+                        <td style="text-align: right;">@i.HotelBookingProfit.ToString("N0")</td>
+
+                        <td style="text-align: right;">@i.FlyBookingAmount.ToString("N0")</td>
+                        <td style="text-align: right;">@i.FlyBookingPrice.ToString("N0")</td>
+                        <td style="text-align: right;">@i.FlyBookingProfit.ToString("N0")</td>
+
+                        <td style="text-align: right;">@i.TourAmount.ToString("N0")</td>
+                        <td style="text-align: right;">@i.TourPrice.ToString("N0")</td>
+                        <td style="text-align: right;">@i.TourProfit.ToString("N0")</td>
+
+                        <td style="text-align: right;">@i.OtherBookingAmount.ToString("N0")</td>
+                        <td style="text-align: right;">@i.OtherBookingPrice.ToString("N0")</td>
+                        <td style="text-align: right;">@i.OtherBookingProfit.ToString("N0")</td>
+
+                        <td style="text-align: right;">@i.VinWonderAmount.ToString("N0")</td>
+                        <td style="text-align: right;">@i.VinWonderPrice.ToString("N0")</td>
+                        <td style="text-align: right;">@i.VinWonderProfit.ToString("N0")</td>
+                    }
+                    else
+                    {
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.VINHotelRent).ToString()))
+                        {
+                            <td style="text-align: right;">@i.HotelBookingAmount.ToString("N0")</td>
+                            <td style="text-align: right;">@i.HotelBookingPrice.ToString("N0")</td>
+                            <td style="text-align: right;">@i.HotelBookingProfit.ToString("N0")</td>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.FlyingTicket).ToString()))
+                        {
+                            <td style="text-align: right;">@i.FlyBookingAmount.ToString("N0")</td>
+                            <td style="text-align: right;">@i.FlyBookingPrice.ToString("N0")</td>
+                            <td style="text-align: right;">@i.FlyBookingProfit.ToString("N0")</td>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.Tourist).ToString()))
+                        {
+                            <td style="text-align: right;">@i.TourAmount.ToString("N0")</td>
+                            <td style="text-align: right;">@i.TourPrice.ToString("N0")</td>
+                            <td style="text-align: right;">@i.TourProfit.ToString("N0")</td>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.Other).ToString()) || ViewBag.ServiceType.Contains(((int)ServicesType.VehicleRent).ToString()))
+                        {
+                            <td style="text-align: right;">@i.OtherBookingAmount.ToString("N0")</td>
+                            <td style="text-align: right;">@i.OtherBookingPrice.ToString("N0")</td>
+                            <td style="text-align: right;">@i.OtherBookingProfit.ToString("N0")</td>
+                        }
+                        @if (ViewBag.ServiceType.Contains(((int)ServicesType.VinWonder).ToString()))
+                        {
+                            <td style="text-align: right;">@i.VinWonderAmount.ToString("N0")</td>
+                            <td style="text-align: right;">@i.VinWonderPrice.ToString("N0")</td>
+                            <td style="text-align: right;">@i.VinWonderProfit.ToString("N0")</td>
+                        }
+                    }
+             
+
+                <td style="text-align: right;">@i.AmountVat.ToString("N0")</td>
+                <td style="text-align: right;">@i.PriceVat.ToString("N0")</td>
+                <td style="text-align: right;">@i.ProfitVat.ToString("N0")</td>
+            </tr>
+                   }
+                 }
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @await Component.InvokeAsync("PagingNew", new
+    {
+        pageModel = new Paging()
+        {
+            TotalRecord = Model.TotalRecord,
+            TotalPage = Model.TotalPage,
+            CurrentPage = Model.CurrentPage,
+            PageSize = Model.PageSize,
+            RecordName = "kết quả",
+            PageAction = "_ReportDepartment.OnPaging({0})",
+            PageSelectPageSize = "_ReportDepartment.onSelectPageSize()",
+        }
+    })
+</div>}
+<script>
+    $(".list-expand").on('click',  function (ev, picker) {
+        var element = $(this)
+        var tr = element.closest('tr')
+        var parent_department_value = tr.attr('data-parent-departmentid')
+        if (element.find('i').hasClass('fa-plus')) {
+            $('.table-report').find('.expand-item').each(function (index, item) {
+                var tr_item = $(this);
+                if (tr_item.attr('data-parent-departmentid') == parent_department_value) {
+                    tr_item.show()
+                }
+            })
+            element.find('i').removeClass('fa-plus')
+            element.find('i').addClass('fa-minus')
+        }
+        else {
+            $('.table-report').find('.expand-item').each(function (index, item) {
+                var tr_item = $(this);
+                if (tr_item.attr('data-parent-departmentid') == parent_department_value) {
+                    tr_item.hide()
+                }
+            })
+            element.find('i').addClass('fa-plus')
+            element.find('i').removeClass('fa-minus')
+
+
+
+        }
+    })
+</script>

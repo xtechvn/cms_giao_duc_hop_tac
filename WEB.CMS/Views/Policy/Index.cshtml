@@ -1,0 +1,195 @@
+﻿@using Entities.Models
+@{
+  
+    var PermisionType = (List<AllCode>)ViewBag.PermisionType;
+
+}
+<div class="container"></div>
+<section style=" overflow-x: hidden;">
+    <div class="row-main container">
+        <h2 class="txt_18 bold mb20">Chính sách hợp tác</h2>
+        <div class="flex fillter-donhang mb10">
+
+            <div class="form-group mb10 mr-2">
+                <input type="text" class="form-control" id="PolicyName" placeholder="Mã KH, Tên KH, Điện thoại, Email" style="width: 220px;">
+            </div>
+
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <div class="datepicker-wrap" style="width:100%">
+                        <input class="form-control date text-left filter_date_daterangepicker" id="EffectiveDateFrom" type="text"
+                               name="datetimeApprove" style="min-width: 180px !important" placeholder="Ngày hiệu lực" />
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2">
+                <select class="select2" id="PermissionType" name="" style="width: 220px; height: 30px;">
+                    <option value="-1">Tất cả nhóm khách hàng</option>
+                    @if (PermisionType != null)
+                    {
+                        foreach (var item in PermisionType)
+                        {
+                            <option value="@item.CodeValue">@item.Description</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb10 mr-2"style="min-width:365px">
+                
+                <select class="select2 client-select main-staff-select" id="UserCreate" multiple="multiple" style="width:100% !important">
+                </select>
+            </div>
+
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <input class="form-control date text-left filter_date_daterangepicker" id="CreateDate" type="text"
+                           name="datetimeApprove2" style="min-width: 180px !important" placeholder="Ngày tạo" />
+                </div>
+            </div>
+
+
+          
+            <div class="mb10 mr-2">
+                <button type="button" class="btn btn-default bg-main" onclick="_Policy.SearchData()">
+                    <svg class="icon-svg" style="vertical-align: sub;">
+                        <use xlink:href="/images/icons/icon.svg#search"></use>
+                    </svg>
+                    Tìm kiếm
+                </button>
+            </div>
+        </div>
+
+        <div class="line-bottom mb20">
+            <div class="flex row-main-head">
+
+                <div class="btn-right text-right">
+                    <button type="button" class="btn btn-default bg-main mb10 mr-2" onclick="_Policy.OpenPopup('')"><i class="fa fa-plus-circle"></i>Tạo mới chính sách</button>
+                    <div class="row-main-head mb10 mr-2" style="display:none">
+                        <div class="down-up">
+                            <a class="btn btn-default onclick" href="javascript:;">
+                                <i class="fa fa-bars"></i>
+                                <i class="fa fa-caret-down"></i>
+                            </a>
+                            <div class="form-down text-nowrap" style="display: none;">
+                                <div class="grid-slide">
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="STT" onclick="_Policy.ChangeSetting(1)" class="checkbox-tb-column" data-id="1">
+                                        <span class="checkmark"></span>
+                                        STT
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="PolicyId" onclick="_Policy.ChangeSetting(2)" class="checkbox-tb-column" data-id="2">
+                                        <span class="checkmark"></span>
+                                        Id
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="PolicyNameCS" onclick="_Policy.ChangeSetting(3)" class="checkbox-tb-column" data-id="3">
+                                        <span class="checkmark"></span>
+                                        Tên
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="EffectiveDate" onclick="_Policy.ChangeSetting(4)" class="checkbox-tb-column" data-id="4">
+                                        <span class="checkmark"></span>
+                                        Hiệu lực từ ngày
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="PermissionTypeCS" onclick="_Policy.ChangeSetting(5)" class="checkbox-tb-column" data-id="5">
+                                        <span class="checkmark"></span>
+                                        Nhóm khách hàng
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="CreatedDate" onclick="_Policy.ChangeSetting(6)" class="checkbox-tb-column" data-id="6">
+                                        <span class="checkmark"></span>
+                                        Ngày tạo
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="CreatedBy" onclick="_Policy.ChangeSetting(7)" class="checkbox-tb-column" data-id="7">
+                                        <span class="checkmark"></span>
+                                        Người tạo
+                                    </label>
+
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="ThaoT" onclick="_Policy.ChangeSetting(8)" class="checkbox-tb-column" data-id="8">
+                                        <span class="checkmark"></span>
+                                        Thao tác
+                                    </label>
+                                   
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Danh sách hợp đồng*@
+
+        <div id="grid_data_Search">
+            <img src="/images/icons/loading.gif" style=" width: 100px; height: 100px; margin-left:46%;" id="imgLoading_Search" />
+        </div>
+    </div>
+</section>
+<style>
+    .row-main-head .down-up .form-down {
+        width: 370px !important;
+    }
+
+    .grid-slide {
+        display: grid;
+        grid-template-columns: auto auto;
+    }
+
+    .token-input-input-token input {
+        background: #fff !important;
+        width: 100% !important;
+        font-size: 13px !important;
+        height: 30px !important;
+        line-height: 30px !important;
+        border: 1px solid #ccc !important;
+        padding: 0 5px !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+        color: #000 !important;
+        border-radius: 0.25rem !important;
+    }
+</style>
+
+
+@section scripts {
+    <script type="text/javascript" src="/modules/Policy.js"></script>
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+    <script>
+    
+        $('input[name="datetimeApprove"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="datetimeApprove"]').on('cancel.daterangepicker', function (ev, picker) {
+            $('#EffectiveDateFrom').val('');
+            isPickerApprove = false;
+        });
+        $('input[name="datetimeApprove"]').on('apply.daterangepicker', function (ev, picker) {
+            $('#EffectiveDateFrom').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove = true;
+        });
+
+        $('input[name="datetimeApprove2"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="datetimeApprove2"]').on('cancel.daterangepicker', function (ev, picker) {
+            $('#CreateDate').val('');
+            isPickerApprove2 = false;
+        });
+        $('input[name="datetimeApprove2"]').on('apply.daterangepicker', function (ev, picker) {
+            $('#CreateDate').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove2 = true;
+        });
+    </script>
+}

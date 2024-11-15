@@ -1,0 +1,364 @@
+﻿@using Entities.ViewModels.HotelBookingRoom
+@using Entities.ViewModels
+@using Entities.Models
+@{
+    Layout = null;
+    var HotelGuest = (List<HotelGuestViewModel>)ViewBag.hotelBookingGuest;
+    var ContactClient = (ContactClient)ViewBag.ContactClient;
+    Entities.Models.HotelBooking booking = (Entities.Models.HotelBooking)ViewBag.HotelBooking;
+
+    var rooms = (List<Entities.Models.HotelBookingRooms>)ViewBag.room_list;
+    var packages = (List<Entities.Models.HotelBookingRoomRates>)ViewBag.package_list;
+    int num_people = (int)ViewBag.num_people;
+    int room_index = 0;
+
+    List<Entities.Models.HotelBookingRoomExtraPackages> extra_packages = (List<Entities.Models.HotelBookingRoomExtraPackages>)ViewBag.ExtraPackages;
+    int index = 0;
+    double total_amount = booking.TotalAmount;
+    double total_profit = booking.TotalProfit;
+
+}
+
+<style>
+    .servicemanual-hotel-room-packagediv {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .servicemanual-hotel-room-packagedaterangediv {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .form-control:disabled {
+        background-color: #e8e8e8 !important;
+    }
+
+    .d-flex {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+</style>
+
+<div class="bold txt_14 mb10">Ghi chú</div>
+<div class="form-group">
+    <textarea class="form-control service-hotel-note" disabled style="height: 200px;">@(booking != null&& booking.Note!=null? booking.Note:"")</textarea>
+</div>
+<div class="flex-auto mb15" style=" justify-content: right;">
+    <div class="form-group other-amount" style="min-width: 200px;width: 200px; ">
+        <label class="lbl text-center" style="width: 100%;">Chi phí khác </label>
+        <div class="wrap_input">
+            <input  class="form-control currency text-right " disabled type="text" value="@(booking.TotalOthersAmount!=null ? ((double)booking.TotalOthersAmount).ToString("N0"):"0")">
+        </div>
+    </div>
+    <div class="form-group discount" style="min-width: 200px;width: 200px;">
+        <label class="lbl text-center" style="width: 100%;">Hoa hồng CTV</label>
+        <div class="wrap_input">
+            <input class="form-control currency text-right" disabled type="text" value="@(booking.TotalDiscount!=null ? ((double)booking.TotalDiscount).ToString("N0"):"0")">
+        </div>
+    </div>
+</div>
+<div class="txt_14 bold mb10">Bảng kê dịch vụ phòng <small>(Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo)</small></div>
+<div class="table-responsive table-gray">
+    <table class="table table-nowrap">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th class="text-center" style="min-width: 250px;">Hạng phòng</th>
+                <th class="text-center" style="min-width: 200px;">Gói</th>
+                <th class="text-center" style="min-width: 150px;">Thời gian sử dụng</th>
+                <th class="text-right" style="min-width: 100px;">Giá nhập</th>
+                <th class="text-right" style="min-width: 100px;">Giá bán</th>
+                <th class="text-right" style="min-width: 50px;">Số đêm</th>
+                <th class="text-right" style="min-width: 50px;">Số lượng phòng</th>
+                <th class="text-right">Tổng tiền giá bán</th>
+                <th class="text-right">Lợi nhuận</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @if (rooms.Count > 0)
+            {
+                foreach (var r in rooms)
+                {
+                    var package_by_room_id = packages.Where(x => x.HotelBookingRoomId == r.Id);
+                    @if (package_by_room_id != null && package_by_room_id.Count() > 0)
+                    {
+                        package_by_room_id = package_by_room_id.OrderBy(x => x.Id);
+                    }
+
+                    <tr data-room-id="@r.Id" data-room-type-id="@r.RoomTypeId" data-room-type-code="@r.RoomTypeCode">
+                        <td>@(++room_index)</td>
+                        <td>
+                            <input class="form-control" type="text" disabled placeholder="Nhập tên hạng phòng" value="@r.RoomTypeName">
+                        </td>
+                        <td>
+                            @if (package_by_room_id != null && package_by_room_id.Count() > 0)
+                            {
+                                foreach (var p in package_by_room_id)
+                                {
+                                    <div class="d-flex align-center ">
+                                        <input class="form-control" disabled type="text" placeholder="Nhập tên gói" value="@p.RatePlanCode">
+                                    </div>
+                                }
+                            }
+
+                        </td>
+                        <td class="servicemanual-hotel-room-td-rates-daterange">
+                            @if (package_by_room_id != null && package_by_room_id.Count() > 0)
+                            {
+                                foreach (var p in package_by_room_id)
+                                {
+                                    <div class="d-flex align-center">
+                                        <input class="form-control " disabled type="text" value="@(p.StartDate==null?"" :((DateTime)p.StartDate).ToString("dd/MM/yyyy")+" -") @(p.EndDate==null?"" : ((DateTime)p.EndDate).ToString("dd/MM/yyyy"))">
+                                    </div>}
+                            }
+                        </td>
+                        <td class="servicemanual-hotel-room-td-rates-operator-price">
+                            @if (package_by_room_id != null && package_by_room_id.Count() > 0)
+                            {
+                                foreach (var p in package_by_room_id)
+                                {
+                                    <div class="d-flex align-center">
+                                        <input class="form-control currency text-right" disabled type="text" placeholder="Nhập giá nhập vào" value="@(p.OperatorPrice==null?"0":((double)p.OperatorPrice).ToString("N0"))">
+                                    </div>}
+                            }
+                        </td>
+                        <td class="servicemanual-hotel-room-td-rates-sale-price">
+                            @if (package_by_room_id != null && package_by_room_id.Count() > 0)
+                            {
+                                foreach (var p in package_by_room_id)
+                                {
+                                    <div class="d-flex align-center">
+                                        <input class="form-control currency  text-right" disabled type="text" placeholder="Nhập giá bán" value="@(p.SalePrice==null?"0":((double)p.SalePrice).ToString("N0"))">
+                                    </div>}
+                            }
+                        </td>
+                        <td class="servicemanual-hotel-room-td-rates-nights">
+                            @if (package_by_room_id != null && package_by_room_id.Count() > 0)
+                            {
+                                foreach (var p in package_by_room_id)
+                                {
+                                    <div class="d-flex align-center">
+                                        <input class="input-disabled-background form-control currency  text-right " type="text" name="" disabled value="@(p.Nights==null?"0":((double)p.Nights).ToString("N0"))">
+                                    </div>}
+                            }
+                        </td>
+                        <td class="servicemanual-hotel-room-td-number-of-rooms">
+                            <div class="d-flex align-center">
+                                <input class="form-control currency  text-right" disabled type="text" name="" value="@(r.NumberOfRooms==null?"1":((double)r.NumberOfRooms).ToString("N0"))">
+                            </div>
+                        </td>
+
+                        <td class="servicemanual-hotel-room-td-rates-total-amount">
+                            @if (package_by_room_id != null && package_by_room_id.Count() > 0)
+                            {
+                                foreach (var p in package_by_room_id)
+                                {
+                                    <div class="d-flex align-center">
+                                        <input class="input-disabled-background form-control currency text-right" type="text" disabled value="@(((double)p.TotalAmount).ToString("N0"))">
+                                    </div>}
+                            }
+                        </td>
+                        <td class="servicemanual-hotel-room-td-rates-profit">
+                            @if (package_by_room_id != null && package_by_room_id.Count() > 0)
+                            {
+                                foreach (var p in package_by_room_id)
+                                {
+                                    <div class="d-flex align-center">
+                                        <input class="input-disabled-background form-control currency text-right" type="text" disabled value="@(((double)p.Profit).ToString("N0"))">
+                                    </div>}
+                            }
+                        </td>
+                    </tr>
+                }
+
+            }
+
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <div class="text-right"><strong>Tổng cộng</strong></div>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="text-right" style="font-weight: bold;">@(rooms.Sum(x=>x.TotalAmount).ToString("N0"))</td>
+                <td class="text-right" style="font-weight: bold;">@(rooms.Sum(x=>x.Profit).ToString("N0"))</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="txt_14 bold mb10">Bảng kê phụ thu, dịch vụ khác <small>(Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo)</small></div>
+<div class="table-responsive table-gray">
+    <table class="table table-nowrap">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th class="text-center" style="min-width: 200px;">Tên dịch vụ</th>
+                <th class="text-center" style="min-width: 150px;">Gói</th>
+                <th class="text-center" style="min-width: 150px;">Thời gian sử dụng</th>
+                <th class="text-right" style="min-width: 100px;">Giá nhập</th>
+                <th class="text-right" style="min-width: 100px;">Giá bán</th>
+                <th class="text-right" style="min-width: 100px;">Số ngày</th>
+                <th class="text-right" style="min-width: 100px;">Số lượng</th>
+                <th class="text-right">Tổng tiền giá bán</th>
+                <th class="text-right">Lợi nhuận</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (extra_packages.Count > 0)
+            {
+                foreach (var p in extra_packages)
+                {
+                    <tr>
+                        <td>@(++index)</td>
+                        <td>
+                            <input class="form-control " type="text" disabled placeholder="Nhập nội dung dịch vụ" value="@p.PackageCode">
+                        </td>
+                        <td class="servicemanual-hotel-extrapackage-td-code">
+                            <div class="d-flex align-center ">
+                                <input class="form-control " type="text" disabled placeholder="Nhập tên gói" value="@p.PackageId">
+                            </div>
+
+                        </td>
+                        <td class="servicemanual-hotel-extrapackage-td-daterange">
+                            <div class="d-flex align-center">
+                                <input class="form-control " type="text" disabled value="@(p.StartDate==null?"" :((DateTime)p.StartDate).ToString("dd/MM/yyyy")+" -") @(p.EndDate==null?"" : ((DateTime)p.EndDate).ToString("dd/MM/yyyy"))">
+                            </div>
+                        </td>
+                        <td class="servicemanual-hotel-extrapackage-td-operator-price">
+                            <div class="d-flex align-center">
+                                <input class="form-control currency  text-right" disabled type="text" placeholder="Nhập giá nhập vào" value="@(p.OperatorPrice!=null ? ((double)p.OperatorPrice).ToString("N0"): ((double)p.Amount- (double)p.Profit).ToString("N0"))">
+                            </div>
+                        </td>
+                        <td class="servicemanual-hotel-extrapackage-td-sale-price">
+                            <div class="d-flex align-center">
+                                <input class="form-control currency  text-right" disabled type="text" placeholder="Nhập giá bán" value="@(p.SalePrice!=null  ? ((double)p.SalePrice).ToString("N0"): ((double)p.Amount- (double)p.Profit).ToString("N0"))">
+                            </div>
+                        </td>
+                        <td class="servicemanual-hotel-extrapackage-td-nights">
+                            <div class="d-flex align-center">
+                                <input class="input-disabled-background form-control currency  text-right " type="text" disabled value="@(p.Nights!=null  ? ((double)p.Nights).ToString("N0"):"1")">
+                            </div>
+                        </td>
+                        <td class="servicemanual-hotel-extrapackage-td-number-of-extrapackages">
+                            <div class="d-flex align-center">
+                                <input class="form-control currency  text-right" disabled type="text" value="@(p.Quantity!=null  ? ((double)p.Quantity).ToString("N0"):"1")">
+                            </div>
+                        </td>
+                        <td class="servicemanual-hotel-extrapackage-td-total-amount">
+                            <div class="d-flex align-center">
+                                <input class="input-disabled-background form-control currency   text-right" type="text" disabled value="@(((double)p.Amount).ToString("N0"))">
+                            </div>
+                        </td>
+                        <td class="servicemanual-hotel-extrapackage-td-profit">
+                            <div class="d-flex align-center">
+                                <input class="input-disabled-background form-control currency  text-right" type="text" disabled value="@(((double)p.Profit).ToString("N0"))">
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <div class="text-right"><strong>Tổng cộng</strong></div>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="text-right" style="font-weight: bold;">@(((double)extra_packages.Sum(x => x.Amount)).ToString("N0"))</td>
+                <td class="text-right" style="font-weight: bold;">@(((double)extra_packages.Sum(x => x.Profit)).ToString("N0"))</td>
+            </tr>
+
+        </tbody>
+    </table>
+</div>
+
+<div class="text-right row">
+    <div class="col-4 col-md-6"></div>
+    <div class="col-4 col-md-3">
+        <span><strong style="padding-right: 20px;"> Tổng thành tiền dịch vụ:</strong>  <strong class="total_amount_service">@(total_amount.ToString("N0"))</strong></span>
+    </div>
+
+    <div class="col-4 col-md-3">
+        <span><strong style="padding-right: 20px;"> Tổng lợi nhuận dịch vụ:</strong>  <strong class="total_profit_service">@(total_profit.ToString("N0")) </strong></span>
+    </div>
+</div>
+
+<h3 class="txt_18 bold mb20">
+    Danh sách đoàn
+</h3>
+<p>Thông tin thành viên chính</p>
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th>Họ và tên</th>
+                    <th>Ngày sinh</th>
+                    <th>Loại phòng</th>
+                    <th>Quốc gia</th>
+                    <th>Quốc tịch</th>
+                    <th>Điện thoại</th>
+                    <th>Email</th>
+                    <th>Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ContactClient != null)
+                {
+                    <tr>
+                        <td>@ContactClient.Name</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>@ContactClient.Mobile</td>
+                        <td>@ContactClient.Email</td>
+                        <td></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<p>Thông tin danh sách  thành viên khác</p>
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Họ và tên</th>
+                    <th>Ngày sinh</th>
+                    <th>Loại phòng</th>
+                    <th>Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (HotelGuest != null)
+                {
+                    index = 0;
+                    foreach (var hg in HotelGuest)
+                    {
+                        <tr>
+                            <td>@(++index)</td>
+                            <td>@hg.Name</td>
+                            <td>@(hg.Birthday!=null? Convert.ToDateTime(hg.Birthday).ToString("dd/MM/yyyy HH:mm:ss"):"")</td>
+                            <td>@hg.RoomTypeName</td>
+                            <td>@hg.Note</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="attachment-sale border pd10">
+    <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading coll">
+</div>

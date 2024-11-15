@@ -1,0 +1,50 @@
+﻿@using Entities.ViewModels.BankingAccount
+@model List<BankingAccountViewModel>
+@{
+    var Index = 1;
+
+}
+
+<div class="table-responsive table-new">
+    <table class="table table-nowrap mb0">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tài khoản</th>
+                <th>Tồn đầu kỳ</th>
+                <th>Phát sinh có</th>
+                <th>Phát sinh nợ</th>
+                <th>Tồn cuối kỳ</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Index</td>
+                        <td>@item.BankId - @item.AccountNumber</td>
+                        <td>@item.Amount.ToString("N0") đ</td>
+                        <td>@item.SumAmount.ToString("N0") đ</td>
+                        <td>@item.SumAmountTR.ToString("N0")  đ</td>
+                        <td>@((item.Amount + item.SumAmount + item.SumAmountTR).ToString("N0")) đ</td>
+                    </tr>
+                    Index++;
+                }
+                <tr>
+                    <td></td>
+                    <th>Tổng</th>
+                    <th>@(Model.Sum(s=>s.Amount).ToString("N0")) đ</th>
+                    <th>@(Model.Sum(s=>s.SumAmount).ToString("N0")) đ</th>
+                    <th>@(Model.Sum(s=>s.SumAmountTR).ToString("N0")) đ</th>
+                    <th>@((Model.Sum(s => s.Amount) + Model.Sum(s => s.SumAmount) + Model.Sum(s => s.SumAmountTR)).ToString("N0")) đ</th>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+
+

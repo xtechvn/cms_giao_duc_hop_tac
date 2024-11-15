@@ -1,0 +1,33 @@
+﻿<form id="form_add_Policy" onsubmit="return false">
+    <div class="grid grid-don-hang gap10 mb20">
+        <div class="grid-item border">
+
+            <div class="form-default3 pd10">
+                <div class="row">
+                    <input type="text" class="form-control PolicyName" id="PolicyId" name="PolicyId" value="0" style="display:none">
+                    <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Hạng phòng </label></div>
+                    <div class="col-md-8 mb10">
+                        <input type="text" class="form-control PolicyName" id="PolicyName" name="PolicyName">
+                    </div>
+                    <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Thời gian áp dụng </label><sup class="red">*</sup></div>
+                    <div class="col-md-8 mb10" style="width:100% !important;">
+                        <input type="text" class="form-control  input EffectiveDate" id="EffectiveDate" name="EffectiveDate">
+                    </div>
+                    <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Trạng thái </label><sup class="red">*</sup></div>
+                    <div class="col-md-8 mb10" style="width:100% !important;">
+                        <input type="text" class="form-control  input EffectiveDate" id="EffectiveDate" name="EffectiveDate">
+                    </div>
+
+                </div>
+                <div class="table-responsive table-gray" id="data_body">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="text-center">
+        <button type="submit" onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+        <button type="submit" onclick=" " class="btn btn-default">Thêm</button>
+    </div>
+</form>

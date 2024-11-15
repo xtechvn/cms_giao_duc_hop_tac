@@ -1,0 +1,158 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.ViewModels
+@using Entities.ViewModels.Funding
+@using Utilities
+@using Utilities.Contants
+@model GenericViewModel<DebtStatisticViewModel>
+
+@if (Model == null || Model.ListData == null || Model.ListData.Count == 0)
+{
+    <div class="search-null center mb40">
+        <div class="mb24">
+            <img src="/images/graphics/icon-search.png" alt="">
+        </div>
+        <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+        <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+    </div>
+}
+else
+{
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 30px;">STT</th>
+                    <th style="width: 100px;">Mã phiếu</th>
+                    <th style="width: 100px;">Khách hàng</th>
+                    <th style="width: 100px;">Thời gian</th>
+                    <th style="width: 100px;" class="text-right">Số tiền</th>
+                    <th style="width: 200px;">Nội dung</th>
+                    <th style="width: 200px;">Trạng thái</th>
+                    <th style="width: 140px;">Ngày tạo</th>
+                    <th style="width: 140px;">Người tạo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ListData != null && Model.ListData.Count > 0)
+                {
+                    var counter = (Model.CurrentPage - 1) * Model.PageSize;
+                    foreach (var item in Model.ListData)
+                    {
+                        counter++;
+                        <tr>
+                            <td class="center ">@counter</td>
+                            <td class="text-nowrap">
+                                <a class="blue" href="/DebtStatistic/Detail?debtStatisticId=@item.Id">
+                                    @item.Code
+                                </a>
+                            </td>
+                            <td class="text-break">
+                                <a href="/CustomerManager/Detail?id=@item.ClientId"><span class="blue"> @item.ClientName</span></a>
+                            </td>
+                            <td class="text-break">@item.FromDateStr - @item.ToDateStr</td>
+                            <td class="text-break text-right">
+                                @* @item.Payment / @item.Amount.Value.ToString("N0") *@
+                                @if (item.AmountPay >= item.Amount)
+                                {
+                                    <div class="green">@item.AmountPay.ToString("N0")/ </div>
+                                }
+                                else
+                                {
+                                    <div class="red">@item.AmountPay.ToString("N0")/ </div>
+                                }
+                                <div>@item.Amount.Value.ToString("N0")</div>
+                            </td>
+                            <td class=" text-break">
+                                @if (item.Note.Length > 100)
+                                {
+                                    <div title="@item.Note">@item.Note.Substring(0, 50)...</div>
+                                }
+                                else
+                                {
+                                    @item.Note
+                                }
+                            </td>
+                            <td class=" text-break" style="min-width: 130px;">
+                                @if (item.Status == (int)(DEBT_STATISTIC_STATUS.CHO_KE_TOAN_XAC_NHAN)
+                               || item.Status == (int)(DEBT_STATISTIC_STATUS.CHO_KHACH_HANG_XAC_NHAN))
+                                {
+                                    <span class="status-wait">@item.StatusName</span>
+                                }
+                                @if (item.Status == (int)(DEBT_STATISTIC_STATUS.DA_XAC_NHAN))
+                                {
+                                    <span class="status-approve">@item.StatusName</span>
+                                }
+                                @if (item.Status == (int)(DEBT_STATISTIC_STATUS.TU_CHOI) || item.Status == (int)(DEBT_STATISTIC_STATUS.HUY))
+                                {
+                                    <span class="status-reject">@item.StatusName</span>
+                                }
+                                @if (item.Status == (int)(DEBT_STATISTIC_STATUS.LUU_NHAP))
+                                {
+                                    <span class="status-draft">@item.StatusName</span>
+                                }
+                            </td>
+                            @if (item.CreatedDate != null)
+                            {
+                                <td class=" text-break">@item.CreatedDate.Value.ToString("dd-MM-yyyy HH:mm")</td>
+                            }
+                            else
+                            {
+                                <td class=" text-break">@item.CreatedDate</td>
+                            }
+                            <td class=" text-break">@item.UserCreateName </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<style>
+    .status-wait {
+        background: #EEB442 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-approve {
+        background: #5CB566 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-draft {
+        background: #C9C9C9 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-reject {
+        background: #FF0000 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+</style>
+
+@await Component.InvokeAsync("Paging", new
+{
+    pageModel = new Paging()
+    {
+        TotalRecord = Model.TotalRecord,
+        TotalPage = Model.TotalPage,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        RecordName = "kết quả lọc",
+        PageAction = "_payment_request_service.OnPaging({0})"
+    }
+})

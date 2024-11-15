@@ -1,0 +1,234 @@
+﻿@using Entities.ViewModels.Programs
+@using Utilities.Contants
+@{
+    var Model = (List<ProgramsPackageModel>)ViewBag.data;
+    
+
+}
+<style>
+    .white-popup {
+        width: 900px !important;
+    }
+</style>
+
+<form id="ProgramsPackage_form" onsubmit="return false">
+    @if (Model != null)
+    {
+        <div class="content_lightbox">
+            <div class="head line-bottom">
+
+            </div>
+            <div class="row">
+
+                @if (Model[0].ProgramsPackage != null)
+                {
+                    var data = Model[0].ProgramsPackage.Where(s => s.RoomType == ViewBag.RoomType).ToList();
+                    <div class="col-3 mb10">Mã gói</div>
+                    <div class="col-9 mb10">: @data[0].PackageCode</div>
+                    <div class="col-3 mb10">Tên gói</div>
+                    <div class="col-9 mb10">: @data[0].PackageName</div>
+                    <div class="col-3 mb10">Hạng phòng</div>
+                    <div class="col-9 mb10">: @data[0].RoomType</div>
+                }
+                else
+                {
+                    <div class="col-3 mb10">Mã gói</div>
+                    <div class="col-9 mb10">:  </div>
+                    <div class="col-3 mb10">Tên gói</div>
+                    <div class="col-9 mb10">:  </div>
+                    <div class="col-3 mb10">Hạng phòng</div>
+                    <div class="col-9 mb10">: </div>
+                }
+                <div class="col-3 mb10">Thời gian áp dụng</div>
+                <div class="col-9 mb10">: @ViewBag.mindate - @ViewBag.maxdate</div>
+                <div class="col-3 mb10">Trạng thái</div>
+
+                @if (Model[0].ProgramsPackageStatus == 0)
+                {
+                    <div class="col-9 mb10">: Mở bán </div>
+                }
+                else
+                {
+                    <div class="col-9 mb10">: Đã đóng</div>
+                }
+            </div>
+
+
+            <div class="table-responsive table-gray">
+                <table class="table table-nowrap">
+                    <thead>
+                        <tr>
+                            <th style="width: 150px;">Giá nhập</th>
+                            <th>Ngày trong tuần</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model[0].ProgramsPackage != null && Model[0].ProgramsPackage.Count > 0)
+                        {
+
+                            foreach (var item in Model[0].ProgramsPackage.Where(s => s.RoomType == ViewBag.RoomType && s.Type != 0).GroupBy(s => new { s.Price, s.RoomType, s.FromDate }).Select(i => i.First()).ToList())
+                            {
+                                <tr class="ProgramsPackage-row">
+
+                                    <td>@item.Price.ToString("N0")</td>
+                                    <td>
+
+                                        @{
+                                            var list = @item.WeekDay.Split(',');
+                                            string thu = null;
+                                        }
+                                        @if (@item.WeekDay.Contains("2"))
+                                        {
+                                            thu += "Thứ 2, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("3"))
+                                        {
+                                            thu += "Thứ 3, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("4"))
+                                        {
+                                            thu += "Thứ 4, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("5"))
+                                        {
+                                            thu += "Thứ 5, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("6"))
+                                        {
+                                            thu += "Thứ 6, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("7"))
+                                        {
+                                            thu += "Thứ 7, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("CN"))
+                                        {
+                                            thu += "CN, ";
+                                        }
+
+
+                                        @if (thu != null)
+                                        {
+
+                                            if (item.Type == 0)
+                                            {
+
+                                                thu = thu + " " + Convert.ToDateTime(item.ApplyDate).ToString("dd/MM/yyyy");
+                                            }
+                                            else
+                                            {
+                                                thu = thu.TrimEnd(',', ' ');
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            thu = Convert.ToDateTime(item.ApplyDate).ToString("dd/MM/yyyy");
+                                        }
+
+
+                                        @thu
+                                    </td>
+
+                                </tr>
+                            }
+                            foreach (var item in Model[0].ProgramsPackage.Where(s => s.RoomType == ViewBag.RoomType && s.Type == 0).GroupBy(s => new { s.Price, s.RoomType, s.FromDate, s.ApplyDate }).Select(i => i.First()).ToList())
+                            {
+                                <tr class="ProgramsPackage-row">
+
+                                    <td>@item.Price.ToString("N0")</td>
+                                    <td>
+
+                                        @{
+                                            var list = @item.WeekDay.Split(',');
+                                            string thu = null;
+                                        }
+                                        @if (@item.WeekDay.Contains("2"))
+                                        {
+                                            thu += "Thứ 2, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("3"))
+                                        {
+                                            thu += "Thứ 3, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("4"))
+                                        {
+                                            thu += "Thứ 4, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("5"))
+                                        {
+                                            thu += "Thứ 5, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("6"))
+                                        {
+                                            thu += "Thứ 6, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("7"))
+                                        {
+                                            thu += "Thứ 7, ";
+                                        }
+
+                                        @if (@item.WeekDay.Contains("CN"))
+                                        {
+                                            thu += "CN, ";
+                                        }
+
+
+                                        @if (thu != null)
+                                        {
+
+                                            if (item.Type == 0)
+                                            {
+
+                                                thu = thu + " " + Convert.ToDateTime(item.ApplyDate).ToString("dd/MM/yyyy");
+                                            }
+                                            else
+                                            {
+                                                thu = thu.TrimEnd(',', ' ');
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            thu = Convert.ToDateTime(item.ApplyDate).ToString("dd/MM/yyyy");
+                                        }
+
+
+                                        @thu
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group align-right mt20 block">
+                @if (Model[0].Status != (int)ProgramsStatus.Da_duyet && Model[0].Status != (int)ProgramsStatus.Cho_TBP_duyet && ViewBag.btnSua == 1)
+                {
+                    <button type="submit" class="btn btn-default bg-main" onclick="_DetailPrograms.loadDetailProgramsPackage('@Model[0].Id', '1','@ViewBag.RoomType','@ViewBag.ProgramName')" id="editview"><i class="fa fa-floppy-o"></i>Sửa</button>
+                }
+
+
+                <button type="submit" class="btn btn-default cancel" onclick="$.magnificPopup.close();"><i class="fa fa-minus-circle"></i>Bỏ qua</button>
+            </div>
+
+        </div>
+    }
+
+</form>
+
+
+<script type="text/javascript" src="/modules/DetailPrograms.js"></script>

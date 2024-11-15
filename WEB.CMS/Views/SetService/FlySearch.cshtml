@@ -1,0 +1,145 @@
+﻿
+@{
+    Layout = null;
+}
+@using Entities.ViewModels
+@model GenericViewModel<Entities.ViewModels.SetServices.FlyBookingSearchViewModel>
+@if (Model != null)
+{
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã dịch vụ</th>
+                    <th style="min-width: 150px !important; max-width: 350px !important;width: 300px !important;">
+                     Chi tiết dịch vụ
+                    </th>
+                    <th>
+                        Ngày check in -
+                        Ngày check out
+                    </th>
+                    <th>Doanh thu dịch vụ</th>
+                    <th>Giá NET thực tế</th>
+                    <th>Lợi nhuận thực tế</th>
+                    <th>Mã đơn hàng</th>
+                    <th>Ngày tạo</th>
+                    <th>Nhân viên bán</th>
+                    <th>Điều hành</th>
+                    <th>Mã code</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+       @if (Model.ListData != null && Model.ListData.Count > 0)
+                {
+                    var STT = (Model.CurrentPage - 1) * Model.PageSize;
+                    
+                       @foreach (var item in Model.ListData)
+                       {
+                           var leg_count = item.GroupBookingId.Split(",").Count();
+                           STT++;
+                <tr>
+                    <td>@STT</td>
+                    <td>
+                        <a class="blue" href="/SetService/fly/detail/@(item.GroupBookingId.Replace(",","_"))">@item.ServiceCode </a>
+
+                    </td>
+                    <td>
+                        Hành trình: @(leg_count>1?"Khứ hồi": "Một chiều").
+                        <br />
+                        Điểm đi: @item.StartPoint (@item.StartDate.ToString("dd/MM/yyyy - HH:mm"))
+                        <br />
+                        Điểm đến: @item.EndPoint  @(leg_count>1? "("+@item.EndDate.ToString("dd/MM/yyyy - HH:mm")+")": "")
+                        <br />
+                        Chiều đi: @item.GoFlightNumber - @item.GoAirLines  - Mã đặt chỗ: @item.GoBookingCode
+                        <br />
+                        @(leg_count>1? " Chiều về: "+item.BackFlightNumber+" - "+item.BackAirLines+" - Mã đặt chỗ: "+item.BackBookingCode: "")
+                        <br />
+                        Số người: @item.PassengerNumber
+
+                    </td>
+                    <td>@item.StartDate.ToString("dd/MM/yyyy") - @(leg_count>1? item.EndDate.ToString("dd/MM/yyyy") : "N/A")</td>
+                    <td>
+                        @{ double operator_amount = (item.AmountGo == null ? 0 : (double)item.AmountGo); }
+                        @(operator_amount.ToString("N0"))
+                    </td>
+                    <td>
+                        @{ double operator_price = (item.PriceGo == null ? 0 : (double)item.PriceGo); }
+                        @(operator_price.ToString("N0"))
+                    </td>
+                    <td>
+                        @{
+                            double operator_profit = operator_amount - operator_price;
+                        }
+                        @(operator_profit.ToString("N0"))
+                    </td>
+                    <td><a class="blue" href="/Order/@item.OrderId">@item.OrderNo</a> </td>
+                    <td>@item.CreatedDate.ToString("dd/MM/yyyy - HH:mm")</td>
+                    <td>@item.SalerFullName <br /> @item.SalerName <br /> @item.SalerEmail</td>
+                    <td>@item.OperatorName</td>
+                    <td style="max-width:10%;width:8%"> @(item.BookingCode== null? "": item.BookingCode.TrimEnd(',', ' '))</td>
+                    <td>
+                        @switch (item.FlyBookingStatus)
+                        {
+                            case (int)Utilities.Contants.ServiceStatus.New:
+                            case (int)Utilities.Contants.ServiceStatus.WaitingExcution:
+                                {
+                <span class="status-oranger">@item.FlyBookingStatusName</span> }
+                                                break;
+                                            case (int)Utilities.Contants.ServiceStatus.OnExcution:
+                                                {
+                <span class="status-blue">@item.FlyBookingStatusName</span> }
+                                                break;
+                                            case (int)Utilities.Contants.ServiceStatus.ServeCode:
+                                            case (int)Utilities.Contants.ServiceStatus.Payment:
+                                            case (int)Utilities.Contants.ServiceStatus.ServeCodeKH:
+                                                {
+                <span class="status-green">@item.FlyBookingStatusName</span> }
+                                                break;
+                                            case (int)Utilities.Contants.ServiceStatus.Cancel:
+                                            case (int)Utilities.Contants.ServiceStatus.Decline:
+                                                {
+                <span class="status-red">@item.FlyBookingStatusName</span>                                }
+                                                break;
+                                        }
+                    </td>
+                </tr>
+                 
+                }  
+       }
+            </tbody>
+        </table>
+    </div>
+    <input id="countFy"value="@Model.TotalRecord" style="display:none"/>
+    @await Component.InvokeAsync("PagingNew", new
+    {
+        pageModel = new Paging()
+        {
+            TotalRecord = Model.TotalRecord,
+            TotalPage = Model.TotalPage,
+            CurrentPage = Model.CurrentPage,
+            PageSize = Model.PageSize,
+            RecordName = "Chính sách",
+            PageAction = "_set_service_fly.OnPaging({0})",
+            PageSelectPageSize = "_set_service_fly.onSelectPageSize()",
+        }
+    })
+<script>
+        $('#selectPaggingOptions').val('@Model.PageSize').attr("selected", "selected");
+                        _set_service_fly.ChangeTotalFlyTicketTotalCount(@Model.TotalRecord)
+                </script>
+                </div> }
+            else
+                        {
+                <div class="search-null center mb40">
+                    <div class="mb24">
+                        <img src="/images/graphics/icon-search.png" alt="">
+                    </div>
+                    <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+                    <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+                </div>
+                <script>        _set_service_fly.ChangeTotalFlyTicketTotalCount(0) </script>
+            }
+

@@ -1,0 +1,166 @@
+﻿@{ var SalerGroup = (List<Entities.Models.User>)ViewBag.SalerGroup;
+    var dataclient = (List<Entities.Models.User>)ViewBag.dataclient;
+
+}
+@if (dataclient != null)
+{
+
+
+    if (ViewBag.IsEdit) {
+        <div class="border bg-white mb20">
+    <div class="lb-form pd10">
+        Thông tin phụ trách
+    </div>
+    <div class="pd10">
+        <div class="form-default3 pd10">
+            <div class="form-group">
+                <label class="lbl">Nhân viên chính <sup class="red">*</sup></label>
+                <div class="list-select-tag">
+                    <select class="form-control select2 js-example-basic-multiple" name="SalerId" id="SalerId">
+                        @if (dataclient != null && ViewBag.SalerId != null)
+                        {
+                            <option selected="selected" value="">Chọn nhân viên</option>
+                            @foreach (var item in dataclient)
+                            {
+                                if (item.Id == ViewBag.SalerId && ViewBag.SalerId > 0)
+                                {
+                                    <option selected="selected" value="@item.Id">@item.FullName - @item.UserName</option> }
+                                else
+                                {
+                                    <option value="@item.Id">@item.FullName - @item.UserName</option>}
+                                }   
+                            }
+                        else
+                        {
+                            <option selected="selected" value="-1">Chọn nhân viên</option>
+                             @foreach (var item in dataclient)
+                            {
+                                <option value="@item.Id">@item.FullName - @item.UserName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-default3 pd10">
+            <div class="form-group" >
+                <label class="lbl">Nhân viên phụ:</label><br />
+                <div class="list-select-tag">
+                    <select class="form-control select2 js-example-basic-multiple" name="SalerGroup" id="SalerGroup" multiple="multiple">
+                        @if (SalerGroup != null )
+                        {
+                            @foreach (var item in dataclient)
+                            {
+                                foreach (var sallseId in SalerGroup)
+                                {
+                                    if (item.Id == sallseId.Id)
+                                    {
+                                        <option selected="selected" value="@item.Id">@item.Email</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Id">@item.FullName - @item.UserName</option>
+                                    }   
+                                }
+                                       
+                            }
+                         }
+                         else
+                         {
+                            @foreach (var item in dataclient)
+                            {
+                                <option value="@item.Id">@item.FullName - @item.UserName</option>
+
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                }
+                else
+                {
+        <div class="border bg-white mb20">
+    <div class="lb-form pd10">
+        Thông tin phụ trách
+    </div>
+    <div class="pd10">
+        <div class="form-default3 pd10">
+            <div class="form-group">
+                <label class="lbl">Nhân viên chính <sup class="red">*</sup></label>
+                <div class="list-select-tag">
+                    <select class="form-control select2 js-example-basic-multiple" name="SalerId" id="SalerId" disabled>
+                        @if (dataclient != null && ViewBag.SalerId != null)
+                        {
+                            <option selected="selected" value="">Chọn nhân viên</option>
+                            @foreach (var item in dataclient)
+                            {
+                                if (item.Id == ViewBag.SalerId && ViewBag.SalerId > 0)
+                                {
+                                    <option selected="selected" value="@item.Id">@item.FullName - @item.UserName</option> }
+                                else
+                                {
+                                    <option value="@item.Id">@item.FullName - @item.UserName</option>}
+                                }   
+                            }
+                        else
+                        {
+                            <option selected="selected" value="-1">Chọn nhân viên</option>
+                             @foreach (var item in dataclient)
+                            {
+                                <option value="@item.Id">@item.FullName - @item.UserName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-default3 pd10">
+            <div class="form-group" >
+                <label class="lbl">Nhân viên phụ:</label><br />
+                <div class="list-select-tag">
+                    <select class="form-control select2 js-example-basic-multiple" name="SalerGroup" id="SalerGroup" multiple="multiple" disabled>
+                        @if (SalerGroup != null )
+                        {
+                            @foreach (var item in dataclient)
+                            {
+                                foreach (var sallseId in SalerGroup)
+                                {
+                                    if (item.Id == sallseId.Id)
+                                    {
+                                        <option selected="selected" value="@item.Id">@item.Email</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Id">@item.FullName - @item.UserName</option>
+                                    }   
+                                }
+                                       
+                            }
+                         }
+                         else
+                         {
+                            @foreach (var item in dataclient)
+                            {
+                                <option value="@item.Id">@item.FullName - @item.UserName</option>
+
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                }
+
+}
+<script>
+    $('#SalerGroup').select2();
+    $('#SalerId').select2();
+</script>
+
+

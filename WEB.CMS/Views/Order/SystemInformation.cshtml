@@ -1,0 +1,37 @@
+﻿<div class="border bg-white mb20">
+    <div class="lb-form pd10">
+        Thông tin hệ thống
+    </div>
+    @if (ViewBag.UserCreateId != null)
+    {
+<div class="pd10">
+    <ul class="mb0">
+        <li class="grid grid__2">
+            <div>Ngày tạo</div>
+            <div>: @ViewBag.UserCreateTime</div>
+        </li>
+        <li class="grid grid__2">
+            <div>Người tạo</div>
+            <div>: @ViewBag.UserCreateClientName</div>
+        </li>
+        <li class="grid grid__2">
+            <div>Ngày cập nhật</div>
+            <div>: @(ViewBag.UserUpdateTime != null ? ViewBag.UserUpdateTime : "N/A")</div>
+        </li>
+        <li class="grid grid__2">
+            <div>Người cập nhật</div>
+            <div>: @(ViewBag.UserUpdateClientName!=null? ViewBag.UserUpdateClientName : "N/A")</div>
+        </li>
+    </ul>
+</div> }
+else
+{
+<div class="pd10">
+    N/A
+</div>}
+    <div class="lb-form pd10">
+        <a href="javascript:;" style="color: #056BD3;" onclick="_orderDetail.GetLog(@ViewBag.orderId ,'@ViewBag.OrderNo')">Lịch sử đơn hàng</a><br />
+        <a href="javascript:;" style="color: #056BD3;" onclick="_orderDetail.GetLogOrderIsLock(@ViewBag.orderId ,'@ViewBag.OrderNo')">Lịch sử khóa sổ</a>
+    </div>
+
+</div>

@@ -1,0 +1,245 @@
+﻿@{
+    ViewData["Title"] = "Chi tiết khách sạn";
+}
+@using Entities.Models;
+@using Entities.ViewModels.Hotel;
+@model HotelDetailViewModel
+<style>
+    .main-pad-top {
+        padding-top: 121px;
+    }
+</style>
+
+@{
+    var hotel_ultilities = (List<AllCode>)ViewBag.HotelUtilities;
+
+    var selected_packages = new List<int>();
+    var is_check_all_ultility = false;
+    if (!string.IsNullOrEmpty(Model.Extends))
+    {
+        selected_packages = Model.Extends.Split(',').Select(s => int.Parse(s)).ToList();
+
+        if (selected_packages.Count == hotel_ultilities.Count)
+        {
+            is_check_all_ultility = true;
+        }
+    }
+}
+
+<section style="overflow-x: hidden;">
+    <div class="row-main container">
+        @if (Model != null)
+        {
+            <h2 class="txt_18 bold mb10">Chi tiết khách sạn</h2>
+            <input type="hidden" id="global_hotel_id" value="@Model.Id" />
+            <input type="hidden" id="global_supplier_id" value="@Model.SupplierId" />
+            <input type="hidden" id="global_ServiceName" value="@Model.Name" />
+
+            <div class="table-responsive table-white">
+                <table class="table table-nowrap">
+                    <tbody>
+                        <tr>
+                            <td colspan="3">
+                                <strong> @Model.Name</strong>
+                                <div class="" style="float: right;">
+                                    <a class="delete blue" style="cursor:pointer;" onclick="hotel_management.OnAddOrUpdate('@Model.Id')"><i class="fa fa-edit"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><strong>Thông tin cơ bản</strong></td>
+                            <td style="width: 440px;"><strong>Thông tin tài chính</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="min-width: 400px;">
+                                <div class="row">
+                                    <div class="col-4 mb10 gray">ID</div>
+                                    <div class="col-8 mb10">: @Model.Id</div>
+                                    <div class="col-4 mb10 gray">Tên rút gọn</div>
+                                    <div class="col-8 mb10">: @Model.ShortName</div>
+                                    <div class="col-4 mb10 gray">Năm thành lập</div>
+                                    <div class="col-8 mb10">: @Model.EstablishedYear</div>
+                                    @*  <div class="col-4 mb10 gray">Loại hình dịch vụ</div>
+                                        <div class="col-8 mb10">N/A</div>*@
+                                </div>
+                            </td>
+                            <td style="min-width: 400px;">
+                                <div class="row">
+                                    <div class="col-4 mb10 gray">Địa điểm</div>
+                                    <div class="col-8 mb10">: @Model.Street</div>
+                                    <div class="col-4 mb10 gray">Email</div>
+                                    <div class="col-8 mb10">: @Model.Email</div>
+                                    <div class="col-4 mb10 gray">Điện thoại</div>
+                                    <div class="col-8 mb10">: @Model.Telephone</div>
+                                    @*  <div class="col-4 mb10 gray">Loại hình lưu trú</div>
+                                        <div class="col-8 mb10">: N/A</div>*@
+                                </div>
+                            </td>
+                            <td style="min-width: 400px;">
+                                <div class="row">
+                                    <div class="col-5 mb10 gray">Mã số thuế</div>
+                                    <div class="col-7 mb10">: @Model.TaxCode</div>
+                                    <div class="col-5 mb10 gray">Chuỗi thương hiệu</div>
+                                    <div class="col-7 mb10 blue">: @Model.ChainBrandsName</div>
+                                    <div class="col-5 mb10 gray">Thời gian xác nhận</div>
+                                    <div class="col-7 mb10">: @Model.VerifyDateName</div>
+                                    @* <div class="col-5 mb10 gray">Người phụ trách</div>
+                                        <div class="col-7 mb10">: Nguyễn Thanh Bình - Phòng kinh doanh 1</div>*@
+                                    @*<div class="col-5 mb10 gray">Thông tin hệ thống</div>
+                                        <div class="col-7 mb10">: <a href="#" class="blue underline">Xem thêm</a></div>*@
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-default nav nav-tabs">
+                <a class="active" href="#tab-room" data-toggle="tab">Danh sách phòng</a>
+                <a href="#tab-program" data-toggle="tab">Chương trình</a>
+                <a href="#tab-surcharge" data-toggle="tab">Phụ thu</a>
+                <a href="#tab-benefit" data-toggle="tab">Tiện ích</a>
+                <a href="#tab-payment" data-toggle="tab">Thông tin thanh toán</a>
+                <a href="#tab-contact" data-toggle="tab">Liên hệ</a>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane show active" id="tab-room" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-12 mb10">
+                            <button type="button" class="btn btn-success min"
+                                onclick="hotel_room.OnAddOrUpdate(0)">
+                                Thêm phòng
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" id="grid_hotel_room">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="tab-program" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-12" id="grid_supplier_program">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="tab-surcharge" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-12 mb10">
+                            <button type="button" class="btn btn-success min"
+                                onclick="hotel_surcharge.OnAddOrUpdate(0)">
+                                Thêm giá phụ thu
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-12" id="grid_hotel_surcharge">
+                        </div>
+                        <div class="col-md-12" style="margin-top: 60px;" id="hotel_surcharge_general">
+                            <h2 class="txt_18 bold mb10">Phụ thu khác (hiển thị ngoài trang sản phẩm):</h2>
+                            <div class="mb10">
+                                <input type="hidden" id="hotel-surcharge-note-orginal" value="@(Model.OtherSurcharge == null?"": Model.OtherSurcharge)"/>
+                                <textarea id="text-editor" style="width:90%; max-height:400px;">
+                                  @(Model.OtherSurcharge == null?"": Model.OtherSurcharge)
+
+                                </textarea>
+                            </div>
+                            <div class="col-md-12 mb10">
+                                <button type="button" class="btn btn-success min"  onclick="hotel_surcharge.UpdateSurchageNote()">
+                                    Lưu
+                                </button>
+                                <button type="button" class="btn btn-default cancel"  onclick="hotel_surcharge.CancelSurchageNote()">
+                                    Hủy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="tab-benefit" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-12 mb10">
+                            <button type="button" class="btn btn-success min"
+                                onclick="hotel_ultility.Upsert()">
+                                Cập nhật tiện ích
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="check-list mb10">
+                                <input type="checkbox" id="btn_hotel_extend_ckb_all"
+                                   @(is_check_all_ultility ? "checked" :string.Empty) />
+                                <span class="checkmark"></span>
+                                Chọn tất cả
+                            </label>
+                            <p><strong>Tiện ích khách sạn</strong></p>
+                        </div>
+                        <div class="col-md-12" id="grid_hotel_benefit">
+                            <div class="grid grid__2 gap10 mb20">
+                                @if (hotel_ultilities != null && hotel_ultilities.Any())
+                                {
+                                    foreach (var item in hotel_ultilities)
+                                    {
+                                        <label class="check-list">
+                                            <input type="checkbox" class="ckb_hotel_extend_type" id="ckb__hotel_service_type" value="@item.CodeValue"
+                                       @(selected_packages.Contains(item.CodeValue) ? "checked" :string.Empty) />
+                                            <span class="checkmark"></span>
+                                            @item.Description
+                                        </label>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="tab-payment" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-12 mb10">
+                            <button type="button" class="btn btn-success min"
+                                onclick="hotel_banking_account.OnAddOrUpdate(0)">
+                                Thêm thông tin thanh toán
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" id="grid_hotel_banking_account">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="tab-contact" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-12 mb10">
+                            <button type="button" class="btn btn-success min"
+                                onclick="hotel_contact.OnAddOrUpdate(0)">
+                                Thêm liên hệ
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" id="grid_hotel_contact">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="search-null center mt40 mb40">
+                <div class="mb24">
+                    <img src="/images/graphics/icon-search.png" alt="">
+                </div>
+                <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+                <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+            </div>
+        }
+    </div>
+</section>
+
+@section scripts {
+<script type="text/javascript" src="~/modules/hotel_detail.js"></script>
+}

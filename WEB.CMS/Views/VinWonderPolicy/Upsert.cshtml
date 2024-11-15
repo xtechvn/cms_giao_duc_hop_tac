@@ -1,0 +1,125 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.Models
+@using Entities.ViewModels
+@model CampaignViewModel
+@{
+    var common_profits = (List<AllCode>)ViewBag.CommonProfit;
+    var profit_value = 0;
+    if (common_profits != null && common_profits.Any())
+    {
+        var profit_model = common_profits.FirstOrDefault(s => s.CodeValue == 2);
+        profit_value = profit_model != null ? int.Parse(profit_model.Description) : 0;
+    }
+
+    var str_date = string.Empty;
+    if (Model != null && Model.Id > 0)
+    {
+        str_date = $"{Model.FromDate.ToString("dd/MM/yyyy HH:mm")} - {Model.ToDate.ToString("dd/MM/yyyy HH:mm")}";
+    }
+}
+
+<div class="tab-default border-bottom">
+    @if (Model.Id > 0)
+    {
+         <a href="#" class="active">Sửa chiến dịch</a>
+    }
+    else
+    {
+        <a href="#" class="active">Nhập thông tin</a>
+    }
+</div>
+<p>Sau khi hoàn thành chỉnh sửa, vui lòng đăng tập tin Excel lên. Bạn có thể kiểm tra những sản phẩm mới tạo 1 lần nữa ở bên dưới </p>
+<div class="mb10">
+    <label class="btn btn-success" style="margin-right:10px">
+        <input class="mfp-hide" type="file" id="file_import_vinwonder">
+        Tải tập tin
+    </label>
+    <span style="color:#ADB0B1">Import file mẫu của Vinwonder. Định dạng: xlsx</span>
+</div>
+<div class="red p-3 rounded mb20 mfp-hide" id="file_import_vinwonder_error_message" style="background: #F3DFDF;">
+    Lỗi xảy ra: File upload không đúng định dạng, Hệ thống không nhận biết được các cột
+</div>
+
+<div class="flex">
+    <div class="flex-form-group mb15">
+        <label class="flex-text">Hiệu lực</label>
+        <div class="flex-input">
+            <div class="datepicker-wrap row row_min">
+                <div class="col-12">
+                     <input type="hidden" id="ip_campaign_id" value="@Model.Id" />
+                    <input class="form-control text-center datepicker-input dateranger_picker_input"
+                           id="ip_effect_time" type="text"
+                           placeholder="Khoảng thời gian hiệu lực"
+                           style="min-width:280px;" value="@str_date" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ml-5"></div>
+    <div class="flex-form-group mb15">
+        <label class="flex-text">Lợi nhuận chung</label>
+        <div class="flex-input">
+            <div class="flex align-center">
+                <div class="input-tag-price" id="vinwonder_common_profit">
+                    <input type="text" class="form-control currency" id="ip_common_profit" value="@profit_value.ToString("N0")" data-type="2" disabled style="width: 100px;">
+                    @if (common_profits != null && common_profits.Any())
+                    {
+                        foreach (var item in common_profits.OrderByDescending(s => s.OrderNo))
+                        {
+                            if (item.CodeValue == 1)
+                            {
+                                <span class="status-gray currency_type ml-2 cur-pointer" data-type="1" data-value="@item.Description">%</span>
+                            }
+                            else
+                            {
+                                <span class="status-green currency_type cur-pointer" data-type="2" data-value="@item.Description">VNĐ</span>
+                            }
+                        }
+                    }
+                </div>
+                <button type="button" class="btn btn-default agray ml-2" id="btn_edit_common_profit" style="padding: 0 10px;">
+                    <i class="fa fa-edit mr-0"></i>
+                </button>
+                <button type="button" class="btn btn-default ml-2 bg-main mfp-hide" id="btn_save_common_profit"
+                        title="Lưu lợi nhuận chung" style="padding: 0 10px;">
+                    <i class="fa fa-floppy-o mr-0"></i>
+                </button>
+                <button type="button" class="btn btn-default ml-2 cancel mfp-hide" id="btn_cancel_common_profit"
+                        title="Hủy" style="padding: 0 10px;">
+                    <i class="fa fa-minus-circle mr-0"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="flex-form-group mb15">
+    <label class="flex-text">Tên chiến dịch</label>
+    <div class="flex-input">
+        <input type="text" id="ip_campaign_name" value="@Model.Description" />
+        @*<select class="select2" name="" disabled>
+            <option value="">-- Tạo mới giá vé Vinwonder từ: 01/08/2023 đến 30/12/2023 --</option>
+            </select>*@
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12" id="grid_vinwonder_price">
+        @if (Model.PricePolycies != null && Model.PricePolycies.Any())
+        {
+            await Html.RenderPartialAsync("~/Views/VinWonderPolicy/GridPrice.cshtml", Model.PricePolycies);
+        }
+    </div>
+</div>
+
+<div class="form-default">
+    <div class="form-group align-right mt20 block">
+        <button type="button" class="btn btn-default bg-main" id="btn_save_vinwonder_campaign" onclick="_vin_wonder.UpsertCampaign()">
+            <i class="fa fa-floppy-o"></i>Cập nhật
+        </button>
+        <button type="button" class="btn btn-default cancel" data-dismiss="modal"><i class="fa fa-minus-circle"></i>Đóng</button>
+    </div>
+</div>
+
+<script type="text/javascript" src="~/modules/vin_wonder.js" defer></script>

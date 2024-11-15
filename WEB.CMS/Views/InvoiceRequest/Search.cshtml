@@ -1,0 +1,244 @@
+﻿@{
+    Layout = null;
+
+}
+@using Entities.ViewModels
+@using Entities.ViewModels.Invoice
+@using Utilities
+@using Utilities.Contants
+@model GenericViewModel<InvoiceRequestViewModel>
+
+@if (Model == null || Model.ListData == null || Model.ListData.Count == 0)
+{
+    <div class="search-null center mb40">
+        <div class="mb24">
+            <img src="/images/graphics/icon-search.png" alt="">
+        </div>
+        <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+        <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+    </div>
+}
+else
+{
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 30px;">STT</th>
+                    <th style="width: 100px;">Mã phiếu</th>
+                    <th style="width: 140px;">Ngày dự kiến xuất</th>
+                    <th style="width: 100px;">Mã hóa đơn</th>
+                    <th style="width: 100px;">Số hóa đơn</th>
+                    <th style="width: 100px;">Ngày xuất</th>
+                    <th style="width: 100px;">Khách hàng</th>
+                    <th style="width: 100px;" class="text-right">Tổng tiền</th>
+                    <th style="width: 100px;" class="text-right">Tổng tiền cần xuất</th>
+                    <th style="width: 100px;" class="text-right">Thu thêm</th>
+                    <th style="width: 200px;">Đơn hàng liên quan</th>
+                    <th style="width: 200px;">Trạng thái</th>
+                    <th style="width: 140px;">Ngày tạo</th>
+                    <th style="width: 140px;">Người tạo</th>
+                    <th style="width: 140px;">Ngày duyệt</th>
+                    <th style="width: 140px;">Người duyệt</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ListData != null && Model.ListData.Count > 0)
+                {
+                    var counter = (Model.CurrentPage - 1) * Model.PageSize;
+                    <tr style="background:#f9dab0">
+                        <td class=" "></td>
+                        <td class=" "></td>
+                        <td class=" "></td>
+                        <td class=" "></td>
+                        <td class=" "></td>
+                        <td class=" "></td>
+                        <td class=" ">Tổng</td>
+                        <td class="text-right ">@Model.ListData.Sum(n => n.TotalPrice.Value).ToString("N0")</td>
+                        <td class="text-right ">@Model.ListData.Sum(n => n.PriceExtraExport.Value).ToString("N0")</td>
+                        <td class="text-right ">@Model.ListData.Sum(n => n.PriceExtra.Value).ToString("N0")</td>
+                        <td class=" "></td>
+                        <td class=" "></td>
+                        <td class=" "></td>
+                        <td class=" "></td>
+                        <td class=" "></td>
+                        <td class=" "></td>
+                    </tr>
+                    foreach (var item in Model.ListData)
+                    {
+                        counter++;
+                        <tr>
+                            <td class="center ">@counter</td>
+                            <td class="text-nowrap">
+                                <a class="blue" href="/InvoiceRequest/Detail?invoiceRequestId=@item.Id">
+                                    @item.InvoiceRequestNo
+                                </a>
+                            </td>
+                            <td class="text-break">
+                                @if (item.PlanDate != null)
+                                {
+                                    @item.PlanDate.Value.ToString("dd/MM/yyyy")
+                                }
+
+                                @if (item.PlanDate < DateTime.Today)
+                                {
+                                    <div style="color: red">@item.PaymentDateRemind</div>
+                                }
+                                @if (item.PlanDate >= DateTime.Today)
+                                {
+                                    <div>@item.PaymentDateRemind</div>
+                                }
+                            </td>
+                            <td class="text-break">
+                                @if (!string.IsNullOrEmpty(item.InvoiceCode))
+                                {
+                                    <a class="blue" href="/Invoice/Detail?invoiceId=@item.InvoiceId">
+                                        @item.InvoiceCode
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div>N/A</div>
+                                }
+                            </td>
+                            <td class="text-break">
+                                @if (!string.IsNullOrEmpty(item.InvoiceNo))
+                                {
+                                    <a class="blue" href="/Invoice/Detail?invoiceId=@item.InvoiceId">
+                                        @item.InvoiceNo
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div>N/A</div>
+                                }
+                            </td>
+                            <td class="text-break">
+                                @if (item.ExportDate != null)
+                                {
+                                    @item.ExportDate.Value.ToString("dd/MM/yyyy")
+                                }
+                                else
+                                {
+                                    <div>N/A</div>
+                                }
+                            </td>
+                            <td class="text-break">
+                                <a href="/CustomerManager/Detail?id=@item.ClientId"><span class="blue"> @item.ClientName</span></a>
+                                @if (item.Status == (int)(INVOICE_REQUEST_STATUS.TU_CHOI))
+                                {
+                                    <div class="" style="color: #FF0000 !important
+">
+                                        <span>@item.UserUpdateName</span>
+                                        <span>đã từ chối. </span>
+                                        <span>Lý do: @item.DeclineReason</span>
+                                    </div>
+                                }
+                            </td>
+                            <td class="text-right">
+                                <div>@item.TotalPrice.Value.ToString("N0")</div>
+                            </td>
+                            <td class="text-right">
+                                <div>@item.PriceExtraExport.Value.ToString("N0")</div>
+                            </td>
+                            <td class="text-right">
+                                <div>@item.PriceExtra.Value.ToString("N0")</div>
+                            </td>
+                            <td class="text-break">
+                                <a href="/Order/Orderdetails?id=@item.OrderId"><div class="blue"> @item.OrderNo</div></a>
+                            </td>
+                            <td class=" text-break" style="min-width: 130px;">
+                                @if (item.Status == (int)(INVOICE_REQUEST_STATUS.CHO_TBP_DUYET)||item.Status == (int)(INVOICE_REQUEST_STATUS.CHO_KTT_DUYET))
+                                {
+                                    <span class="status-wait">@item.InvoiceRequestStatus</span>
+                                }
+                                @if (item.Status == (int)(INVOICE_REQUEST_STATUS.DA_DUYET) ||
+                                   item.Status == (int)(INVOICE_REQUEST_STATUS.HOAN_THANH))
+                                {
+                                    <span class="status-approve">@item.InvoiceRequestStatus</span>
+                                }
+                                @if (item.Status == (int)(INVOICE_REQUEST_STATUS.TU_CHOI))
+                                {
+                                    <span class="status-reject">@item.InvoiceRequestStatus</span>
+                                }
+                                @if (item.Status == (int)(INVOICE_REQUEST_STATUS.LUU_NHAP))
+                                {
+                                    <span class="status-draft">@item.InvoiceRequestStatus</span>
+                                }
+                            </td>
+                            <td class=" text-break">@item.CreatedDate.Value.ToString("dd-MM-yyyy HH:mm")</td>
+                            <td class=" text-break">@item.UserName </td>
+                            <td class=" text-break">
+                                @if (item.VerifyDate != null)
+                                {
+                                    @item.VerifyDate.Value.ToString("dd-MM-yyyy HH:mm")
+                                }
+                                else
+                                {
+                                    <div>N/A</div>
+                                }
+                            </td>
+                            <td class=" text-break">
+                                @if (!string.IsNullOrEmpty(item.UserVerifyName))
+                                {
+                                    @item.UserVerifyName
+                                }
+                                else
+                                {
+                                    <div>N/A</div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<style>
+    .status-wait {
+        background: #EEB442 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-approve {
+        background: #5CB566 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-draft {
+        background: #C9C9C9 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-reject {
+        background: #FF0000 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+</style>
+
+@await Component.InvokeAsync("Paging", new
+{
+    pageModel = new Paging()
+    {
+        TotalRecord = Model.TotalRecord,
+        TotalPage = Model.TotalPage,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        RecordName = "kết quả lọc",
+        PageAction = "_invoice_request_service.OnPaging({0})"
+    }
+})

@@ -1,0 +1,42 @@
+﻿@{ ViewData["Title"] = "Sổ kỳ kế toán"; }
+@using Entities.Models
+@{
+    var AgencyType = (List<AllCode>)ViewBag.AgencyType;
+    var PermisionType = (List<AllCode>)ViewBag.PermisionType;
+    var ClientType = (List<AllCode>)ViewBag.ClientType;
+}
+<section style=" overflow-x: hidden;">
+    <div class="row-main container">
+        <h2 class="txt_18 bold mb20">Sổ kỳ kế toán</h2>
+        <div class="flex fillter-donhang mb10">
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <div class="datepicker-wrap" style="width:100%">
+                        <input class="form-control date text-left filter_date_daterangepicker" id="date_time" type="text" value="@DateTime.Now.Year"
+                               name="datetimeApprove" style="min-width: 180px !important" onchange=" _close_the_book.GetListDate()" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div id="grid_data_date">
+          
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script asp-append-version="true" type="text/javascript" src="/modules/close_the_book.js" ></script>
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+    <script>
+        $('input[name="datetimeApprove"]').Zebra_DatePicker({
+            view: 'years',
+            format: 'Y',
+            direction: ['2024', @DateTime.Now.Year],
+            onClose: function (el) {
+                _close_the_book.GetListDate()
+            }
+        });
+
+    </script>
+}

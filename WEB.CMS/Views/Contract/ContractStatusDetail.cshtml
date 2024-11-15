@@ -1,0 +1,28 @@
+﻿@using Utilities.Contants
+@{
+    Layout = null;
+}
+<form id="form_Note" onsubmit="return false">
+
+
+    @if (ViewBag.id == 2)
+    {
+        <div class="grid-item border mb20">
+            <textarea id="Note_txt" name="Note_txt" class="form-control" placeholder="Nhập lý do" style="height: 150px;"></textarea>
+        </div>
+        <div class="text-center">
+            <button onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+            <button onclick="_ContractDetail.OnResetStatus('0','@ContractStatus.TU_CHOI')" class="btn btn-default">Từ chối</button>
+        </div>
+    }
+    else
+    {
+        <div class="grid-item border mb20">
+            <textarea id="Note_txt" name="Note_txt"  class="form-control" placeholder="Nhập lý do" style="height: 150px;"></textarea>
+        </div>
+        <div class="text-center">
+            <button onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+            <button onclick="_ContractDetail.OnResetStatus('0', '@ContractStatus.HUY_BO')" class="btn btn-default">Hủy bỏ</button>
+        </div>
+    }
+</form>

@@ -1,0 +1,430 @@
+﻿@using Utilities.Contants
+@using Entities.ViewModels.Tour
+@{
+
+    //var data = (List<Entities.ViewModels.OrderServiceViewModel>)ViewBag.data;
+    var listFlight = (List<Entities.ViewModels.OrderServiceViewModel>)ViewBag.listFlight;
+    long OrderId = Convert.ToInt32(ViewBag.OrderId);
+    int i = 1;
+    List<int> service_status_allow_to_delete = new List<int>() { (int)Utilities.Contants.ServiceStatus.New, (int)Utilities.Contants.ServiceStatus.Decline };
+    List<int> order_status_allow_to_delete = new List<int>() { (int)Utilities.Contants.OrderStatus.CREATED_ORDER, (int)Utilities.Contants.OrderStatus.CONFIRMED_SALE };
+    byte order_status = (byte)ViewBag.OrderStatus;
+    bool allow_to_edit = (bool)ViewBag.AllowToEdit;
+    bool is_add_more_service = (bool)ViewBag.IsAddMoreService;
+}
+@model List<Entities.ViewModels.OrderServiceViewModel>
+<div class="border bg-white mb20">
+    <div class="flex space-between row-main-head pd10">
+        <div class="bold">Danh sách dịch vụ</div>
+        @if (is_add_more_service && ViewBag.IsLock == false)
+        {
+            <div class="down-up">
+                <a class="btn btn-default onclick" href="javascript:;">
+                    Thêm dịch vụ
+                    <i class="fa fa-caret-down"></i>
+                </a>
+                <div class="form-down col1 " style="display: none;">
+                    <button class="btn btn-link" onclick="_order_detail_create_service.ServiceHotel(0);">Khách sạn</button>
+                    <button class="btn btn-link" onclick="_order_detail_create_service.FlyingTicket(@OrderId,'');">Vé máy bay</button>
+                    <button class="btn btn-link" onclick="_order_detail_create_service.Tour(@OrderId,0);">Tour du lịch</button>
+                    <button class="btn btn-link" onclick="_order_detail_create_service.OtherService(@OrderId,0);">Dịch vụ khác</button>
+                    <button class="btn btn-link" onclick="_order_detail_create_service.VinWonderService(@OrderId,0);">VinWonder</button>
+                    <button class="btn btn-link" onclick="_order_detail_create_service.WaterSportService(@OrderId, 0);">Thể thao biển</button>
+                </div>
+            </div>
+
+        }
+    </div>
+    <div class="line-bottom pb0"></div>
+    <div class="pd10">
+        <div class="table-responsive table-gray">
+            <table class="table table-nowrap">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Loại dịch vụ</th>
+                        <th>Ngày sử dụng</th>
+                        <th>Chi tiết dịch vụ</th>
+                        <th style="width: 160px;">Điều hành viên</th>
+                        <th class="text-right">Tổng giá dịch vụ</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(i++)</td>
+                                <td>@item.Type</td>
+                                <td>
+                                    @switch (item.Type)
+                                    {
+                                        case "Vé máy bay":
+                                            {
+                                                if (item.Flight != null)
+                                                {
+                                                    if (item.Flight.Leg2 != 3)
+                                                    {
+                                                        if (item.Flight.Leg == 0)
+                                                        {
+                                                            @item.StartDate.ToString("dd/MM/yyyy")
+                                                        }
+                                                        if (item.Flight.Leg == 1)
+                                                        {
+                                                            @item.StartDate.ToString("dd/MM/yyyy")
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>@item.StartDate.ToString("dd/MM/yyyy") - @item.EndDate.ToString("dd/MM/yyyy")</div>
+                                                    }
+
+                                                }
+                                            }
+                                            break;
+                                        case "Vinwonder":
+                                            {
+                                                <div>@item.StartDate.ToString("dd/MM/yyyy HH:mm") </div>
+                                            }
+                                            break;
+                                        case "Tour":
+                                        case "Khách sạn":
+                                        case "Dịch vụ khác":
+                                            {
+                                                <div>@item.StartDate.ToString("dd/MM/yyyy HH:mm") - @item.EndDate.ToString("dd/MM/yyyy HH:mm")</div>
+                                            }
+                                            break;
+
+                                    }
+
+                                </td>
+                                <td>
+                                    @switch (item.Type)
+                                    {
+                                        case "Vé máy bay":
+                                            {
+                                                if (item.Flight != null)
+                                                {
+                                                    if (item.Flight.Leg2 != 3)
+                                                    {
+                                                        if (item.Flight.Leg == 0)
+                                                        {
+                                                            <div>Chiều đi: @item.Flight.StartDistrict - @item.Flight.EndDistrict - Mã đặt chỗ:@item.Flight.AirlineName_Vi - @item.Flight.BookingCode</div>
+                                                        }
+                                                        if (item.Flight.Leg == 1)
+                                                        {
+                                                            <div>Chiều về: @item.Flight.StartDistrict - @item.Flight.EndDistrict - Mã đặt chỗ:@item.Flight.AirlineName_Vi -  @item.Flight.BookingCode</div>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+
+                                                        if (item.Flight.Leg == 0)
+                                                        {
+                                                            <div>Chiều đi: @item.Flight.StartDistrict - @item.Flight.EndDistrict - Mã đặt chỗ:@item.Flight.AirlineName_Vi - @item.Flight.BookingCode</div>
+                                                            <div>Chiều về: @item.Flight.StartDistrict2 - @item.Flight.EndDistrict2 - Mã đặt chỗ:@item.Flight.AirlineName_Vi2 - @item.Flight.BookingCode2</div>
+                                                        }
+                                                        if (item.Flight.Leg == 1)
+                                                        {
+                                                            <div>Chiều đi:@item.Flight.StartDistrict2 - @item.Flight.EndDistrict2 - Mã đặt chỗ:@item.Flight.AirlineName_Vi2  -  @item.Flight.BookingCode2</div>
+                                                            <div>Chiều về: @item.Flight.StartDistrict - @item.Flight.EndDistrict - Mã đặt chỗ:@item.Flight.AirlineName_Vi  -  @item.Flight.BookingCode</div>
+
+                                                        }
+
+
+                                                    }
+                                                    <div class="red">@item.Note</div>
+                                                }
+                                            }
+                                            break;
+                                        case "Vinwonder":
+                                            {
+                                                <div>@item.VinWonderBooking[0].SiteName </div>
+                                                <div>@item.VinWonderBooking[0].TotalTicket loại vé </div>
+                                                <div class="red">@item.Note</div>
+                                            }
+                                            break;
+                                        case "Tour":
+                                            {
+
+                                                if (item.tour != null)
+                                                {
+                                                    <div> @item.tour.TourProductName</div>
+                                                    <div> Tour: @item.tour.TourName</div>
+                                                    <div> Loại hình tổ chức: @item.tour.ORGANIZINGName </div>
+                                                    @if (item.tour.TourType == 1)
+                                                    {<div>Điểm đi - điểm đến: @item.tour.StartPoint1 - @item.tour.GroupEndPoint1</div>}
+                                                    @if (item.tour.TourType == 2)
+                                                    {<div>Điểm đi - điểm đến: @item.tour.StartPoint2 - @item.tour.GroupEndPoint2</div>}
+                                                    @if (item.tour.TourType == 3)
+                                                    {<div>Điểm đi - điểm đến: @item.tour.StartPoint3 - @item.tour.GroupEndPoint3</div>}
+                                                    <div class="red">@item.Note</div>
+
+                                                }
+                                            }
+                                            break;
+                                        case "Khách sạn":
+                                            {
+                                                if (item.Hotel != null)
+                                                {
+                                                    <div>@item.Hotel[0].HotelName </div>
+                                                    @foreach (var H in item.Hotel)
+                                                    {
+
+                                                        <span>
+                                                            @H.RoomTypeName : @H.TotalRooms phòng
+                                                            <span>,@H.TotalDays đêm</span>
+                                                            <span>,@H.NumberOfAdult người lớn</span>
+                                                            @if (H.NumberOfChild != 0)
+                                                            {<span>,@H.NumberOfChild trẻ em</span>}
+                                                            @if (H.NumberOfInfant != 0)
+                                                            {<span>,@H.NumberOfInfant trẻ sơ sinh</span>}
+                                                        </span><br />
+
+                                                    }
+                                                    <div class="red">@item.Note</div>
+                                                }
+                                            }
+                                            break;
+                                        case "Dịch vụ khác":
+                                            {
+                                                if (item.OtherBooking != null)
+                                                {
+
+                                                    <div>Dịch vụ : @item.OtherBooking[0].ServiceName </div>
+                                                    <div class="red">@item.Note</div>
+                                                }
+                                            }
+                                            break;
+
+                                    }
+                                </td>
+                                <td>@(item.FullName==null?"N/A": item.FullName)</td>
+                                <td class="text-right">@(item.Amount !=null? item.Amount.ToString("###,###"):"0")</td>
+                                <td class="text-center" style="width:10% !important">
+                                    @switch (item.Status)
+                                    {
+
+                                        case (int)(ServiceStatus.New):
+                                        case (int)(ServiceStatus.WaitingExcution):
+
+                                            {
+                                                <span class="status-oranger">@item.StatusName</span>
+
+                                            }
+                                            break;
+                                        case (int)(ServiceStatus.OnExcution):
+                                        case (int)(ServiceStatus.ServeCode):
+                                        case (int)(ServiceStatus.ServeCodeKH):
+                                            {
+                                                <span class="status-blue">@item.StatusName</span>
+                                            }
+                                            break;
+                                        case ((int)(ServiceStatus.Payment)):
+                                            {
+                                                <span class="status-green">@item.StatusName</span>
+                                            }
+                                            break;
+                                        case ((int)(ServiceStatus.Decline)):
+                                        case ((int)(ServiceStatus.Cancel)):
+                                            {
+                                                <span class="status-red">@item.StatusName  </span>
+                                            }
+                                            break;
+                                    }
+
+                                </td>
+                                <td class="text-center">
+                                    @switch (item.Type)
+                                    {
+                                        case "Vé máy bay":
+                                            {
+                                                <a class="delete blue" href="javascript:;" onclick="_order_detail_create_service.FlyingTicket(@item.OrderId, '@item.Flight.GroupBookingId');">Xem</a>
+                                                @if (service_status_allow_to_delete.Contains(item.Status) && order_status_allow_to_delete.Contains(order_status) && allow_to_edit && ViewBag.IsLock == false)
+                                                {
+                                                    <a class="delete red" href="javascript:;" onclick="_order_detail_create_service.DeleteFlyBookingDetail(@item.OrderId,'@item.Flight.GroupBookingId');">Xóa</a>}
+                                                @if (item.Status == (int)ServiceStatus.Decline && ViewBag.IsLock == false)
+                                                {
+                                                    <a class="delete red " href="javascript:;" onclick="_order_detail_create_service.CancelFlyBookingDetail('@item.Flight.GroupBookingId');">Hủy</a>
+                                                }
+                                            }
+                                            break;
+                                        case "Vinwonder":
+                                            {
+                                                <a class="delete blue" href="javascript:;" onclick="_order_detail_create_service.VinWonderService(@item.OrderId,@item.ServiceId);">Xem</a>
+                                                @if (service_status_allow_to_delete.Contains(item.Status) && order_status_allow_to_delete.Contains(order_status) && allow_to_edit && ViewBag.IsLock == false)
+                                                {
+                                                    <a class="delete red " href="javascript:;" onclick="_order_detail_create_service.DeleteVinwondereBookingDetail(@item.ServiceId);">Xóa</a>}
+                                                @if (item.Status == (int)ServiceStatus.Decline && ViewBag.IsLock == false)
+                                                {
+                                                    <a class="delete red " href="javascript:;" onclick="_order_detail_create_service.CancelVinwonder(@item.ServiceId);">Hủy</a>}
+                                            }
+                                            break;
+                                        case "Tour":
+                                            {
+                                                <a class="delete blue" href="javascript:;" onclick="_order_detail_create_service.Tour(@item.OrderId,@item.ServiceId);">Xem</a>
+                                                @if (service_status_allow_to_delete.Contains(item.Status) && order_status_allow_to_delete.Contains(order_status) && allow_to_edit && ViewBag.IsLock == false)
+                                                {
+                                                    <a class="delete red " href="javascript:;" onclick="_order_detail_create_service.DeleteTour(@item.ServiceId);">Xóa</a>}
+                                                @if (item.Status == (int)ServiceStatus.Decline && ViewBag.IsLock == false)
+                                                {
+                                                    <a class="delete red " href="javascript:;" onclick="_order_detail_create_service.CancelTour(@item.ServiceId);">Hủy</a>}
+                                            }
+                                            break;
+                                        case "Khách sạn":
+                                            {
+                                                <a class="delete blue" href="javascript:;" onclick="_order_detail_create_service.ServiceHotel(@item.ServiceId);">Xem</a>
+                                                @if (service_status_allow_to_delete.Contains(item.Status) && order_status_allow_to_delete.Contains(order_status) && allow_to_edit && ViewBag.IsLock == false)
+                                                {
+                                                    <a class="delete red" href="javascript:;" onclick="_order_detail_create_service.DeleteHotel(@item.ServiceId);">Xóa</a>}
+                                                @if (item.Status == (int)ServiceStatus.Decline && ViewBag.IsLock == false)
+                                                {
+                                                    <a class="delete red" href="javascript:;" onclick="_order_detail_create_service.CancelHotel(@item.ServiceId);">Hủy</a>}
+
+                                            }
+                                            break;
+                                        case "Dịch vụ khác":
+                                            {
+                                                <a class="delete blue" href="javascript:;" onclick="_order_detail_create_service.OtherService(@item.OrderId,@item.ServiceId);">Xem</a>
+                                                @if (service_status_allow_to_delete.Contains(item.Status) && order_status_allow_to_delete.Contains(order_status) && allow_to_edit && ViewBag.IsLock == false)
+                                                {
+                                                    <a class="delete red " href="javascript:;" onclick="_order_detail_create_service.DeleteOtherBookingDetail(@item.ServiceId);">Xóa</a>}
+                                                @if (item.Status == (int)ServiceStatus.Decline && ViewBag.IsLock == false)
+                                                {
+                                                    <a class="delete red " href="javascript:;" onclick="_order_detail_create_service.CancelOthers(@item.ServiceId);">Hủy</a>}
+                                            }
+                                            break;
+
+                                    }
+                                </td>
+                            </tr>
+
+                        }
+                        <tr class="no-border hidden-tablet">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="bold">Tổng giá trị đơn</td>
+                            @if (Model[0].OrderAmount != 0)
+                            {
+                                <td class="red text-right">@Model[0].OrderAmount.ToString("###,###,###")</td>
+                            }
+                            else
+                            {
+                                <td class="red text-right"> 0</td>
+                            }
+                            <td></td>
+                        </tr>
+                        <tr class="no-border hidden-tablet">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="bold">Voucher giảm</td>
+                            @if (Model[0].Discount != 0)
+                            {
+                                <td class=" text-right"> - @(Model[0].Discount.ToString("###,###")) </td>
+                            }
+                            else
+                            {
+                                <td class=" text-right"> 0 </td>
+                            }
+                            <td>
+                                @(Model[0].code != null ?  "("+ Model[0].code + ")":"" )
+                            </td>
+                        </tr>
+                        <tr class="no-border hidden-tablet">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="onclick-toggle">
+                                <a class="blue toggle" href="javascript:;">
+                                    Chiết khấu
+                                    <i class="fa fa-caret-down"></i>
+                                </a>
+                                <div class="content-toggle pd10 bg-white border">
+                                    <div class="mb10">Chiết khấu trực tiếp theo</div>
+                                    <label class="radio mr-3">
+                                        <input type="radio" name="optradio" checked="">
+                                        <span class="checkmark"></span>
+                                        Số tiền
+                                    </label>
+                                    <label class="radio mr-3">
+                                        <input type="radio" name="optradio">
+                                        <span class="checkmark"></span>
+                                        %
+                                    </label>
+                                    <input type="text" class="form-control mb5" id="">
+                                    <input type="text" class="form-control" id="">
+                                </div>
+                            </td>
+                            <td class="text-right">0</td>
+                            <td></td>
+                        </tr>
+                        <tr class="no-border hidden-tablet">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="bold">Hoàn trả khách hàng</td>
+                            @if (Model[0].Refund != 0)
+                            {
+                                <td class=" text-right"> - @(Model[0].Refund.ToString("N0")) </td>
+                            }
+                            else
+                            {
+                                <td class=" text-right"> 0 </td>
+                            }
+                            <td>
+                            </td>
+                        </tr>
+                        <tr class="no-border hidden-tablet">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="bold">Khách phải trả</td>
+                            <td class="red text-right">@((Model[0].OrderAmount  - Convert.ToDouble(Model[0].Refund) - Convert.ToDouble(Model[0].Discount)) == 0? "0":(Model[0].OrderAmount - Convert.ToDouble(Model[0].Refund) - Convert.ToDouble(Model[0].Discount)).ToString("###,###,###"))</td>
+                            <td></td>
+                        </tr>
+                        <tr class="no-border hidden-tablet">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>Đã thanh toán</td>
+                            <td class="text-right">@(ViewBag.paymentAmount == null ? "0": ViewBag.paymentAmount.ToString("N0"))</td>
+                            <td></td>
+                        </tr>
+                        <tr class="no-border hidden-tablet">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>Lợi nhuận</td>
+                            <td class="text-right">@(Model[0].Profit==0?  "0": Model[0].Profit.ToString("###,###,###"))</td>
+                            <td></td>
+                        </tr>  
+                        <tr class="no-border hidden-tablet">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>Quỹ chăm sóc khách hàng</td>
+                            <td class="text-right">@ViewBag.quyCSKH</td>
+                            <td></td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+            <div></div>
+        </div>
+
+    </div>
+</div>

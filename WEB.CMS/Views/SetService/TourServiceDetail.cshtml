@@ -1,0 +1,155 @@
+﻿@{
+    double profit = (double)ViewBag.Profit;
+}
+@using Entities.ViewModels.Tour
+@using Utilities.Contants
+@model TourViewModel
+
+<table class="table table-nowrap">
+    <tbody>
+        <tr>
+            <td colspan="3">
+                <strong>Dịch vụ Tour: @Model.ServiceCode</strong>
+                @if (Model.Status == 0)
+                {<span class="status-oranger">@Model.StatusName</span>}
+                @if (Model.Status == 1)
+                {<span class="status-oranger">@Model.StatusName</span>}
+                @if (Model.Status == 2)
+                {<span class="status-blue">@Model.StatusName</span>}
+                @if (Model.Status == 3)
+                {<span class="status-green">@Model.StatusName</span>}
+                @if (Model.Status == 8)
+                {<span class="status-green">@Model.StatusName</span>}
+                @if (Model.Status == 4)
+                {<span class="status-green">@Model.StatusName</span>}
+                @if (Model.Status == 5)
+                {<span class="status-red">@Model.StatusName</span>}
+
+            </td>
+        </tr>
+        <tr>
+            <td style="min-width: 400px;">
+                <div class="row">
+                    <div class="col-4 mb10 gray">Nhà cung cấp</div>
+                    <div class="col-8 mb10" id="suplier-detail" data-suplier-name="@Model.SuplierName" data-suplier-id="@Model.SupplierId">: @Model.SuplierName</div>
+                    <div class="col-4 mb10 gray">Loại tour</div>
+                    <div class="col-8 mb10">: @Model.TourName</div>
+                    <div class="col-4 mb10 gray">Hình thức tổ chức</div>
+                    <div class="col-8 mb10">: @Model.ORGANIZINGName</div>
+                    <div class="col-4 mb10 gray">Điểm đi</div>
+                    @if (Convert.ToInt32(Model.TourType) != 0)
+                    {
+                        @switch (Convert.ToInt32(Model.TourType))
+                        {
+                            case (int)TourType.Noi_Dia:
+                                {
+                                    <div class="col-8 mb10">: @Model.StartPoint1</div>
+                                }
+                                break;
+
+                            case (int)TourType.In_bound:
+                                {
+                                    <div class="col-8 mb10">: @Model.StartPoint2</div>
+                                }
+                                break;
+
+                            case (int)TourType.Out_bound:
+                                {
+                                    <div class="col-8 mb10">: @Model.StartPoint3</div>
+                                }
+                                break;
+                        }
+                    }
+                    <div class="col-4 mb10 gray">Điểm đến</div>
+                    @if (Convert.ToInt32(Model.TourType) != 0)
+                    {
+                        @switch (Convert.ToInt32(Model.TourType))
+                        {
+                            case (int)TourType.Noi_Dia:
+                                {
+                                    <div class="col-8 mb10">: @Model.GroupEndPoint1</div>
+                                }
+                                break;
+
+                            case (int)TourType.In_bound:
+                                {
+                                    <div class="col-8 mb10">: @Model.GroupEndPoint2</div>
+                                }
+                                break;
+
+                            case (int)TourType.Out_bound:
+                                {
+                                    <div class="col-8 mb10">: @Model.GroupEndPoint3</div>
+                                }
+                                break;
+                        }
+                    }
+                    <div class="col-4 mb10 gray">Ngày đi</div>
+                    <div class="col-8 mb10">: @(Convert.ToDateTime(Model.StartDate).ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                    <div class="col-4 mb10 gray">Ngày về</div>
+                    <div class="col-8 mb10">: @(Convert.ToDateTime (Model.EndDate).ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                    <div class="col-4 mb10 gray">Nhân viên bán</div>
+                    <div class="col-8 mb10">: @Model.OperatorName</div>
+                    <div class="col-4 mb10 gray">Điều hành viên</div>
+                    <div class="col-8 mb10" id="Saler-Name" data-sale="@Model.SalerIdName">: @Model.SalerIdName <a class="blue" onclick="_SetService_Detail.OpenPopupUserAgent(@Model.Id,@Model.OrderId, 5)"><i class="fa fa-edit blue"></i></a></div>
+                </div>
+            </td>
+            <td style="min-width: 400px;">
+                <div class="row">
+                    <div class="col-4 mb10 gray">Tổng giá trị đơn hàng</div>
+                    <div class="col-8 mb10">: @Model.OrderAmount.ToString("N0")</div>
+                    <div class="col-4 mb10 gray">Tổng chi phí ban đầu</div>
+                    <div class="col-8 mb10">: @(Model.Amount == 0?"0": Convert.ToDouble(Model.Amount).ToString("###,###"))</div>
+                    <div class="col-4 mb10 gray">Tổng chi phí thực tế</div>
+                    <div class="col-8 mb10" id="operator-order-amount" data-amount="@(Model.Price != null ?  Convert.ToDouble(Model.Price).ToString("N0"): Convert.ToDouble(Model.Amount).ToString("N0"))">: @(Model.Price != null ?  Convert.ToDouble(Model.Price).ToString("N0"): Convert.ToDouble(Model.Amount).ToString("N0"))</div>
+                    <div class="col-4 mb10 gray">Lợi nhuận dịch vụ thực tế</div>
+                    <div class="col-8 mb10" id="operator-order-profit" data-profit="@(Convert.ToDouble(Model.Amount-(Model.Price != null ? Model.Price : Model.Amount -Model.Profit) /*-(Model.Commission != null ? Model.Commission : 0) - (Model.OthersAmount != null ? Model.OthersAmount : 0)*/).ToString("N0"))"> : @(Convert.ToDouble(Model.Amount-(Model.Price != null ? Model.Price : Model.Amount -Model.Profit) /*-(Model.Commission != null ? Model.Commission : 0) - (Model.OthersAmount != null ? Model.OthersAmount : 0)*/).ToString("N0"))</div>
+                    <div class="col-4 mb10 gray">Lợi nhuận sale nhập</div>
+                    <div class="col-8 mb10"> : @(Convert.ToDouble(Model.Profit).ToString("N0"))</div>
+                    <div class="col-4 mb10 gray">Hoàn trả khách hàng</div>
+                    <div class="col-8 mb10">: @Model.Refund.ToString("N0") </div>
+                    <div class="col-4 mb10 gray">Nhà cung cấp hoàn tiền</div>
+                    <div class="col-8 mb10">: @ViewBag.amount.ToString("N0") </div>
+                    @if (Model.Status != (int)Utilities.Contants.ServiceStatus.Payment && Model.Status != (int)Utilities.Contants.ServiceStatus.Cancel)
+                    {
+
+                        @if (Model.FundCustomerCare != null && Model.FundCustomerCare > 0)
+                        {
+
+                            <div class="col-8 mb10 gray">
+                                Áp dụng quỹ chăm sóc khách hàng &nbsp;
+                                <input type="checkbox" id="checkbox_Tour" onclick="_SetService_Tour_Detail.OpenPopupFundCustomer(@Model.Id)" checked />
+                            </div>
+                            <div class="col-4 mb10 "></div>
+                            <div class="col-4 mb10 gray">Quỹ chăm sóc khách hàng  </div>
+                            <div class="col-8 mb10">: @(((double)Model.FundCustomerCare).ToString("N0"))</div>
+                        }
+                        else
+                        {
+                            <div class="col-8 mb10 gray">
+                                Áp dụng quỹ chăm sóc khách hàng &nbsp;
+                                <input type="checkbox" id="checkbox_Tour" onclick="_SetService_Tour_Detail.OpenPopupFundCustomer(@Model.Id)" />
+                            </div>
+                        }
+
+
+                    }
+
+
+
+</td>
+            <td style="min-width: 400px;">
+                <div class="row">
+                    <div class="col-5 mb10 gray">Người tạo</div>
+                    <div class="col-7 mb10">: @Model.CreatedByName</div>
+                    <div class="col-5 mb10 gray">Ngày tạo</div>
+                    <div class="col-7 mb10 ">: @(Convert.ToDateTime(Model.CreatedDate).ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                    <div class="col-5 mb10 gray">Người cập nhật</div>
+                    <div class="col-7 mb10">: @(Model.UpdatedByName ==null?"N/A": Model.UpdatedByName)</div>
+                    <div class="col-5 mb10 gray">Ngày cập nhật</div>
+                    <div class="col-7 mb10">: @(Model.UpdatedDate == null ? "N/A" : Convert.ToDateTime(Model.UpdatedDate).ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

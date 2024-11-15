@@ -1,0 +1,195 @@
+﻿@{
+    Layout = null;
+    List<Entities.Models.FlyBookingExtraPackages> list = (List<Entities.Models.FlyBookingExtraPackages>)ViewBag.extra_list;
+    Entities.Models.FlyBookingDetail? go = (Entities.Models.FlyBookingDetail)ViewBag.Go;
+    Entities.Models.FlyBookingDetail? back = (Entities.Models.FlyBookingDetail)ViewBag.Back;
+    double TotalAmountAdt = (double)ViewBag.TotalAmountAdt;
+    double TotalAmountChd = (double)ViewBag.TotalAmountChd;
+    double TotalAmountInf = (double)ViewBag.TotalAmountInf;
+    double TotalProfitAdt = (double)ViewBag.TotalProfitAdt;
+    double TotalProfitChd = (double)ViewBag.TotalProfitChd;
+    double TotalProfitInf = (double)ViewBag.TotalProfitInf;
+    double package_adt = (double)ViewBag.package_adt;
+    double package_chd = (double)ViewBag.package_chd;
+    double package_inf = (double)ViewBag.package_inf;
+    double TotalAmount = (double)ViewBag.TotalAmount;
+    int fly_count = (int)ViewBag.FlyDetailCount;
+    List<Entities.Models.Passenger> passengers = (List<Entities.Models.Passenger>)ViewBag.passengers;
+    Entities.Models.PriceDetail? active_price_detail = (Entities.Models.PriceDetail?)ViewBag.PriceDetail;
+    int index = 0;
+}
+<table class="table table-nowrap">
+    <thead>
+        <tr>
+            <th style="width: 70px;">STT</th>
+            <th style="min-width: 200px;">Nội dung</th>
+            <th class="text-right" style="min-width: 150px;">Giá nhập<sup class="red">*</sup></th>
+            <th class="text-right" style="min-width: 150px;">Giá bán<sup class="red">*</sup></th>
+            <th class="text-right" style="width:150px !important;">Số lượng</th>
+            <th class="text-right" style="width: 250px !important;">Thành tiền giá bán</th>
+            <th class="text-right" style="width:150px !important;">Lợi nhuận</th>
+            <th class="text-right"></th>
+        </tr>
+    </thead>
+    <tbody class="service-fly-extrapackage-tbody" data-active-profit="@(active_price_detail!=null? active_price_detail.Profit: 0)" data-profit-unit="@(active_price_detail!=null? active_price_detail.UnitId: 0)">
+        @if (TotalAmountAdt > 0 && go != null)
+        {
+            <tr class="service-fly-extrapackage-row" data-extra-package-id="-1">
+                <td class="service-fly-extrapackage-order">@(++index)</td>
+                <td>
+                    <select class="form-control service-fly-extrapackage-packagename-select" style="width:100% !important">
+                        <option value="adt_amount" selected="selected">Người lớn</option>
+                        <option value="chd_amount">Trẻ em (2-14 tuổi)</option>
+                        <option value="inf_amount">Em bé (0-2 tuổi)</option>
+                    </select>
+                </td>
+                @{
+                    double amount_sale_pre = (double)TotalAmountAdt / (double)go.AdultNumber;
+                }
+
+
+                <td> <input class="form-control text-right currency service-fly-extrapackage-baseprice" type="text" name="service-fly-extrapackage-baseprice" value="@(package_adt.ToString("N0"))"></td>
+                <td> <input class="form-control text-right currency service-fly-extrapackage-saleprice" type="text" name="service-fly-extrapackage-saleprice" value="@(amount_sale_pre.ToString("N0"))"></td>
+                <td> <input class="form-control text-right currency service-fly-extrapackage-quantity" type="text" name="service-fly-extrapackage-quantity" value="@(((int)go.AdultNumber).ToString("N0"))"></td>
+                <td class="text-right"> <input class="form-control text-right currency service-fly-extrapackage-amount" disabled style="background-color: lightgray;" value="@TotalAmountAdt.ToString("N0")"></td>
+                <td class="text-right service-fly-packages-profit-row">
+                    <input class="form-control text-right currency service-fly-extrapackage-profit" disabled type="text" style="background-color: lightgray;" value="@(TotalProfitAdt.ToString("N0"))">
+                </td>
+
+                <td class="text-right">
+                    <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_fly.DeleteFlyBookingExtraPackage($(this));"></a>
+                </td>
+            </tr>
+        }
+        @if (TotalAmountChd > 0 && go != null)
+        {
+            <tr class="service-fly-extrapackage-row" data-extra-package-id="-2">
+                <td class="service-fly-extrapackage-order">@(++index)</td>
+                <td>
+                    <select class="form-control select2 service-fly-extrapackage-packagename-select" style="width:100% !important">
+                        <option value="adt_amount">Người lớn</option>
+                        <option value="chd_amount" selected="selected">Trẻ em (2-14 tuổi)</option>
+                        <option value="inf_amount">Em bé (0-2 tuổi)</option>
+                    </select>
+                </td>
+
+
+                @{
+                    double amount_sale_pre = (double)TotalAmountChd / (double)go.ChildNumber;
+                }
+
+                <td> <input class="form-control text-right currency service-fly-extrapackage-baseprice" type="text" name="service-fly-extrapackage-baseprice" value="@(package_chd.ToString("N0"))"></td>
+                <td> <input class="form-control text-right currency service-fly-extrapackage-saleprice" type="text" name="service-fly-extrapackage-saleprice" value="@(amount_sale_pre.ToString("N0"))"></td>
+                <td> <input class="form-control text-right currency service-fly-extrapackage-quantity" type="text" name="service-fly-extrapackage-quantity" value="@(((int)go.ChildNumber).ToString("N0"))"></td>
+                <td class="text-right"> <input class="form-control text-right currency service-fly-extrapackage-amount" disabled style="background-color: lightgray;" value="@TotalAmountChd.ToString("N0")"></td>
+                <td class="text-right service-fly-packages-profit-row">
+                    <input class="form-control text-right currency service-fly-extrapackage-profit" disabled type="text" style="background-color: lightgray;" value="@(TotalProfitChd.ToString("N0"))">
+                </td>
+
+                <td class="text-right">
+                    <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_fly.DeleteFlyBookingExtraPackage($(this));"></a>
+                </td>
+            </tr>
+        }
+        @if (TotalAmountInf > 0 && go != null)
+        {
+            <tr class="service-fly-extrapackage-row" data-extra-package-id="-3">
+                <td class="service-fly-extrapackage-order">@(++index)</td>
+                <td>
+                    <select class="form-control service-fly-extrapackage-packagename-select" style="width:100% !important">
+                        <option value="adt_amount">Người lớn</option>
+                        <option value="chd_amount">Trẻ em (2-14 tuổi)</option>
+                        <option value="inf_amount" selected="selected">Em bé (0-2 tuổi)</option>
+                    </select>
+                </td>
+
+                @{
+                    double amount_sale_pre = (double)TotalAmountInf / (double)go.InfantNumber;
+                }
+
+                <td> <input class="form-control text-right currency service-fly-extrapackage-baseprice" type="text" name="service-fly-extrapackage-baseprice" value="@(package_inf.ToString("N0"))"></td>
+                <td> <input class="form-control text-right currency service-fly-extrapackage-saleprice" type="text" name="service-fly-extrapackage-saleprice" value="@(amount_sale_pre.ToString("N0"))"></td>
+                <td> <input class="form-control text-right currency service-fly-extrapackage-quantity" type="text" name="service-fly-extrapackage-quantity" value="@(((int)go.InfantNumber).ToString("N0"))"></td>
+                <td class="text-right"> <input class="form-control text-right currency service-fly-extrapackage-amount" disabled style="background-color: lightgray;" value="@TotalAmountInf.ToString("N0")"></td>
+                <td class="text-right service-fly-packages-profit-row">
+                    <input class="form-control text-right currency service-fly-extrapackage-profit" disabled type="text" style="background-color: lightgray;" value="@(TotalProfitInf.ToString("N0"))">
+                </td>
+
+                <td class="text-right">
+                    <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_fly.DeleteFlyBookingExtraPackage($(this));"></a>
+                </td>
+            </tr>
+        }
+
+        @if (list.Count > 0)
+        {
+            foreach (var item in list)
+            {
+                <tr class="service-fly-extrapackage-row" data-extra-package-id="@item.Id">
+                    <td class="service-fly-extrapackage-order">@(++index)</td>
+                    <td>
+                        <input type="text" class="form-control service-fly-extrapackage-packagename-select-input" style="width:100% !important" value="@item.PackageCode">
+                    </td>
+
+                    @{
+                        double amount_sale_pre = (double)item.Amount / (double)item.Quantity;
+                    }
+
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-baseprice" type="text" name="service-fly-extrapackage-baseprice" value="@(((double)item.BasePrice).ToString("N0"))"></td>
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-saleprice" type="text" name="service-fly-extrapackage-saleprice" value="@(amount_sale_pre.ToString("N0"))"></td>
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-quantity" type="text" name="service-fly-extrapackage-quantity" value="@(((int)item.Quantity).ToString("N0"))"></td>
+                    <td class="text-right"> <input class="form-control text-right currency service-fly-extrapackage-amount" disabled style="background-color: lightgray;" value="@item.Amount.ToString("N0")"></td>
+                    <td class="text-right service-fly-packages-profit-row">
+                        <input class="form-control text-right currency service-fly-extrapackage-profit" disabled type="text" style="background-color: lightgray;" value="@(item.Profit==null ? "0":((double)item.Profit).ToString("N0"))">
+                    </td>
+
+
+                    <td class="text-right">
+                        <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_fly.DeleteFlyBookingExtraPackage($(this));"></a>
+                    </td>
+                </tr>
+            }
+        }
+
+        @if (list.Count <= 0 && TotalAmountAdt <= 0 && TotalAmountChd <= 0 && TotalAmountInf <= 0)
+        {
+        <tr class="service-fly-extrapackage-row" data-extra-package-id="-1">
+            <td class="service-fly-extrapackage-order">@(++index)</td>
+            <td>
+                <select class="form-control service-fly-extrapackage-packagename-select" style="width:100% !important">
+                    <option value="adt_amount">Người lớn</option>
+                    <option value="chd_amount">Trẻ em (2-14 tuổi)</option>
+                    <option value="inf_amount">Em bé (0-2 tuổi)</option>
+                </select>
+            </td>
+            <td> <input class="form-control text-right currency service-fly-extrapackage-baseprice" type="text" name="service-fly-extrapackage-baseprice" value=""></td>
+            <td> <input class="form-control text-right currency service-fly-extrapackage-saleprice" type="text" name="service-fly-extrapackage-saleprice" value=""></td>
+            <td> <input class="form-control text-right currency service-fly-extrapackage-quantity" type="text" name="service-fly-extrapackage-quantity" value=""></td>
+            <td class="text-right"> <input class="form-control text-right currency service-fly-extrapackage-amount" disabled style="background-color: lightgray;" value=""></td>
+            <td class="text-right service-fly-packages-profit-row">
+                <input class="form-control text-right currency service-fly-extrapackage-profit" disabled type="text" style="background-color: lightgray;" value="">
+            </td>
+            <td class="text-right">
+                <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_fly.DeleteFlyBookingExtraPackage($(this));"></a>
+            </td>
+        </tr>
+        }
+    <tr class="service-fly-extrapackage-summary-row">
+        <td></td>
+
+        <td>
+            <a href="javascript:;" class="blue ml-2 mb10" onclick="_order_detail_fly.AddFlyBookingExtraPackage($(this));"><i class="fa fa-plus-circle green"></i> Thêm dòng</a>
+            <a href="javascript:;" class="blue ml-2 mb10" onclick="_order_detail_fly.AddFlyBookingExtraPackageExtra($(this));"><i class="fa fa-plus-circle green"></i> Thêm dịch vụ khác</a>
+        </td>
+        <td class="text-right">Tổng cộng</td>
+        <td class="text-right"></td>
+        <td class="text-right"></td>
+        <td class="text-right font-weight-bold service-fly-extrapackage-total-amount">0</td>
+        <td class="text-right font-weight-bold service-fly-extrapackage-total-profit">0</td>
+        <td></td>
+    </tr>
+
+    </tbody>
+</table>
+
+

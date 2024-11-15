@@ -1,0 +1,119 @@
+﻿@using Entities.Models
+@{
+    var branch = (List<AllCode>)ViewBag.Branch;
+    ViewData["Title"] = "Báo cáo Tổng hợp nợ phải thu của Khách hàng";
+
+}
+<style>
+    .btn_reset {
+        position: absolute;
+        right: 32px;
+        top: 7px;
+        width: 20px;
+        height: 20px;
+        border: 0;
+        outline: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        background: #C4C4C4
+    }
+    .stop-scrolling {
+        height: 100%;
+        overflow: hidden;
+    }
+    .filter .select2 {
+        padding-left: 100px !important;
+    }
+    .filter .lbl{
+        width:100px !important;
+    }
+ </style>
+<h2 class="txt_18 bold mb20" style="padding-left: 20px;">Báo cáo Tổng hợp nợ phải thu của Khách hàng</h2>
+<section style=" overflow-x: hidden;">
+    <div id="filter" class="row-main container filter">
+        <div class="flex ">
+            <div class="form-group mb10 mr-2" style="min-width: 350px;">
+                <div class="datepicker-wrap add-lbl">
+                    <span class="lbl">Chi nhánh</span>
+                    <select id="report-clientdebt-filter-branch-code" style="width: 100% !important; padding-left:100px !important;" placeholder="Chi nhánh">
+                        <option value="-1">Tất cả chi nhánh</option>
+
+                        @if (branch != null && branch.Count > 0)
+                        {
+                            foreach (var b in branch)
+                            {
+                                <option value="@b.CodeValue">@b.Description</option>
+
+                            }
+                        }
+                    </select>
+                </div>
+               
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 350px;">
+                <div class="datepicker-wrap add-lbl">
+                    <span class="lbl">Ngày báo cáo</span>
+                    <input class="form-control date text-left date-select" style="padding-left: 100px !important;" id="report_date" type="text" name="report_date" value="" placeholder="Ngày báo cáo" />
+                </div>
+            </div>
+           
+            <div class="form-group mb10 mr-2" style="min-width: 350px;">
+                <div class="datepicker-wrap add-lbl">
+                    <span class="lbl">Khách hàng</span>
+                    <select id="report-clientdebt-filter-clientId" class="report-clientdebt-filter-clientId" style="width: 100% !important; padding-left: 100px !important;" placeholder="Tất cả khách hàng">
+                        <option value="-1">Tất cả khách hàng</option>
+
+                    </select>
+                    <button type="reset" style="display:none;" class="btn_reset reset-filter-clientId">×</button>
+                </div>
+
+            </div>
+            <div class="mb10 mr-2" style="min-width: 220px;">
+                <button class="btn btn-default" type="button" onclick="_report_client_debt.ExportExcel()" id="btnExport">
+                    <i class="fa fa-file-excel-o" id="icon-export" title="Xuất excel">
+                    </i>
+                </button>
+                <button type="button" class="btn btn-default bg-main" onclick="_report_client_debt.SearchData()">
+                    <svg class="icon-svg" style="vertical-align: sub;">
+                        <use xlink:href="/images/icons/icon.svg#search"></use>
+                    </svg>
+                    Tìm kiếm
+                </button>
+            </div>
+
+
+        </div>
+        <div>
+            <div id="grid-data">
+            </div>
+            <img src="~/images/icons/loading.gif" style="margin-left:45%; width: 100px; height: 100px; display:none" class="loading" id="imgLoading" />
+        </div>
+
+    </div>
+</section>
+<div class="modal fade" id="report-client-debt-detail-block" aria-modal="true" role="dialog" style="display: none; overflow-y: scroll; overflow-x: hidden;">
+    <div class="modal-dialog" style="max-width:95%;">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Chi tiết công nợ phải thu KH: <nw id="report-detail-client-name">Công ty TNHH Hồng Phúc</nw> - Ngày báo cáo: <nw id="report-detail-fromdate">01/11/2023</nw> - <nw id="report-detail-todate">01/11/2023</nw>
+                    <button class="btn btn-default" type="button" onclick="_report_client_debt_detail.ExportExcel()" id="btnExport" style="margin-left:30px;">
+                        <i class="fa fa-file-excel-o" id="icon-export" title="Xuất excel">
+                        </i>
+                    </button>
+
+                </h4>
+               
+                <button type="button" class="close" onclick="_report_client_debt_detail.Close()">×</button>
+            </div>
+            <div class="modal-body" id="grid-report-clientdebt-detail">
+
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript" src="~/modules/report_client_debt.js"></script>
+    <script>_report_client_debt.Initialization()</script>
+}

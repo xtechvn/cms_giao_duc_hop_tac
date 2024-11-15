@@ -1,0 +1,33 @@
+﻿<section style=" overflow-x: hidden;">
+    <div id="filter" class="row-main container">
+        <div class="flex ">
+            <div class="mb10 mr-2" style="min-width: 220px;">
+
+                <button type="button" class="btn btn-default bg-main" onclick="_ProgramsPackage.OpenPopup('0') ">
+                    Thêm mới
+                </button>
+            </div>
+
+        </div>
+        <div class="">
+            <div class="tab-default" style="border-bottom: 1px solid #CCCCCC;">
+                <div class="row" style=" width: 100%; ">
+                    <input id="countOrder" value="1343" style="display:none">
+                    <div class="tab-default col-md-9 mb0 mt10">
+                        <a href="javascript:;" onclick="_ProgramsPackage.loadgrid(1)" id="DSgoi" class="active">Danh sách gói</a>
+                        <a href="javascript:;" onclick="_ProgramsPackage.loadgrid(2)" id="Bgia" class="">Bảng giá</a>
+                    </div>
+                </div>
+            </div>
+            <div id="grid-data">
+            </div>
+            <img src="~/images/icons/loading.gif" style="margin-left:45%; width: 100px; height: 100px; display:none" class="loading" id="imgLoading" />
+            <div id="grid-data2" style="display:none">
+            </div>
+        </div>
+
+    </div>
+</section>
+@section scripts {
+    <script type="text/javascript" src="/modules/ProgramsPackage.js"></script>
+}

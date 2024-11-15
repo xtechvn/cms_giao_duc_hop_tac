@@ -1,0 +1,117 @@
+﻿@{
+    Layout = null;
+    Entities.Models.AllCode? service = (Entities.Models.AllCode?)ViewBag.Service;
+
+    Entities.ViewModels.ElasticSearch.UserESViewModel user = (Entities.ViewModels.ElasticSearch.UserESViewModel)ViewBag.User;
+    Entities.Models.VinWonderBooking? booking = (Entities.Models.VinWonderBooking?)ViewBag.Booking;
+    Entities.Models.GroupProduct? selected_group_product = (Entities.Models.GroupProduct?)ViewBag.Product;
+
+    bool is_order_manual =(bool)ViewBag.IsOrderManual;
+    bool is_allow_to_edit=(bool)ViewBag.AllowToEdit;
+
+}
+
+<style>
+    .stop-scrolling {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .vinwonder_booking_service {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+   
+</style>
+<div class="modal fade vinwonder_booking_service" id="vinwonderbooking-service" aria-modal="true" role="dialog" style="display: block;">
+    <div class="modal-dialog" style="max-width: 95%;">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Thêm dịch vụ VinWonder</h4>
+                <button type="button" class="close" onclick="_order_detail_vinwonder.Close()">×</button>
+            </div>
+            <div id="add-service-vinwonder-form-select" data-id="@(booking!=null &&booking.Id>0?booking.Id.ToString():"0")"  data-service-code="@(booking!=null && booking.ServiceCode!=null && booking.ServiceCode.Trim()!=""?booking.ServiceCode:"")">
+                <div class="modal-body">
+                    <form id="service-vinwonder-form">
+                        <div class="row row_min">
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Địa điểm<sup class="red">*</sup></label>
+                                <select id="add-service-vinwonder-select-location" class="select select2 add-service-vinwonder-select-location" name="add-service-vinwonder-select-service" style="width: 100%;">
+                                    @if (booking != null && booking.Id > 0)
+                                    {
+                                        <option value="@(booking.SiteCode)" selected="selected">@(booking.SiteName)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Điều hành viên <sup class="red">*</sup></label>
+                                <select id="add-service-vinwonder-main-staff" class="select select2 add-service-vinwonder-main-staff" name="add-service-vinwonder-main-staff" style="width: 100%;">
+                                    @if (user != null && user.id > 0)
+                                    {
+                                        <option value="@(user.id)" selected="selected">@(user.fullname + " - "+ user.email)</option>
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex-auto mb15" style=" justify-content: left;">
+                            <div class="form-group other-amount" style="min-width: 200px;width: 200px; ">
+                                <label class="lbl" style="width: 100%;">Chi phí khác </label>
+                                <div class="wrap_input">
+                                    <input id="servicemanual-vinwonder-other-amount" class="form-control currency text-right servicemanual-vinwonder-other-amount" type="text" name="servicemanual-vinwonder-other-amount" placeholder="Nhập chi phí khác" value="@(booking!=null && booking.OthersAmount!=null ? ((double)booking.OthersAmount).ToString("N0"):"0")">
+                                </div>
+                            </div>
+                            <div class="form-group discount" style="min-width: 200px;width: 200px;">
+                                <label class="lbl" style="width: 100%;">Hoa hồng CTV</label>
+                                <div class="wrap_input">
+                                    <input id="servicemanual-vinwonder-commission" class="form-control currency text-right servicemanual-vinwonder-commission" type="text" name="servicemanual-vinwonder-commission" placeholder="Nhập chiết khấu" value="@(booking!=null && booking.Commission!=null ? ((double)booking.Commission).ToString("N0"):"0")">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bold mb15 txt_14">Bảng kê dịch vụ <small>((Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo))</small></div>
+                            <div class="table-responsive table-gray service-vinwonder-packages" data-vinwonder-booking-id="">
+                                <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+                            </div>
+                        </div>
+                        <div class="txt_14 bold mb10"></div>
+                        <div class="table-responsive table-gray" id="servicemanual-fly-total-amount-block">
+                            <div class="row">
+                                <div class="col-6"></div>
+                                <div class="col-3 bold text-right">Tổng tiền dịch vụ:  &nbsp;&nbsp;&nbsp;&nbsp;<strong class="service-manual-vinwonder-total-service-amount">0</strong> </div>
+                                <div class="col-3 bold text-right">Tổng lợi nhuận dịch vụ: &nbsp;&nbsp;&nbsp;&nbsp;<strong class="service-manual-vinwonder-total-service-profit">0</strong></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bold mb10 txt_14">Ghi chú</div>
+                            <div class="form-group">
+                                <textarea class="form-control service-vinwonder-note" style="height: 200px;" rows="6">@(booking!=null && booking.Note!=null? booking.Note:"")</textarea>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="bold mb15 txt_14">Danh sách đoàn</div>
+                    <div class="table-responsive table-gray service-vinwonder-guests">
+                        <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+
+                    </div>
+                    <div class="attachment-file-block border pd10">
+                        <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+                    </div>
+                    <div style="padding-top: 20px; margin-top:10px;">
+                        <div id="service-vinwonder-button-div" class="text-right ">
+                            <div class="btn btn-default btn btn-default cancel" onclick="_order_detail_vinwonder.Close()">Bỏ qua</div>
+                            @if (is_order_manual && is_allow_to_edit && (ViewBag.IsLock == null || ViewBag.IsLock == false))
+                            {
+                                <div class="btn btn-default btn btn-summit-service-vinwonder" onclick="_order_detail_vinwonder.Summit()">@(booking!=null && booking.Id>0?"Sửa":"Thêm")</div>
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,64 @@
+﻿@{
+    Layout=null;
+    string current_operator_name = (string)ViewBag.Name;
+    long id = (long)ViewBag.Id;
+
+}
+
+<style>
+.stop-scrolling {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .client-suggestion {
+
+        overflow-y: scroll;
+        overflow-x: hidden;
+        max-height: 300px;
+        width:100%;
+        cursor: pointer;
+        min-height: 150px;
+        z-index: 2;
+    }
+</style>
+<div class="modal fade" id="change_operator_popup" style="display: block;" data-select2-id="myModal0" aria-modal="true" role="dialog">
+    <div class="modal-dialog" style="max-width: 35%; margin-top: 15%;">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Đổi điều hành viên</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="_set_service_other_detail.PopupChangeOperatorClose()">×</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="form-operator-change" data-id="@id">
+                    <div class="row">
+                        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Nhân viên hiện tại </label></div>
+                        <div class="col-md-8 mb10">
+                            <input type="text" class="form-control" value="@current_operator_name" disabled>
+                        </div>
+                        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Nhân viên mới </label><sup class="red">*</sup></div>
+                        <div class="col-md-8 mb10" id="change-operator-parent-div">
+                            <select class="service-other-change-operator" style="width:100% !important">
+                            </select>
+                            <div id="change-operator-dropdown-div">
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="text-right"style="margin-top: 15px;" >
+                        <button onclick="_set_service_other_detail.PopupChangeOperatorClose()" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+                        <button onclick="_set_service_other_detail.ChangeServiceOperator();" class="btn btn-default">Lưu</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    _set_service_other_detail.PopupChangeOperatorInit();
+</script>
+

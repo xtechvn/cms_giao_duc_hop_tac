@@ -1,0 +1,268 @@
+﻿@using Entities.Models
+@using Utilities.Contants
+@{
+
+    var Status = (List<AllCode>)ViewBag.Status;
+    var Service = (List<AllCode>)ViewBag.Service;
+}
+<section class="" style=" overflow-x: hidden;">
+    <div class="row-main container">
+        <h2 class="txt_18 bold mb20">Chương trình</h2>
+        <div class="flex fillter-donhang ">
+
+            <div class="form-group mb10 mr-2" style="min-width:200px">
+                <select class="select2 client-select main-staff-select" id="ProgramCode" multiple="multiple" style="width:100% !important">
+                </select>
+
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width:165px">
+
+                <select class="select2 form-control" id="ProgramStatus" style="width:100% !important">
+                    <option value="">Tất cả trạng thái</option>
+                    @if (Status != null && Status.Count > 0)
+                    {
+                        foreach (var item in Status)
+                        {
+                            if (item.CodeValue != (int)ProgramsStatus.Da_Xoa)
+                            {
+                                <option value="@item.CodeValue">@item.Description</option>
+                            }
+
+                        }
+                    }
+                </select>
+            </div>
+            @*<div class="form-group mb10 mr-2" style="min-width:165px">
+
+                <select class="select2 form-control ServiceType" id="ServiceType" style="width:100% !important">
+                    <option value="">Tất cả loại dịch vụ</option>
+                    @if (Service != null && Service.Count > 0)
+                    {
+                        foreach (var item in Service)
+                        {
+
+                            <option value="@item.CodeValue">@item.Description</option>
+
+                        }
+                    }
+
+
+
+
+                </select>
+            </div>*@
+
+
+            <div class="form-group mb10 mr-2" style="min-width:365px">
+                <select class="select2 client-select main-staff-select" id="SupplierID" multiple="multiple" style="width:100% !important">
+                </select>
+
+            </div>
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <div class="datepicker-wrap" style="width:100%">
+                        <input class="form-control date text-left filter_date_daterangepicker" id="ApplyDate" type="text"
+                               name="ApplyDate" style="min-width: 180px !important" placeholder="Thời gian bắt đầu" />
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <div class="datepicker-wrap" style="width:100%">
+                        <input class="form-control date text-left filter_date_daterangepicker2" id="ApplyDate2" type="text"
+                               name="ApplyDate2" style="min-width: 180px !important" placeholder="Thời gian kết thúc" />
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width:200px;">
+                <select class="select2 client-select main-staff-select" id="UserCreate" multiple="multiple" style="width:100% !important">
+                </select>
+
+            </div>
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <input class="form-control date text-left filter_date_daterangepicker" id="CreatDate" type="text"
+                           name="CreatDate" style="min-width: 180px !important" placeholder="Ngày tạo" />
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width:200px;">
+                <select class="select2 client-select main-staff-select" id="UserVerify" multiple="multiple" style="width:100% !important">
+                </select>
+
+            </div>
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <input class="form-control date text-left filter_date_daterangepicker" id="VerifyDate" type="text"
+                           name="VerifyDate" style="min-width: 180px !important" placeholder="Ngày duyệt" />
+                </div>
+            </div>
+            <div class="row-main-head mb10 mr-2">
+                <div class="down-up">
+                    <a class="btn btn-default onclick" href="javascript:;">
+                        <i class="fa fa-bars"></i>
+                        <i class="fa fa-caret-down"></i>
+                    </a>
+                    <div class="form-down text-nowrap">
+                        <div class="grid-slide" style="display: grid;">
+                            <label class="check-list mb10 mr25">
+                                <input type="checkbox" id="ProgramCode" checked="checked" class="checkbox-tb-column" onclick="_Programs.changeSetting(2)" data-id="2">
+                                <span class="checkmark"></span>
+                                Mã
+                            </label>
+                            <label class="check-list mb10 mr25 onblur" style="cursor: not-allowed">
+                                <input type="checkbox" id="ProgramNamef" checked="checked" disabled class="checkbox-tb-column" onclick="_Programs.changeSetting(3)" data-id="3">
+                                <span class="checkmark"></span>
+                                Tên
+                            </label>
+
+                            @*<label class="check-list mb10 mr25">
+                                <input type="checkbox" id="ServiceType" checked="checked" class="checkbox-tb-column" onclick="_Programs.changeSetting(4)" data-id="4">
+                                <span class="checkmark"></span>
+                                Loại dịch vụ
+                            </label>*@
+                            <label class="check-list mb10 mr25 onblur" style="cursor: not-allowed">
+                                <input type="checkbox" id="ServiceNamef" checked="checked" disabled class="checkbox-tb-column" onclick="_Programs.changeSetting(4)" data-id="4">
+                                <span class="checkmark"></span>
+                                Tên dịch vụ
+                            </label>
+                            <label class="check-list mb10 mr25 onblur" style="cursor: not-allowed">
+                                <input type="checkbox" id="SupplierNamef" checked="checked" disabled class="checkbox-tb-column" onclick="_Programs.changeSetting(5)" data-id="5">
+                                <span class="checkmark"></span>
+                                Nhà cung cấp
+                            </label>
+                            <label class="check-list mb10 mr25">
+                                <input type="checkbox" id="ApplyDate" checked="checked" class="checkbox-tb-column" onclick="_Programs.changeSetting(6)" data-id="6">
+                                <span class="checkmark"></span>
+                                Thời gian áp dụng
+                            </label>
+
+                            <label class="check-list mb10 mr25 onblur" style="cursor: not-allowed">
+                                <input type="checkbox" id="Descriptionf" checked="checked" disabled class="checkbox-tb-column" onclick="_Programs.changeSetting(7)" data-id="7">
+                                <span class="checkmark"></span>
+                                Mô tả
+                            </label>
+                            <label class="check-list mb10 mr25">
+                                <input type="checkbox" id="UserCreate" checked="checked" class="checkbox-tb-column" onclick="_Programs.changeSetting(8)" data-id="8">
+                                <span class="checkmark"></span>
+                                Người tạo
+                            </label>
+                            <label class="check-list mb10 mr25 onblur " style="cursor: not-allowed">
+                                <input type="checkbox" id="CreateDatef" checked="checked" disabled class="checkbox-tb-column" onclick="_Programs.changeSetting(9)" data-id="9">
+                                <span class="checkmark"></span>
+                                Ngày tạo
+                            </label>
+                            <label class="check-list mb10 mr25">
+                                <input type="checkbox" id="UserVerify" checked="checked" class="checkbox-tb-column" onclick="_Programs.changeSetting(10)" data-id="10">
+                                <span class="checkmark"></span>
+                                Người duyệt
+                            </label>
+                            <label class="check-list mb10 mr25">
+                                <input type="checkbox" id="VerifyDate" checked="checked" class="checkbox-tb-column" onclick="_Programs.changeSetting(11)" data-id="11">
+                                <span class="checkmark"></span>
+                                Ngày duyệt
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb10 mr-2">
+                @if (ViewBag.btnXuatEX == 1)
+                {
+                    <button class="btn-search btn-default" type="button" onclick="_Programs.Export()" id="btnExport">
+                        <i class="fa fa-file-excel-o" id="icon-export" title="Xuất excel">
+                        </i>
+                    </button>
+                }
+
+                <button type="button" class="btn btn-default bg-main" onclick="_Programs.SearchData();">
+                    <svg class="icon-svg" style="vertical-align: sub;">
+                        <use xlink:href="/images/icons/icon.svg#search"></use>
+                    </svg>
+                    Tìm kiếm
+                </button>
+                @if (ViewBag.btnThem == 1)
+                {
+                    <button type="button" class="btn btn-default bg-main" onclick="_Programs.OpenPopup('0', '0');">
+                        Thêm mới
+                    </button>
+                }
+
+            </div>
+        </div>
+
+        <div id="grid_data">
+            <img src="/images/icons/loading.gif" style=" width: 100px; height: 100px; margin-left:46%;" id="imgLoading" />
+        </div>
+    </div>
+</section>
+
+@section scripts {
+
+    
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+    <script type="text/javascript" src="/modules/Programs.js"></script>
+    <script>
+        $('input[name="ApplyDate"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+
+
+        $('input[name="ApplyDate"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove2 = false;
+        });
+        $('input[name="ApplyDate"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove2 = true;
+        });
+        $('input[name="ApplyDate2"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+
+
+        $('input[name="ApplyDate2"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove6 = false;
+        });
+        $('input[name="ApplyDate2"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove6 = true;
+        });
+        $('input[name="CreatDate"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="CreatDate"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove3 = false;
+        });
+        $('input[name="CreatDate"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove3 = true;
+        });
+        $('input[name="VerifyDate"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="VerifyDate"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove4 = false;
+        });
+        $('input[name="VerifyDate"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove4 = true;
+        });
+    </script>
+}

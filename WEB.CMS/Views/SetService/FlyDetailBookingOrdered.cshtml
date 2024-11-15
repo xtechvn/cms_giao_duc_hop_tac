@@ -1,0 +1,320 @@
+﻿@{
+    Layout = null;
+    int index = 0;
+
+    List<Entities.Models.FlyBookingExtraPackages> list = (List<Entities.Models.FlyBookingExtraPackages>)ViewBag.extra_list;
+
+    Entities.Models.FlyBookingDetail? go = (Entities.Models.FlyBookingDetail)ViewBag.Go;
+    Entities.Models.FlyBookingDetail? back = (Entities.Models.FlyBookingDetail)ViewBag.Back;
+    int fly_count = (int)ViewBag.FlyDetailCount;
+    string go_airline_name = (string)ViewBag.GoAirLineName;
+    string back_airline_name = (string)ViewBag.BackAirLineName;
+
+    /*
+   double TotalAmountAdt = (double)ViewBag.TotalAmountAdt;
+   double TotalAmountChd = (double)ViewBag.TotalAmountChd;
+   double TotalAmountInf = (double)ViewBag.TotalAmountInf;
+   double TotalProfitAdt = (double)ViewBag.TotalProfitAdt;
+   double TotalProfitChd = (double)ViewBag.TotalProfitChd;
+   double TotalProfitInf = (double)ViewBag.TotalProfitInf;
+   double package_adt = (double)ViewBag.package_adt;
+   double package_chd = (double)ViewBag.package_chd;
+   double package_inf = (double)ViewBag.package_inf;
+   double TotalAmount = (double)ViewBag.TotalAmount;
+   */
+
+    List<Entities.Models.Passenger> passengers = (List<Entities.Models.Passenger>)ViewBag.passengers;
+    Entities.Models.ContactClient contact_client = (Entities.Models.ContactClient)ViewBag.ContactClient;
+    List<Entities.ViewModels.SetServices.FlyBookingPackagesOptionalViewModel> fly_booking_packages = (List<Entities.ViewModels.SetServices.FlyBookingPackagesOptionalViewModel>)ViewBag.ListPackagesOptional;
+    string operator_name = (string)ViewBag.OperatorName;
+    if (operator_name.Trim() == "")
+    {
+        operator_name = "Nguyễn Cảnh Linh";
+    }
+    double adg_commission = 0;
+    double others_amount = 0;
+    if (go != null && go.Id > 0)
+    {
+        adg_commission += go.Adgcommission == null ? 0 : (double)go.Adgcommission;
+        others_amount += go.OthersAmount == null ? 0 : (double)go.OthersAmount;
+    }
+    if (back != null && back.Id > 0)
+    {
+        adg_commission += back.Adgcommission == null ? 0 : (double)back.Adgcommission;
+        others_amount += back.OthersAmount == null ? 0 : (double)back.OthersAmount;
+    }
+}
+<style>
+    .form-control:disabled {
+        background-color: #e8e8e8 !important;
+    }
+
+    .service-fly-ordered-package-name {
+        margin-top: 15px;
+    }
+</style>
+<div>
+    <div class="bold mb10 txt_14">Ghi chú</div>
+    <div class="form-group">
+        <textarea class="form-control service-fly-note" disabled style="height: 200px;">@(go != null&& go.Note!=null? go.Note:"")</textarea>
+    </div>
+</div>
+
+<div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding mb20 ">
+    <table class="table table-nowrap ">
+        <thead>
+            <tr>
+                <th class="text-left" style="min-width: 250px;">Hành trình </th>
+                <th class="text-left" style="min-width: 250px;">Điểm đi</th>
+                <th class="text-left" style="min-width: 250px;">Điểm đến</th>
+                <th class="text-left" style="min-width: 250px;">Ngày đi</th>
+                <th class="text-left" style="min-width: 250px;">Ngày về</th>
+                <th class="text-left" style="min-width: 250px;">Điều hành viên</th>
+
+            </tr>
+        </thead>
+        <tbody id="set-service-fly-global-information">
+            <tr>
+                <td class="text-left">
+                    @if (fly_count == 1)
+                    {
+                        <p style="width:100% !important">Một chiều</p>
+                    }
+                    else
+                    {
+                        <p style="width:100% !important">Khứ hồi</p>
+                    }
+                </td>
+                <td class="text-left"> <p style="width:100% !important"> @go.StartPoint</p></td>
+                <td class="text-left"> <p style="width:100% !important"> @go.EndPoint</p></td>
+                <td class="text-left"> <p style="width:100% !important"> @(((DateTime)go.StartDate).ToString("dd/MM/yyyy - HH:mm"))</p></td>
+                <td class="text-left"> <p style="width:100% !important"> @(back!=null? ((DateTime)back.StartDate).ToString("dd/MM/yyyy - HH:mm") : "N/A")</p></td>
+                <td class="text-left"> <p style="width:100% !important"> @operator_name</p></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+@if (fly_count > 1)
+{
+    <div class="mb15 bold txt_18 set-service-fly-detail-title">
+        Chiều đi
+    </div>
+}
+<div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding mb20 ">
+    <table class="table table-nowrap ">
+        <thead>
+            <tr>
+                <th class="text-left" style="min-width: 250px;">Hãng bay </th>
+                <th class="text-left" style="min-width: 250px;">Chuyến bay</th>
+                <th class="text-left" style="min-width: 250px;">Mã đặt chỗ</th>
+
+            </tr>
+        </thead>
+        <tbody id="set-service-fly-global-information">
+            <tr>
+                <td class="text-left">
+                    <p style="width:100% !important"> @go_airline_name</p>
+                </td>
+                <td class="text-left">  <p style="width:100% !important"> @go.Flight</p></td>
+                <td class="text-left">  <p style="width:100% !important"> @go.BookingCode</p></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@if (fly_count > 1)
+{
+    <div class="mb15 bold txt_18 set-service-fly-detail-title">
+        Chiều về
+    </div>
+    <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding mb20 ">
+        <table class="table table-nowrap ">
+            <thead>
+                <tr>
+                    <th class="text-left" style="min-width: 250px;">Hãng bay </th>
+                    <th class="text-left" style="min-width: 250px;">Chuyến bay</th>
+                    <th class="text-left" style="min-width: 250px;">Mã đặt chỗ</th>
+
+                </tr>
+            </thead>
+            <tbody id="set-service-fly-global-information">
+                <tr>
+                    <td class="text-left">
+                        <p style="width:100% !important"> @back_airline_name</p>
+                    </td>
+                    <td class="text-left">  <p style="width:100% !important"> @back.Flight</p></td>
+                    <td class="text-left">  <p style="width:100% !important"> @back.BookingCode</p></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+<div class="flex-auto mb15" style=" justify-content: right;">
+    <div class="form-group other-amount" style="min-width: 200px;width: 200px; ">
+        <label class="lbl text-center" style="width: 100%;">Chi phí khác </label>
+        <div class="wrap_input">
+            <input id="servicemanual-fly-other-amount" class="form-control currency text-right servicemanual-fly-other-amount" disabled type="text" name="servicemanual-fly-other-amount" placeholder="Nhập chi phí khác" value="@(others_amount.ToString("N0"))">
+        </div>
+    </div>
+    <div class="form-group discount" style="min-width: 200px;width: 200px;">
+        <label class="lbl text-center" style="width: 100%;">Hoa hồng CTV</label>
+        <div class="wrap_input">
+            <input id="servicemanual-fly-discount" class="form-control currency text-right servicemanual-fly-discount" disabled type="text" name="servicemanual-fly-discount" placeholder="Nhập chiết khấu" value="@(adg_commission.ToString("N0"))">
+        </div>
+    </div>
+</div>
+<div class="mb15 bold txt_18 set-service-fly-detail-title">
+    Bảng kê dịch vụ
+    <small>(Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo)</small>
+    @if (go.Status == (short)Utilities.Contants.ServiceStatus.OnExcution || go.Status == (short)Utilities.Contants.ServiceStatus.ServeCode || go.Status == (short)Utilities.Contants.ServiceStatus.ServeCodeKH)
+    {
+        <button class="btn btn-default update-operator-order-amount">Cập nhật thành tiền</button>
+        <button class="btn btn-default update-operator-order-amount-save" style="display:none;">Lưu</button>
+        <button class="btn btn-default update-operator-order-amount-cancel" style="display:none;">Hủy</button>
+    }
+
+</div>
+<div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding mb20">
+    <table class="table table-nowrap set-service-fly-detail-box">
+        <thead>
+            <tr>
+                <th style="width: 70px;">STT</th>
+                <th style="min-width: 300px;">Mã dịch vụ</th>
+                <th style="min-width: 400px;">Nhà cung cấp</th>
+                <th style="min-width: 400px;">Trạng thái</th>
+                <th class="text-right" style="width:250px !important;">Thành tiền</th>
+                <th style="width: 500px !important;">Ghi chú</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody class="set-service-fly-packages-optional-tbody" data-code="@(go != null&& go.ServiceCode!=null? go.ServiceCode:"")" data-go-id="@(go != null? go.Id.ToString():"")" data-group-booking="@(go != null&& go.GroupBookingId!=null? go.GroupBookingId:"")">
+            @if (fly_booking_packages != null && fly_booking_packages.Count > 0)
+            {
+                foreach (var item in fly_booking_packages)
+                {
+                    <tr class="service-fly-ordered-row" data-id="@item.Id">
+                        <td class="service-fly-ordered-order">@(++index)</td>
+                        <td><p class="form-control service-fly-ordered-package-name">@item.PackageName</p></td>
+                        <td>
+                            <select class="select2 service-fly-ordered-suplier input-disabled-background" style="width:100% !important" disabled>
+                                <option value="@item.SuplierId" selected="selected">@item.SuplierId - @item.supplier.FullName</option>
+
+                            </select>
+                        </td>
+                        <td>
+                               <select disabled class="form-control input-disabled-background supplier-select  service-fly-status" name="service-fly-status">
+
+                                   @if (item.Status == 0)
+                                   {
+                                       <option selected="selected" value="0">Sử dụng </option>
+                                   }
+                                   else
+                                   {
+                                       <option value="0">Sử dụng </option>
+                                   }
+                                   @if (item.Status == 1)
+                                   {
+                                       <option selected="selected" value="1">Hủy </option>
+                                   }
+                                   else
+                                   {
+                                       <option value="1">Hủy </option>
+                                   }
+
+                               </select>
+                        </td>
+                        <td><input type="text" class="form-control text-right currency service-fly-ordered-amount input-disabled-background" disabled value="@item.Amount.ToString("N0")" /></td>
+                        <td><input type="text" class="form-control service-fly-ordered-note input-disabled-background" disabled value="@item.Note" /></td>
+                        <td> <a class="fa fa-trash-o service-fly-ordered-delete-row-disabled service-fly-ordered-delete-row" style="display:none;" href="javascript:;"></a></td>
+                    </tr>
+                }
+            }
+
+            <tr class="service-fly-ordered-summary-row">
+                <td></td>
+                <td></td>
+                <td>
+                    <a href="javascript:;" class="blue ml-2 mb10 service-fly-ordered-add-new-disabled service-fly-ordered-add-new" style="display:none;"><i class="fa fa-plus-circle green"></i> Thêm dòng</a>
+                </td>
+                <td class="text-right">Tổng cộng</td>
+                <td class="text-right service-fly-ordered-total-amount bold">
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+
+        </tbody>
+    </table>
+
+</div>
+<div class="mb15 bold txt_18 set-service-fly-detail-title">
+    Danh sách đoàn
+</div>
+<div class="mb15 bold txt_16 set-service-fly-detail-title" style="color:gray;">
+    Thông tin thành viên chính
+</div>
+<div id="set-service-fly-go-contact-client" class="row set-service-fly-detail-box  wrap_bg wrap_bg_no-padding mb20" style="background-color:white; margin-top:20px;">
+    @if (contact_client != null)
+    {
+        <div class="col-2">
+            <p class="bold" style="width:100% !important"> Họ và tên</p>
+            <p style="width:100% !important"> @contact_client.Name</p>
+        </div>
+        <div class="col-2">
+            <p class="bold" style="width:100% !important"> Số điện thoại</p>
+            <p style="width:100% !important">@contact_client.Mobile</p>
+        </div>
+        <div class="col-2">
+            <p class="bold" style="width:100% !important"> Email</p>
+            <p style="width:100% !important"> @contact_client.Email</p>
+        </div>
+    }
+    else
+    {
+        <p class="mb15 bold txt_16 error error-no-contact-client" style="width:100% !important; padding-left:15px;"> Đơn hàng chưa có thông tin liên hệ, vui lòng báo nhân viên bán hàng bổ sung</p>
+    }
+
+</div>
+<div class="mb15 bold txt_16 set-service-fly-detail-title" style="color:gray;">
+    Danh sách thành viên
+</div>
+<table class="table table-nowrap set-service-fly-detail-box  wrap_bg wrap_bg_no-padding mb20">
+    <thead>
+        <tr>
+            <th class="text-left" style="width: 70px;">STT</th>
+            <th class="text-left" style="min-width: 100px;">Giới tính</th>
+            <th class="text-left">Họ tên</th>
+            <th class="text-left">Ngày sinh</th>
+            <th class="text-left">Ghi chú</th>
+        </tr>
+    </thead>
+    <tbody class="set-service-fly-go-passenger-tbody">
+        @if (passengers.Count > 0)
+        {
+            index = 0;
+            foreach (var p in passengers)
+            {
+                <tr class="set-service-fly-passenger-row" data-passenger-id="@p.Id">
+                    <td class="text-left set-service-fly-passenger-number">@(++index)</td>
+                    <td class="text-left">
+                        @(p.Gender==true?"Nam":"Nữ")
+
+                    </td>
+                    <td class="text-left">@(p.Name)</td>
+                    <td class="text-left">
+                        @(p.Birthday!=null?((DateTime)p.Birthday).ToString("dd/MM/yyyy"): DateTime.Now.ToString("dd/MM/yyyy"))
+
+                    </td>
+                    <td class="text-left">@p.Note</td>
+
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<div class="attachment-operator border pd10">
+    <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+</div>
+<script>
+    _set_service_fly_detail.FlyDetailBookingOrderedInitialization();
+</script>

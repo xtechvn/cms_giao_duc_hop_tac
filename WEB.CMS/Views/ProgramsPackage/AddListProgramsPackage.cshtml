@@ -1,0 +1,68 @@
+﻿@using Utilities.Contants
+@using Entities.ViewModels
+@using  Entities.ViewModels.Programs
+@using Utilities
+@{
+    var Model = (List<ProgramsPackagePriceViewModel>)ViewBag.ProgramPackageDaily;
+    var dataProgramPackage = (List<ProgramsPackageViewModel>)ViewBag.data;
+
+
+    int index = 0;
+
+    var date1 = (Model != null && Model.Count > 0) ? Model.Min(s => DateTime.ParseExact(s.FromDate, "dd/MM/yyyy", null)) : DateTime.Now;
+    var date2 = (Model != null && Model.Count > 0) ? Model.Max(s => DateTime.ParseExact(s.ToDate, "dd/MM/yyyy", null)) : DateTime.Now;
+}
+
+<div class="border bg-white mb15">
+    <div class="lb-form"><b><strong id="text_Addpk" class="blue">Chi tiết gói :@((Model != null && Model.Count > 0) ? Model[0].ProgramName:"")</strong></b> </div>
+    <input value="@ViewBag.ServiceName" id="ServiceName" style="display:none" />
+    <input value="@ViewBag.id" id="ProgramId" style="display:none" />
+    <input value="@ViewBag.Packageid" id="Packageid" style="display:none" />
+    <input value="@ViewBag.ProgramName" id="ProgramName" style="display:none" />
+    <input value="@ViewBag.type" id="typeSummit" style="display:none" />
+    <input value="@ViewBag.RoomTypeid" id="RoomTypeid" style="display:none" />
+    <div class="pd10">
+        <div id="view_summit">
+        </div>
+
+
+        <div id="List_data">
+
+        </div>
+
+    </div>
+</div>
+
+
+@section scripts{
+    <script type="text/javascript" src="/modules/DetailPrograms.js"></script>
+    <script>_DetailPrograms.loadDetailProgramsPackage('@Model[0].Id', '@ViewBag.type', '@Model[0].RoomType', '@Model[0].ProgramName')</script>
+    <script>_ProgramsPackage.loaddataAddnhanhProgramsPackage('@ViewBag.id','@ViewBag.Packageid', '@ViewBag.ProgramName','@ViewBag.RoomTypeid','@ViewBag.type')</script>
+    <script>_DetailPrograms.OpenviewAdd('@ViewBag.id', '0')</script>
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+    <script>
+                $('input[name="filter_date_ListProgramsPackagePrice"]').daterangepicker({
+                    autoUpdateInput: false,
+                    autoApply: true,
+                    showDropdowns: true,
+                    drops: 'down',
+                    minDate: '@date1.ToString("dd/MM/yyyy")',
+                    maxDate: '@date2.ToString("dd/MM/yyyy")',
+                            locale: {
+                                format: 'DD/MM/YYYY'
+                            }
+
+                });
+                $('input[name="filter_date_ListProgramsPackagePrice"]').on('cancel.daterangepicker', function (ev, picker) {
+                    $(this).val('');
+                    isPickerApprovePackagePrice = false;
+                });
+                $('input[name="filter_date_ListProgramsPackagePrice"]').on('apply.daterangepicker', function (ev, picker) {
+                    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+                    isPickerApprovePackagePrice = true;
+                });
+    </script>
+}
+
+
+

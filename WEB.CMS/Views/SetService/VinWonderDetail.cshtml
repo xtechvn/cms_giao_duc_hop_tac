@@ -1,0 +1,185 @@
+﻿@{
+    ViewData["Title"] = "Chi tiết đặt dịch vụ VinWonder";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var booking = (Entities.Models.VinWonderBooking)ViewBag.Booking;
+    var user_created = (Entities.Models.User)ViewBag.UserCreated;
+    var user_updated = (Entities.Models.User?)ViewBag.UserUpdated;
+    var saler = (Entities.Models.User?)ViewBag.Saler;
+    var operator_object = (Entities.Models.User?)ViewBag.Operator;
+    var order_amount = (double)ViewBag.OrderAmount;
+    var client_id = (long)ViewBag.ClientId;
+
+    double amount = (double)booking.Amount;
+    double commission = booking.Commission != null ? (double)booking.Commission : 0;
+    double other_amount = booking.OthersAmount != null ? (double)booking.OthersAmount : 0;
+    var price = booking.TotalUnitPrice != null && booking.TotalUnitPrice > 0 ? (double)booking.TotalUnitPrice : (double)booking.Amount - (double)booking.TotalProfit;
+    double profit = amount - price /* - other_amount - commission*/;
+
+    bool allow_to_finish_payment = (bool)ViewBag.AllowToFinishPayment;
+    double refund_amount = (long)ViewBag.RefundAmount;
+
+}
+
+<style>
+    .set-service-vinwonder-detail-box {
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-left: 10px;
+        margin-left: 0;
+    }
+
+    .set-service-vinwonder-detail-title {
+        padding-top: 15px;
+    }
+
+    .input-disabled-background {
+        background-color: #f0f0f0 !important;
+        color: black !important;
+    }
+</style>
+<div class="row-main container">
+    <div class="table-responsive table-white">
+        <input id="service-vinwonder-detail-data" style="display:none" 
+               data-user="@ViewBag.user" data-order-id="@booking.OrderId" data-sale="@saler.FullName " data-status="@booking.Status" 
+               data-booking-id="@booking.Id" data-servicecode="@booking.ServiceCode"
+                data-orderid="@booking.OrderId" data-clientid="@client_id" data-amount="@booking.Amount">
+
+     
+        <table class="table table-nowrap">
+            <tbody>
+                <tr>
+                    <td colspan="3">
+                        <strong>Dịch vụ khác: @ViewBag.ServiceCode</strong>
+                        @if (booking.Status == 0)
+                        {<span class="status-oranger">@ViewBag.StatusName</span>}
+                        @if (booking.Status == 1)
+                        {<span class="status-oranger">@ViewBag.StatusName</span>}
+                        @if (booking.Status == 2)
+                        {<span class="status-blue">@ViewBag.StatusName</span>}
+                        @if (booking.Status == 3)
+                        {<span class="status-green">@ViewBag.StatusName</span>}
+                        @if (booking.Status == 4)
+                        {<span class="status-green">@ViewBag.StatusName</span>}
+                        @if (booking.Status == 5)
+                        {<span class="status-red">@ViewBag.StatusName</span>}
+
+                    </td>
+                </tr>
+                <tr>
+                    <td style="min-width: 400px;">
+                        <div class="row">
+
+                            <div class="col-4 mb10 gray">Nhân viên bán</div>
+                            <div class="col-8 mb10">: @(saler == null || saler.Id <= 0 ? "N/A" : saler.FullName)</div>
+                            <div class="col-4 mb10 gray">Điều hành viên</div>
+                            <div class="col-8 mb10">: @(operator_object == null || operator_object.Id <= 0 ? "N/A" : operator_object.FullName) <a class="blue" href="javascript:;" onclick="_set_service_vinwonder_detail.PopupChangeOperator(' @(operator_object == null || operator_object.Id <= 0 ? "N/A" : operator_object.FullName)')"><i class="fa fa-edit blue"></i></a></div>
+                        </div>
+                    </td>
+                    <td style="min-width: 400px;">
+                        <div class="row">
+                            <div class="col-4 mb10 gray">Tổng giá trị đơn hàng</div>
+                            <div class="col-8 mb10">: @order_amount.ToString("N0")</div>
+                            <div class="col-4 mb10 gray">Tổng giá trị dịch vụ</div>
+                            <div class="col-8 mb10" id="saler-order-amount" data-amount="@(booking.Amount)">: @(((double)booking.Amount).ToString("N0"))</div>
+                            <div class="col-4 mb10 gray">Tổng chi dịch vụ thực tế</div>
+                            <div class="col-8 mb10" id="operator-order-amount" data-amount="@(booking.TotalUnitPrice!=null &&booking.TotalUnitPrice>0?booking.TotalUnitPrice.ToString():price.ToString())">: @(booking.TotalUnitPrice != null && booking.TotalUnitPrice > 0 ? ((double)booking.TotalUnitPrice).ToString("N0") : price.ToString("N0"))</div>
+                            <div class="col-4 mb10 gray">Tổng Lợi nhuận thực tế</div>
+                            <div class="col-8 mb10" id="operator-total-profit" data-profit="@profit.ToString("N0")">: @profit.ToString("N0")</div>
+                            <div class="col-4 mb10 gray">Lợi nhuận Saler nhập</div>
+                            <div class="col-8 mb10">: @(((double)booking.TotalProfit).ToString("N0"))</div>
+                            <div class="col-4 mb10 gray">Hoàn trả khách hàng</div>
+                            <div class="col-8 mb10">: @refund_amount.ToString("N0")</div>
+                            <div class="col-4 mb10 gray">Nhà cung cấp hoàn tiền</div>
+                            <div class="col-8 mb10">: @ViewBag.amountNcc.ToString("N0")</div>
+                        </div>
+                    </td>
+                    <td style="min-width: 400px;">
+                        <div class="row">
+                            <div class="col-5 mb10 gray">Người tạo</div>
+                            <div class="col-7 mb10">: @user_created.FullName</div>
+                            <div class="col-5 mb10 gray">Ngày tạo</div>
+                            <div class="col-7 mb10 ">: @(((DateTime)booking.CreatedDate).ToString("dd/MM/yyyy HH:mm"))</div>
+                            <div class="col-5 mb10 gray">Người cập nhật</div>
+                            <div class="col-7 mb10">: @(user_updated==null || user_updated.Id<=0?"N/A": user_updated.FullName)</div>
+                            <div class="col-5 mb10 gray">Ngày cập nhật</div>
+                            <div class="col-7 mb10">: @(user_updated == null || user_updated.Id <= 0 ? "N/A" : ((DateTime)booking.UpdatedDate).ToString("dd/MM/yyyy HH:mm"))</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-default" style="border-bottom: 1px solid #CCCCCC;">
+        <div class="row" style=" width: 100%; ">
+            <div class="tab-default col-md-9 mb0 mt10">
+                <a href="javascript:;" class="service-vinwonder-detail-change-tab-button  service-vinwonder-detail-button-order active" data-loaded="0" data-tab-id="0">Đơn hàng</a>
+                <a href="javascript:;" class="service-vinwonder-detail-change-tab-button  service-vinwonder-detail-button-need-to-order" data-loaded="0" data-tab-id="1">Dịch vụ cần đặt</a>
+                <a href="javascript:;" class="service-vinwonder-detail-change-tab-button  service-vinwonder-detail-button-ordered" data-loaded="0" data-tab-id="2">Dịch vụ đã đặt</a>
+                <a href="javascript:;" class="service-vinwonder-detail-change-tab-button  service-vinwonder-detail-button-payment" data-loaded="0" data-tab-id="3">Thanh toán</a>
+                <a href="javascript:;" class="service-vinwonder-detail-change-tab-button  service-vinwonder-detail-button-servicecode" data-loaded="0" data-tab-id="4">Code dịch vụ</a>
+                <a href="javascript:;" class="service-vinwonder-detail-change-tab-button  service-vinwonder-detail-button-refund" data-loaded="0" data-tab-id="5">Hoàn trả khách hàng</a>
+                @*<a href="javascript:;" class="service-vinwonder-detail-change-tab-button  service-vinwonder-detail-button-marketing" data-loaded="0" data-tab-id="6">Chi Phí Marketing</a>*@
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="service-vinwonder-detail-tab service-vinwonder-detail-tab-order">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" />
+        </div>
+        <div class="service-vinwonder-detail-tab service-vinwonder-detail-tab-need-to-order" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" />
+        </div>
+        <div class="service-vinwonder-detail-tab service-vinwonder-detail-tab-ordered" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" />
+        </div>
+        <div class="service-vinwonder-detail-tab service-vinwonder-detail-tab-payment" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" />
+        </div>
+        <div class="service-vinwonder-detail-tab service-vinwonder-detail-tab-servicecode" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" />
+        </div>
+        <div class="service-vinwonder-detail-tab service-vinwonder-detail-tab-refund" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" />
+        </div> 
+        <div class="service-vinwonder-detail-tab service-vinwonder-detail-tab-marketing" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" />
+        </div>
+    </div>
+    <div class="form-group align-right mt20 block pin-btn-bottom ">
+        <b class="btn btn-default cancel ml-1" onclick="_set_service_vinwonder_detail.Back()">Quay lại</b>
+        @if (booking.Status != (int)Utilities.Contants.ServiceStatus.Payment && booking.Status != (int)Utilities.Contants.ServiceStatus.Cancel && booking.Status != (int)Utilities.Contants.ServiceStatus.Decline)
+        {
+            <button type="button" class="btn btn-default red ml-1 " onclick="_SetService_Detail.OnResetStatusPopup('@booking.Id',6,@booking.OrderId,'')">Từ chối</button>
+        }
+        @if (booking.Status == 1)
+        {
+            <button type="button" class="btn btn-default ml-1" onclick="_set_service_vinwonder_detail.GrantOrderPermission($(this))">Nhận đặt dịch vụ</button>
+        }
+        @if (booking.Status == 2)
+        {
+            <button type="button" class="btn btn-default ml-1" onclick="_set_service_vinwonder_detail.SendServiceCode($(this))">Trả code dịch vụ</button>
+        }
+       
+        @if (booking.Status == 3 && allow_to_finish_payment)
+        {
+            <button type="button" class="btn btn-default ml-1" onclick="_set_service_vinwonder_detail.ChangeToPayment($(this))">Quyết toán</button>
+        }
+        else if (booking.Status == 3)
+        {
+            <button type="button" class="btn btn-default ml-1 disabled" onclick="return false;" disabled style="">Quyết toán</button>
+        }
+    </div>
+</div>
+
+
+@section scripts {
+
+    <script type="text/javascript" src="/modules/set_service_vinwonder.js"></script>
+    <script type="text/javascript" src="/modules/SetServiceDetail.js"></script>
+    <script type="text/javascript" src="/modules/payment_request.js"></script>
+    <script type="text/javascript" src="/js/zebra_datepicker.min.js"></script>
+    <script type="text/javascript" src="~/modules/add_payment_request.js"></script>
+    <script type="text/javascript" src="~/modules/set_service_vinwonder_email.js"></script>
+    <script>_set_service_vinwonder_detail.Initialization()</script>
+
+}

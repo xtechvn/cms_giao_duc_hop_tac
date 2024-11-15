@@ -1,0 +1,71 @@
+﻿@using Entities.Models
+@{
+    var BRANCH_CODE = (List<AllCode>)ViewBag.BRANCH_CODE;
+}
+<section class="" style=" overflow-x: hidden;">
+    <div class="row-main container">
+
+        <div class="flex fillter-donhang ">
+
+            <div class="form-group mb10 mr-2" style="min-width:165px">
+
+                <select class="select2 form-control" id="Branch" style="width:100% !important">
+                    @if (BRANCH_CODE != null && BRANCH_CODE.Count > 0)
+                    {
+                        foreach (var item in BRANCH_CODE)
+                        {
+                            <option value="@item.CodeValue">@item.Description</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                <div class="datepicker-wrap add-lbl " style="width:100%">
+                    <span class="lbl">Ngày báo cáo</span>
+                    <input style="padding-left:100px!important" class="form-control date text-left Date" id="Date" type="text" name="datetimeApprove"
+                           placeholder="Ngày báo cáo" value="" />
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width:365px">
+             
+                <select class="select2 client-select main-staff-select" id="SupplierId" multiple style="width:100% !important">
+                </select>
+            </div>
+            <div class="mb10 mr-2">
+                <button class="btn-search btn-default" type="button" onclick="_report_supplier.Export()" id="btnExport">
+                    <i class="fa fa-file-excel-o" id="icon-export" title="Xuất excel">
+                    </i>
+                </button>
+                <button type="button" class="btn btn-default bg-main" onclick="_report_supplier.SearchData();">
+                    <svg class="icon-svg" style="vertical-align: sub;">
+                        <use xlink:href="/images/icons/icon.svg#search"></use>
+                    </svg>
+                    Tìm kiếm
+                </button>
+            </div>
+        </div>
+
+        <div id="grid_data">
+            <img src="/images/icons/loading.gif" style=" width: 100px; height: 100px; margin-left:46%;" id="imgLoading" />
+        </div>
+    </div>
+</section>
+@section scripts{
+    <script type="text/javascript" src="~/modules/report_supplier.js"></script>
+    <script>
+        $('input[name="datetimeApprove"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="datetimeApprove"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove = false;
+        });
+        $('input[name="datetimeApprove"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove = true;
+        });
+    </script>
+}

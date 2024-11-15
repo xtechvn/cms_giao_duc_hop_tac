@@ -1,0 +1,160 @@
+﻿@{
+}
+@model Entities.ViewModels.ProductFlyTicketViewModel
+@{
+
+}
+
+<div class="form-default">
+    <div class="form-group">
+        <label class="lbl">Mã chiến dịch</label>
+        <div class="wrap_input">
+            <input type="text" class="form-control" id="campaignCode" asp-for="@Model.Campaign.CampaignCode" disabled style="color: #7a6e6e !important; ">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="lbl">Mô tả</label>
+        <div class="wrap_input">
+            <input type="text" class="form-control" id="description" asp-for="@Model.Campaign.Description" maxlength="400">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="lbl">Phí dịch vụ</label>
+        <div class="wrap_input">
+            <div class="tag-input-price">
+                <input type="text" class="form-control" id="serviceFee" style="width: 100%;" onkeyup="_fly_ticket_service.FormatNumber()" asp-for="@Model.PriceDetail.Profit">
+                <div class="tag">
+                    <a class="active" id="serviceFeeTypeVND" onclick="_fly_ticket_service.ChooseType(2);" style="cursor:pointer">VND</a>
+                    <a id="serviceFeeTypePercent" onclick="_fly_ticket_service.ChooseType(1);" style="cursor:pointer">%</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="lbl">Hiệu lực từ ngày</label>
+        <div class="wrap_input">
+            <div class="row">
+                <div class="col-md-5">
+                    <input class="form-control datepicker-input" type="text" name="fromDate" id="fromDate"
+                           value="@Model.Campaign.FromDate.ToString("dd/MM/yyyy HH:mm")">
+                </div>
+                <div class="col-md-7 flex">
+                    <div class="col-3" style="margin-top: 6px;">đến</div>
+                    <div class="col-9 " style="padding: 0;">
+                        <input class="form-control datepicker-input" type="text" name="toDate" id="toDate"
+                               value="@Model.Campaign.ToDate.ToString("dd/MM/yyyy HH:mm")">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="lbl">Theo tháng</label>
+        <div class="wrap_input">
+            <input class="flex list-tag form-control" id="month_tags" name="month_tags" style="width:90% !important;">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="lbl">Theo thứ</label>
+        <div class="wrap_input">
+            <input class="flex list-tag form-control" id="weekend_day_tags" name="weekend_day_tags" style="width:90% !important;">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="lbl mt0">Trạng thái</label>
+        <div class="wrap_input flex">
+            <label class="radio radio-block">
+                <input type="radio" name="status" checked="" value="0" asp-for="@Model.Campaign.Status">
+                <span class="checkmark"></span>
+                Kích hoạt
+            </label>
+            <label class="radio radio-block ml-4">
+                <input type="radio" name="status" value="1" asp-for="@Model.Campaign.Status">
+                <span class="checkmark"></span>
+                Khóa tạm dừng
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="lbl">Loại khách hàng</label>
+        <div class="wrap_input">
+            <select class="form-control" id="client_type_id" asp-for="@Model.Campaign.ClientTypeId">
+                @*<option value="1">Đại lý</option>*@
+                <option value="1">&nbsp;&nbsp; Đại lý</option>
+                <option value="2">&nbsp;&nbsp; Đại lý cấp 2</option>
+                <option value="3">&nbsp;&nbsp; Đại lý cấp 3</option>
+                <option value="5">Khách lẻ</option>
+
+            </select>
+        </div>
+    </div>
+    <div class="form-group align-right mt20 block">
+        <button type="submit" class="btn btn-default" onclick="_fly_ticket_service.OnSaveFlyTicket(1);">
+            <i class="fa fa-floppy-o"></i>Lưu
+        </button>
+        <button type="submit" class="btn btn-default " onclick="$.magnificPopup.close();">
+            <i class="fa fa-minus-circle"></i>Bỏ qua
+        </button>
+    </div>
+    @Html.Hidden("DayList", Model.DayList != null && Model.DayList.Count > 0 ? string.Join(",", Model.DayList) : "")
+    @Html.Hidden("MonthList", Model.MonthList != null && Model.MonthList.Count > 0 ? string.Join(",", Model.MonthList) : "")
+    @Html.Hidden("ServiceFeeType", Model.PriceDetail.UnitId)
+    @Html.Hidden("CampaignId", Model.Campaign.Id)
+    @Html.Hidden("ServiceFee", Model.PriceDetail.Price)
+</div>
+
+<script>
+    $('.datepicker-input').Zebra_DatePicker({
+        format: 'd/m/Y H:i'
+    }).removeAttr('readonly');
+    var input = document.querySelector('input[name="weekend_day_tags"]'),
+        // init Tagify script on the above inputs
+        tagify = new Tagify(input, {
+            whitelist: ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"],
+            maxTags: 7,
+            tagTextProp: 'weekend_day_tags',
+            dropdown: {
+                maxItems: 7,           // <- mixumum allowed rendered suggestions
+                classname: "tags-look", // <- custom classname for this dropdown, so it could be targeted
+                enabled: 0,             // <- show suggestions on focus
+                closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
+            }
+        });
+    var dayStr = $('#DayList').val()
+    var monthStr = $('#MonthList').val()
+    var listDay = dayStr.split(',')
+    var listMonth = monthStr.split(',')
+    for (var i = 0; i < listDay.length; i++) {
+        tagify.addTags(listDay[i], true);
+    }
+    var input = document.querySelector('input[name="month_tags"]'),
+        // init Tagify script on the above inputs
+        tagify1 = new Tagify(input, {
+            whitelist: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"],
+            maxTags: 12,
+            tagTextProp: 'month_tags',
+            dropdown: {
+                maxItems: 12,           // <- mixumum allowed rendered suggestions
+                classname: "tags-look", // <- custom classname for this dropdown, so it could be targeted
+                enabled: 0,             // <- show suggestions on focus
+                closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
+            }
+        });
+    for (var i = 0; i < listMonth.length; i++) {
+        tagify1.addTags(listMonth[i], true);
+    }
+    this.serviceFeeType = $('#ServiceFeeType').val()
+    if (parseInt(serviceFeeType) === 1) {
+        $('#serviceFeeTypeVND').removeClass('active')
+        $('#serviceFeeTypePercent').addClass('active')
+    }
+    if (parseInt(serviceFeeType) === 2) {
+        $('#serviceFeeTypeVND').addClass('active')
+        $('#serviceFeeTypePercent').removeClass('active')
+    }
+    _fly_ticket_service.FormatNumber()
+</script>
+@section scripts {
+    <script src="~/lib/tagify/tagify.polyfills.min.js"></script>
+    <link href="~/lib/tagify/tagify.css" rel="stylesheet" type="text/css" />
+}

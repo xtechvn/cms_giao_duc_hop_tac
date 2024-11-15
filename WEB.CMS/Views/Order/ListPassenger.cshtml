@@ -1,0 +1,179 @@
+﻿@using Entities.Models
+@using Entities.ViewModels.HotelBookingCode
+@{ var listPassenger = (List<Entities.ViewModels.PassengerViewModel>)ViewBag.Passenger;
+    var listContactClient = (ContactClient)ViewBag.ContactClient;
+    var i = 0; }
+@model List<HotelBookingCodeModel>
+@if (listContactClient != null)
+{
+<div class="border bg-white mb20">
+
+    <div class="flex space-between row-main-head pd10">
+        <div class="bold">Thông tin liên hệ</div>
+        <div class="text-center ">
+            <div class="text-right ">
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="line-bottom pb0"></div>
+    <div class="pd10 ">
+        <div class="table-responsive table-gray">
+            <table class="table table-nowrap">
+                <thead>
+                    <tr>
+                        <th>Họ và tên</th>
+                        <th>Điện thoại </th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@listContactClient.Name</td>
+                        <td>@listContactClient.Mobile </td>
+                        <td>@listContactClient.Email</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div> }
+else
+{
+<div class="border bg-white mb20">
+
+    <div class="flex space-between row-main-head pd10">
+        <div class="bold">Thông tin liên hệ</div>
+        <div class="text-center ">
+            <div class="text-right ">
+                <button onclick="_orderDetail.Edit('');" type="submit" class="btn btn-default bg-main "><i class="fa fa-plus"></i>Thêm</button>&nbsp;
+            </div>
+
+        </div>
+    </div>
+    <div class="line-bottom pb0"></div>
+    <div class="pd10 ">
+        <div class="table-responsive table-gray">
+            <table class="table table-nowrap">
+                <thead>
+                    <tr>
+                        <th>Họ và tên</th>
+                        <th>Điện thoại </th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>}
+<div class="border bg-white mb20">
+    <div class="flex space-between row-main-head pd10">
+        <div class="bold">Code dịch vụ</div>
+        <div class="text-center ">
+            <div class="text-right ">
+
+            </div>
+
+        </div>
+    </div>
+    <div class="line-bottom pb0"></div>
+    @if (Model != null)
+    {
+
+<div class="wrap_bg bg-white wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 30px;">STT</th>
+                    <th>Mã code dịch vụ</th>
+                    <th>Dịch vụ</th>
+                    <th>Nội dung</th>
+                    <th>
+                        Ghi chú
+                    </th>
+                    <th>Tệp đính kèm</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                        i++;
+                        <tr>
+                                <td>@i</td>
+                                <td>@item.BookingCode</td>
+                                <td>@item.ServiceName</td>
+                                <td>@item.Description</td>
+                                <td>@item.Note</td>
+                                <td>
+                                    <div class="row list-choose lightgallery image-choice-list">
+                                        @if (item.attachFiles != null && item.attachFiles.Count > 0)
+                                        {
+                            <div class="col-sm-3 col-4 mb10" data-src="@item.attachFiles[0].Path">
+                                <div style="margin-top: 10px;">
+                                    <img src="@item.attachFiles[0].Path" style="display:none" />
+                                    <a> <p class="blue">Xem</p></a>
+
+                                </div>
+                            </div> foreach (var A in item.attachFiles)
+                            {
+                                if (A.Id != item.attachFiles[0].Id)
+                                {
+                            <div style="display:none" class="col-sm-3 col-4 mb10" data-src="@A.Path">
+                                <img src="@A.Path" />
+                                <div>
+                                    <a> <p class="blue">Xem</p></a>
+                                </div>
+                            </div>
+                                        }
+
+                            }
+                        }
+                                    </div>
+
+                                </td>
+
+
+                        </tr>
+                    }
+                    }
+            </tbody>
+        </table>
+    </div>
+</div> 
+}
+else
+{
+
+
+<div class="wrap_bg bg-white wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 30px;">STT</th>
+                    <th>Mã code dịch vụ</th>
+                    <th>Dịch vụ</th>
+                    <th>Nội dung</th>
+                    <th>
+                        Ghi chú
+                    </th>
+                    <th>Tệp đính kèm</th>
+                   
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>}
+</div>

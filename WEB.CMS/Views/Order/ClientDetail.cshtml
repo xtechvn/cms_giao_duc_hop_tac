@@ -1,0 +1,51 @@
+﻿@{
+    var client = (Entities.Models.Client)ViewBag.client;
+}
+@if (client != null)
+{
+    <div class="border bg-white mb20">
+        <div class="flex space-between pd10">
+            <div class="bold">Thông tin khách hàng</div>
+
+        </div>
+        <div class="line-bottom pb0 mb0"></div>
+        <div class="info-basic flex align-center pd10 mb10">
+            <div class="ava">
+                <span class="thumb_img thumb_5x5">
+                    @if (client.Avartar != null)
+                    {
+                        <img src="@client.Avartar">
+                    }
+                    else
+                    {
+                        <img src="/images/graphics/user.jpeg">
+                    }
+                </span>
+            </div>
+            <div class="content">
+                <div class="name">@(client.ClientName)</div>
+                @client.Phone - @client.Email
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="border bg-white mb20">
+        <div class="flex space-between pd10">
+            <div class="bold">Thông tin khách hàng</div>
+
+        </div>
+        <div class="line-bottom pb0 mb0"></div>
+        <div class="info-basic flex align-center pd10 mb10">
+            <div class="ava">
+                <span class="thumb_img thumb_5x5">
+                    <img src="/images/graphics/user.jpeg">
+                </span>
+            </div>
+            <div class="content">
+                <div class="name">Khách chưa được tạo tài khoản</div>
+            </div>
+        </div>
+    </div>
+}

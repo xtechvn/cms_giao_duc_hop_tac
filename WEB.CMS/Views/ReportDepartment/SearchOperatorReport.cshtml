@@ -1,0 +1,260 @@
+﻿@using Entities.Models
+@using Entities.ViewModels
+@using Entities.ViewModels.Report
+@{
+    Layout = null;
+    int index = 0;
+    GenericViewModel<OperatorReportViewModel> model = (GenericViewModel<OperatorReportViewModel>)ViewBag.Model;
+    SumOperatorReportViewModel total_model = (SumOperatorReportViewModel)ViewBag.Sum;
+    var list_department_ids = new List<int>();
+    List<Department> list_departments = (List<Department>)ViewBag.Department;
+    if (model != null && model.ListData != null && model.ListData.Count > 0)
+    {
+        index = (model.CurrentPage - 1) * model.PageSize;
+        list_department_ids = model.ListData.OrderBy(x => x.DepartmentName).Select(x => x.DepartmentId).ToList();
+        list_department_ids = list_department_ids.Distinct().ToList();
+    }
+    var root_departments = list_departments.Where(x => x.FullParent == null || x.FullParent.Trim() == "").ToList();
+
+}
+<style>
+    .table_nhacc{
+    td{
+        background: #fff;
+    }
+    th,td{
+        &.pin{
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            &::before{
+                content: '';
+                display: block;
+                width: 1px;
+                height: 100%;
+                background: #CFD9EE;
+                position: absolute;
+                left: -1px;
+                top: 0;
+              }
+              &::after{
+                content: '';
+                display: block;
+                width: 1px;
+                height: 100%;
+                background: #CFD9EE;
+                position: absolute;
+                right: -1px;
+                top: 0;
+              }
+            &:nth-child(1){
+                left: 0;
+                min-width: 50px;
+                max-width: 50px;
+            }
+            &:nth-child(2){
+                left: 50px;
+                min-width: 270px;
+                max-width: 270px;
+            }
+            &:nth-child(3){
+                left: 320px;
+            }
+        }
+    }
+    tr:nth-child(2n){
+        td{
+            background: #f7f7f7;
+        }
+    }
+}
+    .table_nhacc th.pin, .table_nhacc td.pin {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0;
+        z-index: 1;
+    }
+}
+</style>
+@if (model.ListData == null || model.ListData.Count <= 0)
+{
+    <div class="search-null center mb40">
+        <div class="mb24">
+            <img src="/images/graphics/icon-search.png" alt="">
+        </div>
+        <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+        <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+    </div> }
+else
+{
+    <div class="wrap_bg wrap_bg_no-padding mb20">
+        <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding  table-scroll table-report">
+            <table class="table table-nowrap table_nhacc">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="min-width: 50px;" class="pin">STT</th>
+                        <th rowspan="2" style="min-width: 250px; " class="pin">Phòng ban</th>
+                        <th rowspan="2" style=" min-width: 100px; " class="pin">Chi nhánh</th>
+                        <th rowspan="2" style=" min-width: 100px; ">Mã đơn hàng</th>
+                        <th rowspan="2" style=" min-width: 100px; ">dịch vụ</th>
+                        <th rowspan="2" style=" min-width: 250px; ">Nhãn đơn hàng</th>
+                        <th rowspan="2" style=" min-width: 100px; ">Mã khách hàng</th>
+                        <th rowspan="2" style=" min-width: 150px; ">Tên khách hàng</th>
+                        <th rowspan="2" style="min-width: 170px; text-align: center; ">Ngày in</th>
+                        <th rowspan="2" style="min-width: 170px; text-align: center; ">Ngày out</th>
+                        <th colspan="3" style=" min-width: 170px; text-align: center">Doanh thu (Tổng thu của khách hàng)</th>
+                        <th colspan="4" style=" min-width: 170px;  text-align: center">Giá vốn  (Tổng chi cho nhà cung cấp)</th>
+                        <th rowspan="2" style="min-width: 150px; text-align: right;">Hoa hồng CTV</th>
+                        <th rowspan="2" style="min-width: 150px; text-align: right;">Lợi nhuận (có VAT)</th>
+                        <th rowspan="2" style="min-width: 150px; text-align: right;">Lợi nhuận thực tế</th>
+                        <th rowspan="2" style=" min-width: 120px; text-align: center; ">Trạng thái</th>
+                        <th rowspan="2" style=" min-width: 120px; text-align: center; "> Số hóa đơn </th>
+                        <th rowspan="2" style=" min-width: 170px; text-align: center; "> Ngày xuất hóa đơn </th>
+                        <th rowspan="2" style=" min-width: 170px; text-align: center; "> Người phụ trách chính </th>
+                        <th rowspan="2" style=" min-width: 400px; text-align: left; "> Điều hành </th>
+                        <th rowspan="2" style=" min-width: 250px; text-align: left; "> Ngân hàng nhận tiền </th>
+
+                    </tr>
+                    <tr>
+                        <th style="min-width: 150px; text-align: right;"> Tổng tiền </th>
+                        <th style="min-width: 150px; text-align: right;"> Đã thu </th>
+                        <th style="min-width: 150px; text-align: right;"> Còn phải thu </th>
+                        <th style="min-width: 150px; text-align: right;"> Tổng tiền </th>
+                        <th style="min-width: 150px; text-align: right;"> Đã thanh toán </th>
+                        <th style="min-width: 150px; text-align: right;"> NCC Hoàn trả</th>
+                        <th style="min-width: 150px; text-align: right;"> Còn phải thanh toán </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style=" background-color: var(--yellow); ">
+                        <td class="pin"></td>
+                        <td style=" font-weight: bold;" class="pin">
+                            Tổng cộng
+                        </td>
+                        <td style="text-align: right;" class="pin"></td>
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right; font-weight:bold;">@(total_model.AMOUNT.ToString("N0"))</td>
+                        <td style="text-align: right; font-weight: bold;">@((total_model.AmountPay!=null?(double)total_model.AmountPay:0).ToString("N0"))</td>
+                        <td style="text-align: right; font-weight: bold;">@((total_model.AmountRemain != null ? (double)total_model.AmountRemain : total_model.AMOUNT).ToString("N0"))</td>
+
+                        <td style="text-align: right; font-weight: bold;">@((total_model.Price != null ? (double)total_model.Price : 0).ToString("N0"))</td>
+                        <td style="text-align: right; font-weight: bold;">@((total_model.PricePay != null ? (double)total_model.PricePay : 0).ToString("N0"))</td>
+                        <td style="text-align: right; font-weight: bold;">@((total_model.Refund != null ? (double)total_model.Refund : 0).ToString("N0"))</td>
+                        <td style="text-align: right; font-weight: bold;">@((total_model.PriceRemain != null ? (double)total_model.PriceRemain : (total_model.Price != null ? (double)total_model.Price : 0)).ToString("N0"))</td>
+                        <td style="text-align: right; font-weight: bold;">@((total_model.Comission != null ? (double)total_model.Comission : 0).ToString("N0"))</td>
+                        <td style="text-align: right; font-weight: bold;">@((total_model.Profit != null ? (double)total_model.Profit : 0).ToString("N0"))</td>
+
+                        <td style="text-align: right; font-weight: bold;">@((total_model.AMOUNT - (total_model.Price != null ? (double)total_model.Price : 0)).ToString("N0"))</td>
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right;"></td>
+
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right;"></td>
+                        <td style="text-align: right;"></td>
+
+                    </tr>
+                    @if (root_departments != null && root_departments.Count > 0)
+                    {
+
+                    }
+                    @if (list_department_ids != null && list_department_ids.Count > 0)
+                    {
+                        @foreach (var parent in list_department_ids)
+                        {
+                            var list = model.ListData.Where(x => x.DepartmentId == parent).ToList();
+                            if (list != null && list.Count > 0)
+                            {
+                                var first_item = list[0];
+                                <tr style=" color: var(--green);" data-parent-departmentid="@first_item.DepartmentId">
+                                    <td class="pin"></td>
+                                    <td style=" font-weight: bold;" class="pin">
+                                        @(first_item.DepartmentName==null || first_item.DepartmentName.Trim()==""?first_item.ParentDepartmentName:first_item.DepartmentName)
+                                        &nbsp;&nbsp;
+                                        <a class="list-expand" style="color: blue;"><i class=" fa fa-plus"></i></a>
+                                    </td>
+                                    <td style="text-align: center; font-weight: bold;" class="pin">@first_item.BranchName</td>
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right; font-weight:bold;">@list.Sum(x => x.Amount).ToString("N0")</td>
+                                    <td style="text-align: right; font-weight: bold;">@(list.Sum(x=>x.AmountPay!=null?(double)x.AmountPay:0).ToString("N0"))</td>
+                                    <td style="text-align: right; font-weight: bold;">@(list.Sum(x => x.AmountRemain != null ? (double)x.AmountRemain : x.Amount).ToString("N0"))</td>
+
+                                    <td style="text-align: right; font-weight: bold;">@(list.Sum(x => x.Price != null ? (double)x.Price : 0).ToString("N0"))</td>
+                                    <td style="text-align: right; font-weight: bold;">@(list.Sum(x => x.PricePay != null ? (double)x.PricePay : 0).ToString("N0"))</td>
+                                    <td style="text-align: right; font-weight: bold;">@(list.Sum(x => x.Refund != null ? (double)x.Refund : 0).ToString("N0"))</td>
+                                    <td style="text-align: right; font-weight: bold;">@(list.Sum(x => x.PriceRemain != null ? (double)x.PriceRemain : (x.Price != null ? (double)x.Price : 0)).ToString("N0"))</td>
+                                    <td style="text-align: right; font-weight: bold;">@(list.Sum(x => x.Comission != null ? (double)x.Comission : 0).ToString("N0"))</td>
+                                    <td style="text-align: right; font-weight: bold;">@(list.Sum(x => x.Profit != null ? (double)x.Profit : 0).ToString("N0"))</td>
+
+                                    <td style="text-align: right; font-weight: bold;">@((list.Sum(x => x.Amount) - list.Sum(x => x.Price != null ? (double)x.Price : 0)).ToString("N0"))</td>
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right;"></td>
+
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right;"></td>
+                                    <td style="text-align: right;"></td>
+
+                                </tr>
+                                index = 0;
+                                @foreach (var item in list)
+                                {
+
+                                    <tr class="expand-item" data-parent-departmentid="@item.DepartmentId" style="display:none;">
+                                        <td class="pin">@(++index)</td>
+                                        <td class="pin"></td>
+                                        <td class="pin"></td>
+
+                                        <td style="text-align: right;"><a href="/Order/@item.OrderId"> @item.OrderNo </a> </td>
+                                        <td style="text-align: right;">@item.ServiceName </td>
+                                        <td style="text-align: right;">@item.Label </td>
+                                        <td style="text-align: right;">@(item.ClientCode ?? "") </td>
+                                        <td style="text-align: right;">@(item.ClientName ?? "") </td>
+
+                                        <td style="text-align: right;">@item.StartDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td style="text-align: right;">@item.EndDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td style="text-align: right;">@item.Amount.ToString("N0")</td>
+                                        <td style="text-align: right;">@((item.AmountPay==null? 0: (double)item.AmountPay).ToString("N0"))</td>
+                                        <td style="text-align: right;">@((item.AmountRemain == null ? item.Amount : (double)item.AmountRemain).ToString("N0"))</td>
+
+                                        <td style="text-align: right;">@((item.Price == null? 0: (double)item.Price).ToString("N0"))</td>
+                                        <td style="text-align: right;">@((item.PricePay == null ? 0 : (double)item.PricePay).ToString("N0"))</td>
+                                        <td style="text-align: right;">@((item.Refund == null ? 0 : (double)item.Refund).ToString("N0"))</td>
+                                        <td style="text-align: right;">@((item.PriceRemain == null ? (item.Price == null ? 0 : (double)item.Price) : (double)item.PriceRemain).ToString("N0"))</td>
+                                        <td style="text-align: right;">@((item.Comission == null ? 0 : (double)item.Comission).ToString("N0"))</td>
+                                        <td style="text-align: right;">@((item.Profit == null ? 0 : (double)item.Profit).ToString("N0"))</td>
+                                        <td style="text-align: right;">@((item.Amount - (item.Price == null ? 0 : (double)item.Price)).ToString("N0"))</td>
+
+                                        <td style="text-align: right;">@(item.OrderStatusName!=null ? item.OrderStatusName:"")</td>
+                                        <td style="text-align: right;">@(item.InvoiceNo != null ? item.InvoiceNo : "")</td>
+                                        <td style="text-align: right;">@(item.ExportDate == null?"": ((DateTime)item.ExportDate).ToString("dd/MM/yyyy HH:mm"))</td>
+
+                                        <td style="text-align: right;">@(item.FullName != null ? item.FullName : "")</td>
+                                        <td style="text-align: right;">@(item.OperatorName != null ? item.OperatorName : "")</td>
+                                        <td style="text-align: right;">@(item.BankId != null ? item.BankId.Replace(","," ") +" - "+item.AccountNumber : "")</td>
+
+                                    </tr>
+                                }
+                            }
+                        }
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>}

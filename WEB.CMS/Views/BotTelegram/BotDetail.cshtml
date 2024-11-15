@@ -1,0 +1,181 @@
+﻿
+@{
+    Layout = null;
+
+}
+@using Utilities.Contants
+@model Entities.Models.TelegramDetail
+@if (Model == null)
+{
+    <div class="form-default">
+        <div class="form-group">
+            <label class="lbl">Tên project</label>
+            <div class="wrap_input">
+                <select class="form-control" id="ProjectType">
+                    <option value="1">API_V2</option>
+                    <option value="2">CMS_V2</option>
+                    <option value="3">FR_V2</option>
+                    <option value="4">THIRD_PARTY</option>
+                    <option value="5">API_V1</option>
+                    <option value="6">CMS_V1</option>
+                    <option value="7">FR_V12</option>
+                    <option value="8">APP_BOT</option>
+                    <option value="9">FRONT_END_B2B</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="lbl">Token</label>
+            <div class="wrap_input">
+                <input type="text" class="form-control" id="token" onchange="_Telegrammanagement.Submit();" maxlength="400">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="lbl">Group id</label>
+            <div class="wrap_input">
+
+                <input type="text" class="form-control" id="groupChatId" onchange="_Telegrammanagement.Submit();" maxlength="400">
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="lbl">Group log monitor</label>
+            <div class="wrap_input">
+                <input type="text" class="form-control" id="groupLog"  maxlength="400" placeholder="Nhập token và group id để hiển thị thông tin" disabled="disabled" />           
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="lbl">Ngày tạo</label>
+            <div class="wrap_input">
+                <input class="flex list-tag form-control" id="createDate" name="weekend_day_tags" value="@DateTime.Now" smaxlength="400">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="lbl mt0">Trạng thái</label>
+            <div class="wrap_input flex">
+                <label class="radio radio-block">
+                    <input type="radio" name="status" checked="" value="0">
+                    <span class="checkmark"></span>
+                    Kích hoạt
+                </label>
+                <label class="radio radio-block ml-4">
+                    <input type="radio" name="status" value="1">
+                    <span class="checkmark"></span>
+                    Khóa tạm dừng
+                </label>
+            </div>
+        </div>
+
+
+        <div class="form-group align-right mt20 block">
+            <button type="submit" class="btn btn-default" onclick="_Telegrammanagement.OnSaveBot();">
+                <i class="fa fa-floppy-o"></i>Lưu
+            </button>
+            <button type="submit" class="btn btn-default " onclick="$.magnificPopup.close();">
+                <i class="fa fa-minus-circle"></i>Bỏ qua
+            </button>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/modules/telegrammanagement.js"></script>
+}
+else
+{
+    <div class="form-default">
+        <div class="form-group">
+            <label class="lbl">Tên project</label>
+            <div class="wrap_input">
+                <input id="id" value="@Model.Id" type="hidden" />
+                <select class="form-control" id="ProjectType">
+                    <option value="@Model.ProjectType">@Enum.GetName(typeof(LogSource), Model.ProjectType)</option>
+                    <option value="1">API_V2</option>
+                    <option value="2">CMS_V2</option>
+                    <option value="3">FR_V2</option>
+                    <option value="4">THIRD_PARTY</option>
+                    <option value="5">API_V1</option>
+                    <option value="6">CMS_V1</option>
+                    <option value="7">FR_V12</option>
+                    <option value="8">APP_BOT</option>
+                    <option value="9">FRONT_END_B2B</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="lbl">Token</label>
+            <div class="wrap_input">
+                <input type="text" class="form-control" id="token" onchange="_Telegrammanagement.Submit();" value="@Model.Token" maxlength="400">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="lbl">Group id</label>
+            <div class="wrap_input">
+
+                <input type="text" class="form-control" id="groupChatId" onchange="_Telegrammanagement.Submit();" value="@Model.GroupChatId" maxlength="400">
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="lbl">Group log monitor</label>
+            <div class="wrap_input">
+                <input type="text" class="form-control" id="groupLog" maxlength="400"  placeholder="Nhập token và group id để hiển thị thông tin" disabled="disabled" value="@Model.GroupLog" >
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="lbl">Ngày tạo</label>
+            <div class="wrap_input">
+                <input class="flex list-tag form-control" id="createDate" name="weekend_day_tags" value="@Model.CreateDate" smaxlength="400">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="lbl mt0">Trạng thái</label>
+            <div class="wrap_input flex">
+                @if (Model.Status == 0)
+                {
+                    <label class="radio radio-block">
+                        <input type="radio" name="status" checked="checked" value="0">
+                        <span class="checkmark"></span>
+                        Kích hoạt
+                    </label>
+                    <label class="radio radio-block ml-4">
+                        <input type="radio" name="status" value="1">
+                        <span class="checkmark"></span>
+                        Khóa tạm dừng
+                    </label>
+                }
+                else
+                {
+                    <label class="radio radio-block">
+                        <input type="radio" name="status" value="0">
+                        <span class="checkmark"></span>
+                        Kích hoạt
+                    </label>
+                    <label class="radio radio-block ml-4">
+                        <input type="radio" name="status" checked="checked" value="1">
+                        <span class="checkmark"></span>
+                        Khóa tạm dừng
+                    </label>
+                }
+
+            </div>
+        </div>
+
+
+        <div class="form-group align-right mt20 block">
+            <button type="submit" class="btn btn-default" onclick="_Telegrammanagement.OnSaveBot();">
+                <i class="fa fa-floppy-o"></i>Lưu
+            </button>
+            <button type="submit" class="btn btn-default cancel" onclick="$.magnificPopup.close();">
+                <i class="fa fa-minus-circle"></i>Bỏ qua
+            </button>
+        </div>
+    </div>
+}
+
+@section scripts {
+    <script type="text/javascript" src="/modules/telegrammanagement.js"></script>
+    <script src="~/lib/tagify/tagify.polyfills.min.js"></script>
+    <link href="~/lib/tagify/tagify.css" rel="stylesheet" type="text/css" />
+}
+

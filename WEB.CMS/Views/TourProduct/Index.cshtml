@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Quản lý sản phẩm tour";
+}
+@using Entities.Models
+@{
+    var tour_types = (List<AllCode>)ViewBag.TourTypes;
+    var organizing_types = (List<AllCode>)ViewBag.OrganizingTypes;
+    var provinces = (List<Province>)ViewBag.Provinces;
+}
+
+<section style="overflow-x: hidden;">
+    <div class="row-main container">
+        <h2 class="txt_18 bold mb20">Danh sách sản phẩm tour</h2>
+        <div class="flex fillter-donhang">
+            <a type="button" class="btn btn-default mb10 mr-2" href="/TourProduct/AddOrUpdate/0">
+                <i class="fa fa-plus"></i>Thêm mới
+            </a>
+            <div class="form-group mb10 mr-2">
+                <input type="text" class="form-control" id="ip_search_tour_name" placeholder="Mã tour, tên tour" style="width: 150px;">
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                 <select class="" id="sl_search_supplier" multiple style="width: 100%!important;">
+                </select>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                <select id="sl_search_tour_type" multiple style="width: 100%!important;">
+                    @if (tour_types != null && tour_types.Any())
+                    {
+                        foreach (var item in tour_types)
+                        {
+                            <option value="@item.CodeValue">@item.Description</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                <select id="sl_search_organize_type" multiple style="width: 100%!important;">
+                    @if (organizing_types != null && organizing_types.Any())
+                    {
+                        foreach (var item in organizing_types)
+                        {
+                            <option value="@item.CodeValue">@item.Description</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                <select class="select2" id="sl_search_display_website" style="width: 100%!important;">
+                    <option value="-1">Trạng thái hiển thị</option>
+                    <option value="1">Mở </option>
+                    <option value="0">Đóng</option>
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                <select class="" id="sl_search_star" multiple style="width: 100%!important;">
+                    <option value="1">1 Star</option>
+                    <option value="2">2 Star</option>
+                    <option value="3">3 Star</option>
+                    <option value="4">4 Star</option>
+                    <option value="5">5 Star</option>
+                </select>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                <select class="" id="sl_search_start_point" multiple style="width: 100%!important;">
+                    @if (provinces != null && provinces.Any())
+                    {
+                        foreach (var item in provinces)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                <select class="" id="sl_search_end_point" multiple style="width: 100%!important;">
+                    @if (provinces != null && provinces.Any())
+                    {
+                        foreach (var item in provinces)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="mb10 mr-2">
+                <button class="btn-search btn-default mfp-hide" type="button" onclick="_tour_product.Export()" id="btnExport">
+                    <i class="fa fa-file-excel-o" id="icon-export"></i>
+                </button>
+                <button type="button" class="btn btn-default bg-main" onclick="_tour_product.OnSearch()">
+                    <svg class="icon-svg" style="vertical-align: sub;">
+                        <use xlink:href="/images/icons/icon.svg#search"></use>
+                    </svg>
+                    Tìm kiếm
+                </button>
+            </div>
+        </div>
+        <div class="line-bottom mb20"></div>
+        <div class="wrap_bg wrap_bg_no-padding mb20" id="grid_data">
+            <div class="col-xl-12 text-center" style="margin-top:200px">
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+<script type="text/javascript" src="~/modules/tour_product.js"></script>
+}

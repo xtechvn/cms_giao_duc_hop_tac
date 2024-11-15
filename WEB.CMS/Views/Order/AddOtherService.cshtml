@@ -1,0 +1,125 @@
+﻿@{
+    Layout = null;
+    Entities.Models.AllCode? service = (Entities.Models.AllCode?)ViewBag.Service;
+    List<Entities.Models.AllCode?> all_other_serivce = (List<Entities.Models.AllCode?>)ViewBag.AllService;
+
+    Entities.ViewModels.ElasticSearch.UserESViewModel user = (Entities.ViewModels.ElasticSearch.UserESViewModel)ViewBag.User;
+    Entities.Models.OtherBooking? booking = (Entities.Models.OtherBooking?)ViewBag.Booking;
+
+    bool is_order_manual =(bool)ViewBag.IsOrderManual;
+    bool is_allow_to_edit=(bool)ViewBag.AllowToEdit;
+
+}
+
+<style>
+    .stop-scrolling {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .other_booking_service {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+   
+</style>
+<div class="modal fade other_booking_service" id="otherbooking-service" aria-modal="true" role="dialog" style="display: block;">
+    <div class="modal-dialog" style="max-width: 95%;">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Thêm dịch vụ khác</h4>
+                <button type="button" class="close" onclick="_order_detail_other.Close()">×</button>
+            </div>
+            <div id="add-service-other-form-select" data-id="@(booking!=null &&booking.Id>0?booking.Id.ToString():"0")" data-code="@(booking!=null &&booking.ServiceType>0?booking.Id.ToString():"0")" data-service-code="@(booking!=null && booking.ServiceCode!=null && booking.ServiceCode.Trim()!=""?booking.ServiceCode:"")">
+                <div class="modal-body">
+                    <form id="service-other-form">
+                        <div class="row row_min">
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Loại dịch vụ  <sup class="red">*</sup></label>
+                                <select id="add-service-other-select-service" class="select select2 add-service-other-select-service" name="add-service-other-select-service" style="width: 100%;">
+                                    @if (service != null && service.Id > 0)
+                                    {
+                                        <option value="@(service.CodeValue)" selected>@service.Description</option>
+                                    }
+                                    @if (all_other_serivce != null && all_other_serivce.Count > 0)
+                                    {
+                                        foreach (var item in all_other_serivce)
+                                        {
+                                            if (service != null && item.CodeValue == service.CodeValue) continue;
+                                            <option value="@(item.CodeValue)">@item.Description</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Ngày đi <sup class="red">*</sup></label>
+                                <div class="datepicker-wrap" style="width:100%">
+                                    <input class="form-control datepicker-input service-other-date-time-single service-other-from-date" type="text" name="service-other-from-date" value="@(booking!=null ? booking.StartDate.ToString("dd/MM/yyyy HH:mm"):DateTime.Now.ToString("dd/MM/yyyy HH:mm"))">
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Ngày về <sup class="red">*</sup></label>
+                                <div class="datepicker-wrap" style="width:100%">
+                                    <input class="form-control datepicker-input service-other-date-time-single service-other-single-date service-other-to-date" type="text" name="service-other-from-date" value="@(booking!=null ? booking.EndDate.ToString("dd/MM/yyyy HH:mm"):DateTime.Now.ToString("dd/MM/yyyy HH:mm"))">
+
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Điều hành viên <sup class="red">*</sup></label>
+                                <select id="add-service-other-main-staff" class="select select2 add-service-other-main-staff" name="add-service-other-main-staff" style="width: 100%;">
+                                    @if (user != null && user.id > 0)
+                                    {
+                                        <option value="@(user.id)" selected="selected">@(user.fullname + " - "+ user.email)</option>
+                                    }
+
+                                </select>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Chi phí khác </label>
+                                <input id="servicemanual-other-other-amount" class="form-control currency text-right servicemanual-other-other-amount" type="text" name="servicemanual-other-other-amount" placeholder="Nhập chi phí khác" value="@(booking!=null && booking.Id>0 && booking.OthersAmount!=null?((double)booking.OthersAmount).ToString("N0"):"0")">
+
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Hoa hồng CTV </label>
+                                <input id="servicemanual-other-commission" class="form-control currency text-right servicemanual-other-commission" type="text" name="servicemanual-other-commission" placeholder="Nhập chiết khấu" value="@(booking!=null && booking.Id>0&& booking.Commission!=null?((double)booking.Commission).ToString("N0"):"0")">
+
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="bold mb15 txt_14">Bảng kê dịch vụ <small>((Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo))</small></div>
+                            <div class="table-responsive table-gray service-other-packages" data-other-booking-id="">
+                                <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="bold mb10 txt_14">Ghi chú</div>
+                            <div class="form-group">
+                                <textarea class="form-control service-other-note" style="height: 200px;" rows="6">@(booking!=null && booking.Note!=null? booking.Note:"")</textarea>
+                            </div>
+                        </div>
+
+
+                    </form>
+                    <div class="attachment-file-block"  style="padding-top: 20px; margin-top:10px;">
+
+                    </div>
+                    <div style="padding-top: 20px; margin-top:10px;">
+                        <div id="service-other-button-div" class="text-right ">
+                            <div class="btn btn-default btn btn-default cancel" onclick="_order_detail_other.Close()">Bỏ qua</div>
+                            @if (is_order_manual && is_allow_to_edit && (ViewBag.IsLock == null || ViewBag.IsLock == false))
+                            {
+                                <div class="btn btn-default btn btn-summit-service-other" onclick="_order_detail_other.Summit()">@(booking!=null && booking.Id>0?"Sửa":"Thêm")</div>
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+

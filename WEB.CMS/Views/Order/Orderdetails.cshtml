@@ -1,0 +1,174 @@
+﻿@{ object order = new
+    {
+        order_id = ViewBag.OrderId,
+        type = "3",
+    };
+    var OrderStatus = ViewBag.OrderStatus;
+    ViewData["Title"] = "Chi tiết quản lý đơn hàng";
+    List<int> list_status_not_allow = (List<int>)ViewBag.ListOrderStatusNotAllowEdit;
+    List<int> list_status_not_allow_change_detail = (List<int>)ViewBag.ListOrderStatusNotAllowToChangeDetail;
+    List<int> user_role = (List<int>)ViewBag.Role;
+    List<int> list_sale_role = (List<int>)ViewBag.ListSaleRole;
+    bool is_manual_order = (bool)ViewBag.IsManualOrder;
+    bool is_b2c_order = (bool)ViewBag.IsB2COrder;
+    bool has_sale = (bool)ViewBag.HasSaleToProgress;
+    int service_type = (int)ViewBag.OrderServiceType;
+    bool has_decline = (bool)ViewBag.IsDeclineOrder;
+
+
+}
+@using Utilities.Contants
+<section class="main-container">
+    <div class="container">
+        <div class="row">
+            <input id="order_Id" value="@ViewBag.OrderId" style="display:none" />
+            <input id="ProductService" value="@ViewBag.ProductService" style="display:none" />
+            <div class="col-xl-9">
+
+                @*@await Component.InvokeAsync("Client", order)*@
+                <div id="grid_data_ClientDetai">
+                    <partial name="_Skeleton" />
+                </div>
+
+
+                @*@await Component.InvokeAsync("Packages", order)*@
+                <div id="grid_data_Packages">
+                    <partial name="_Skeleton" />
+                </div>
+
+                @*@await Component.InvokeAsync("Payment", order)*@
+                <div id="grid_data_ContractPay">
+                     <partial name="_Skeleton" />
+                </div>
+
+                @*@await Component.InvokeAsync("Pay", order)*@
+                <div id="grid_data_BillVAT">
+                     <partial name="_Skeleton" />
+                </div>
+
+                @*@await Component.InvokeAsync("ListPassenger", order)*@
+                <div id="grid_data_ListPassenger">
+                     <partial name="_Skeleton" />
+                </div>
+
+            </div>
+            <div class="col-xl-3" style="min-width:310px">
+
+                @*@await Component.InvokeAsync("SingleInformation", order)*@
+                <div id="grid_data_SingleInformation">
+                     <partial name="_Skeleton" />
+                </div>
+
+
+                @*@await Component.InvokeAsync("PersonInCharge", order)*@
+                <div id="grid_data_PersonInCharge">
+                     <partial name="_Skeleton" />
+                </div>
+
+
+                @*@await Component.InvokeAsync("File", order)*@
+                <div id="grid_data_File">
+                    <partial name="_Skeleton" />
+                </div>
+
+
+                @*@await Component.InvokeAsync("SystemInformation", order)*@
+                <div id="grid_data_SystemInformation">
+                     <partial name="_Skeleton" />
+                </div>
+
+                <div class="form-group align-right mt20 block pin-btn-bottom ">
+                    <b class="btn btn-default cancel ml-1" onclick="history.back()">Quay lại</b>
+                    @if (ViewBag.IsLock == true && ViewBag.RoleKTTruong == 1)
+                    {
+                        <button type="button" class="btn btn-default ml-1" onclick="_orderDetail.IsLockOrder(@ViewBag.OrderId,'@ViewBag.OrderNo',0)">Mở khóa sổ</button>
+                    }
+                    else
+                    {
+                        @if (ViewBag.PermisionType == 1 && ViewBag.ServiceStatus == 1)
+                        {
+                            <button type="button" class="btn btn-default ml-1" onclick="_orderDetail.UpdateOrderFinishPayment(@ViewBag.OrderId,@ViewBag.ServiceStatus2);">Đơn công nợ</button>
+                        }
+                        @if (OrderStatus != (int)Utilities.Contants.OrderStatus.CREATED_ORDER && OrderStatus != (int)Utilities.Contants.OrderStatus.CONFIRMED_SALE && has_decline)
+                        {
+                            <button type="button" class="btn btn-default ml-1" onclick="_orderDetail.RePushtoOperator(@ViewBag.OrderId)">Chuyển lên điều hành</button>
+                        }
+
+                        @if (list_status_not_allow != null && list_sale_role != null)
+                        {
+                            <button type="button" class="btn btn-default  ml-1 " onclick="_orderDetail.PopupSendEmail()">Báo giá</button>
+                            @if (ViewBag.OrderNo_Type == 0 && ViewBag.FlyingTicketStause == 1)
+                            {
+
+                                <button type="button" class="btn btn-default  ml-1 " onclick="_orderDetail.PopupSendEmail2(@ViewBag.OrderId)">Thông tin chuyến bay</button>
+                            }
+                            @if (list_sale_role.Any(x => user_role.Any(y => y == x)))
+                            {
+
+                                @if (ViewBag.stauseButHUY == 1 && OrderStatus != (int)Utilities.Contants.OrderStatus.FINISHED && OrderStatus != (int)Utilities.Contants.OrderStatus.CANCEL && OrderStatus != (int)Utilities.Contants.OrderStatus.CREATED_ORDER)
+                                {
+                                    <button type="button" class="btn btn-default red ml-1" onclick="_orderDetail.UpdateOrderStatus(@((int)Utilities.Contants.OrderStatus.CANCEL),@ViewBag.OrderId)">Hủy đơn</button>
+                                }
+                            }
+                            @if (ViewBag.btnHuy == 1)
+                            {
+                                <button type="button" class="btn btn-default red ml-1" onclick="_orderDetail.UpdateOrderServiceStatus(@ViewBag.OrderId)">Hủy đơn</button>
+                            }
+                            @if (OrderStatus != (int)Utilities.Contants.OrderStatus.FINISHED)
+                            {
+                                <button type="button" class="btn btn-default ml-1" onclick="_orderDetail.UpdateOrder()">Lưu thông tin</button>
+                            }
+                            @if (is_b2c_order && !has_sale && list_sale_role.Any(x => user_role.Any(y => y == x)) && !(OrderStatus == (int)Utilities.Contants.OrderStatus.FINISHED && OrderStatus == (int)Utilities.Contants.OrderStatus.CANCEL))
+                            {
+                                <button type="button" class="btn btn-default ml-1" onclick="_orderDetail.ChangeOrderSaler(@ViewBag.OrderId,'@ViewBag.OrderNo')">Nhận xử lý đơn hàng</button>
+                            }
+                            @if (OrderStatus == (int)Utilities.Contants.OrderStatus.WAITING_FOR_ACCOUNTANT && (user_role.Contains((int)Utilities.Contants.RoleType.KT) || user_role.Contains((int)Utilities.Contants.RoleType.KeToanTruong) || user_role.Contains((int)Utilities.Contants.RoleType.Admin) || user_role.Contains((int)Utilities.Contants.RoleType.PhoTPKeToan)))
+                            {
+                                <button type="button" class="btn btn-default ml-1" onclick="_orderDetail.UpdateOrderStatus(@((int)Utilities.Contants.OrderStatus.FINISHED),@ViewBag.OrderId)">Kết thúc</button>
+                            }
+                            @if (OrderStatus == (int)Utilities.Contants.OrderStatus.CREATED_ORDER)
+                            {
+                                <button type="button" class="btn btn-default ml-1" onclick="_orderDetail.UpdateOrderStatus(@((int)Utilities.Contants.OrderStatus.DonRac),@ViewBag.OrderId)">Đơn rác</button>
+                            }
+                            @if (user_role.Contains((int)RoleType.Admin) && OrderStatus != (int)Utilities.Contants.OrderStatus.CREATED_ORDER && OrderStatus != (int)Utilities.Contants.OrderStatus.CONFIRMED_SALE)
+                            {
+                                <button type="button" class="btn btn-default ml-1" onclick="_orderDetail.PopupCCTT('@ViewBag.OrderNo')">Cập nhật trạng thái đơn hàng</button>
+                            }
+
+                        }
+                        @if (ViewBag.RoleKTTruong == 1 && ViewBag.OrderClosing == true)
+                        {
+                            <button type="button" class="btn btn-default ml-1" onclick="_orderDetail.IsLockOrder(@ViewBag.OrderId,'@ViewBag.OrderNo',1)">khóa sổ</button>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!--Back to top-->
+<a href="javascript:;" id="to_top"><i class="ic ic-caret-up"></i></a>
+<div class="mask-content"></div>
+
+@section scripts {
+
+    <script type="text/javascript" src="~/modules/add_invoice_request.js" asp-append-version="true"></script>
+    @*<script type="text/javascript" src="~/modules/invoice_request.js" asp-append-version="true"></script>*@
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js" asp-append-version="true"></script>
+    @*<script type="text/javascript" src="~/modules/orderCMS.js" asp-append-version="true"></script>*@
+    <script type="text/javascript" src="~/modules/orderCMSDetail.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/modules/SetServiceDetail.js" asp-append-version="true"></script>
+
+    <script type="text/javascript" src="~/modules/order_detail.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/modules/order_detail_common.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/modules/order_detail_html.js" asp-append-version="true"></script>
+
+    <script type="text/javascript" src="~/modules/order_detail_hotel.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/modules/order_detail_fly.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/modules/order_detail_tour.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/modules/order_detail_other.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/modules/order_detail_vinwonder.js" asp-append-version="true"></script>
+    <script>_order_detail_create_service.Initialization();</script>
+}

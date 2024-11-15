@@ -1,0 +1,86 @@
+﻿@{ ViewData["Title"] = "Báo cáo giao dịch - Adavigo";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+<section class="main-container" style="overflow-x: hidden;">
+    <div class="row-main container">
+        <div class="head-title-new">
+            <h2 class="title-cate bold mb20">Báo cáo giao dịch theo ngày</h2>
+            <div class="flex gap10 mb20">
+                <div class="relative down-up right">
+                    <a href="javascript:;" class="btn btn-default onclick btn-default2" id="btn_check_radio">
+                        <svg class="icon-svg mr-1">
+                            <use xlink:href="#Calendar"></use>
+                        </svg>
+                        <span style="color:white;" id="check_radio_name">Hôm nay</span>
+                        <svg class="icon-svg ml-1">
+                            <use xlink:href="#CaretDown"></use>
+                        </svg>
+                    </a>
+                    <div class="form-down text-nowrap select-option" id="form_down_check_radio" style="display: none;">
+                        <ul class="scroll-inner mb10">
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="1" checked="">
+                                    <span class="checkmark"></span>
+                                    Hôm nay
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="2">
+                                    <span class="checkmark"></span>
+                                    Hôm qua
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="3">
+                                    <span class="checkmark"></span>
+                                    Tuần trước
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="4">
+                                    <span class="checkmark"></span>
+                                    Tháng này
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="5">
+                                    <span class="checkmark"></span>
+                                    Tháng trước
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="6">
+                                    <span class="checkmark"></span>
+                                    Quý này
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="7">
+                                    <span class="checkmark"></span>
+                                    Quý trước
+                                </label>
+                            </li>
+                        </ul>
+                        <div class="">
+                            <a href="javascript:;" onclick="_ReportTransactionSMs.getList()" class="ml-2 btn-default">Áp dụng</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white pd15 radius-10 mb20" id="grid_data_Search">
+            
+        </div>
+    </div>
+       
+</section>
+@section scripts {
+    <script type="text/javascript" src="~/modules/ReportTransactionSMs.js"></script>
+}

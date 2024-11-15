@@ -1,0 +1,106 @@
+﻿<section class="main-container">
+    <div class="row-main container">
+        <div class="head-title-new">
+            <h2 class="title-cate bold mb20">Tổng quan</h2>
+            <div class="flex gap10 mb20">
+                <input class="form-control" style="max-width:120px" id="ReceiveTime" type="text" name="ReceiveTime" value="@DateTime.Now.Year" placeholder="Thời gian bắt đầu" />
+
+                <div class="relative down-up right">
+                    <a href="javascript:;" class="btn btn-default onclick btn-default2" id="btn_check_radio">
+                        <svg class="icon-svg mr-1">
+                            <use xlink:href="#Calendar"></use>
+                        </svg>
+                        <span style="color:white;">Tài khoản</span>
+                        <svg class="icon-svg ml-1">
+                            <use xlink:href="#CaretDown"></use>
+                        </svg>
+                    </a>
+                    <div class="form-down text-nowrap select-option" id="form_down_check_radio" style="display: none; min-width: 290px;">
+
+                        <ul class="scroll-inner mb10" id="List_AC">
+                        </ul>
+
+                        <div class="">
+                            <a href="javascript:;" onclick="_ReportTransactionSMsByYear.Search()" class="ml-2 btn-default">Áp dụng</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="mb20">
+                <div class="bg-white pd15 radius-10">
+                    <h2 class="txt_16 mb15">Dòng tiền hàng tháng</h2>
+                    <div class="col-xl-12">
+                        <canvas id="revenuChart" class="chartjs-render-monitor"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="table-responsive table-new bg-white pd15 radius-10 mb20">
+            <table class="table table-nowrap mb0">
+                <thead>
+                    <tr id="Row_th">
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="tbody_Row_tr">
+                    </tr>
+                    <tr id="tbody_Row_tr2">
+                    </tr>
+                    <tr id="tbody_Row_tr3">
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-white pd15 radius-10">
+            <h2 class="txt_16 mb20">
+                Tổng thu tháng này
+                <span class="tooltip-new">
+                    <svg class="icon-svg">
+                        <use xlink:href="#Question"></use>
+                    </svg>
+
+                </span>
+            </h2>
+            <div>
+                <div class="mb20">
+
+                    <div class="">
+                        <div class="grid grid__3 center">
+                            <div class="item" style="text-align:left;">
+                                Tiền vào
+                                <div class="money txt_20 bold"><span id="total_Amount_TransactionSMs">0</span> đ</div>
+                            </div>
+                            <div class="item">
+                                Tiền ra
+                                <div class="money txt_20 bold"><span id="total_Amount_Payment">0</span> đ</div>
+                            </div>
+                            <div class="item">
+                                Balance
+                                <div class="money txt_20 bold"> <span id="total_Amount">0</span> đ</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+</section>
+@section scripts {
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+    <script type="text/javascript" src="/lib/Chart/Chart.js"></script>
+    <script type="text/javascript" src="/lib/Chart/Chart.PieceLabel.js"></script>
+    <script type="text/javascript" src="~/modules/ReportTransactionSMsByYear.js"></script>
+    <script>
+        $('input[name="ReceiveTime"]').Zebra_DatePicker({
+            view: 'years',
+            format: 'Y'
+        });
+    </script>
+}

@@ -1,0 +1,99 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.ViewModels
+@using Entities.ViewModels.Tour
+@using Utilities
+@model GenericViewModel<TourProductGridModel>
+
+<div class="table-responsive table-default table-gray">
+    <table class="table table-nowrap">
+        <thead>
+            <tr>
+                <th style="min-width: 30px;">STT</th>
+                <th>Mã Tour</th>
+                <th style="min-width: 250px;">Tên Tour</th>
+                <th>Nhà cung cấp</th>
+                <th>Loại</th>
+                <th>Hình thức</th>
+                <th>Hiển thị</th>
+                <th>Người tạo</th>
+                <th>Ngày tạo</th>
+                <th>Người cập nhật</th>
+                <th>Ngày cập nhật</th>
+                <th>Trạng thái</th>
+                <th style="min-width: 100px;">Tác vụ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ListData != null && Model.ListData.Count > 0)
+            {
+                var counter = (Model.CurrentPage - 1) * Model.PageSize;
+                foreach (var item in Model.ListData)
+                {
+                    counter++;
+                    <tr>
+                        <td>@counter</td>
+                        <td>@item.id</td>
+                        <td>
+                            <div>
+                                <a href="/TourProduct/AddOrUpdate/@item.id" class="blue txt_14">
+                                    @item.TourName
+                                </a>
+                            </div>
+                        </td>
+                        <td>@item.FullName</td>
+                        <td>@item.TourTypeName</td>
+                        <td>@item.OrganizingTypeName</td>
+                        <td>@(item.IsDisplayWeb == 1 ? "Mở" : "Đóng")</td>
+                        <td>@item.UserCreate</td>
+                        <td>@(item.CreatedDate.HasValue ? item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm") : string.Empty)</td>
+                        <td>@item.UserUpdate</td>
+                        <td>@(item.UpdatedDate.HasValue ? item.UpdatedDate.Value.ToString("dd/MM/yyyy HH:mm") : string.Empty)</td>
+                        <td>
+                            @if (item.Status == 0)
+                            {
+                                <span class="green">Đã đăng</span>
+                            }
+                            else if (item.Status == 7)
+                            {
+                                <span class="red">Lưu nháp</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="blue" href="/TourProduct/AddOrUpdate/@item.id"><i class="fa fa-edit"></i></a> &nbsp;&nbsp;
+                            <a class="red" href="#" onclick="_tour_product.OnDelete('@item.id')"><i class="fa fa-times"></i></a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="12" class="text-center">
+                        <div class="search-null center mt40 mb40">
+                            <div class="mb24">
+                                <img src="/images/graphics/icon-search.png" alt="">
+                            </div>
+                            <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+                            <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@await Component.InvokeAsync("Paging", new
+{
+    pageModel = new Paging()
+    {
+        TotalRecord = Model.TotalRecord,
+        TotalPage = Model.TotalPage,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        RecordName = "kết quả tìm kiếm",
+        PageAction = "_tour_product.OnPaging({0})"
+    }
+})

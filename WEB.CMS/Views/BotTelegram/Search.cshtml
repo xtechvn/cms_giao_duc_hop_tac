@@ -1,0 +1,53 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.Models
+@using Entities.ViewModels
+@using Utilities.Contants
+@model GenericViewModel<TelegramDetail>
+<table class="table table-nowrap">
+    <thead>
+        <tr class="bg-main2">
+            <th>STT</th>
+            <th>Group Log Monitor</th>
+            <th>Token</th>
+            <th>group chat id</th>
+            <th>Ngày tạo</th>
+            <th>Project Name</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.ListData.Count > 0)
+        {
+            var counter = (Model.CurrentPage - 1) * Model.PageSize;
+            foreach (var item in Model.ListData)
+            {
+                counter++;
+                <tr class="line-item">
+                    <td class="center"> @counter </td>
+
+                    <td>@item.GroupLog</td>
+                    <td><a class="blue" href="javascript:;" onclick="_Telegrammanagement.Updata('@item.Id')"> @item.Token</a></td>
+                    <td>@item.GroupChatId</td>
+                    <td>@(item.CreateDate == DateTime.MinValue ?"": item.CreateDate.ToString("dd/MM/yyyy HH:mm")) </td>
+                    <td>@Enum.GetName(typeof(LogSource), item.ProjectType)</td>
+                    <td>
+                        @(item.Status == 0 ? "Đang chạy": "Khóa/tạm dừng")
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+    @await Component.InvokeAsync("Paging", new
+       {
+           pageModel = new Paging()
+           {
+               TotalRecord = Model.TotalRecord,
+               TotalPage = Model.TotalPage,
+               CurrentPage = Model.CurrentPage,
+               PageSize = Model.PageSize,
+               RecordName = "Bot Telegram",
+               PageAction = "_Telegrammanagement.OnPaging('{0}');"
+           }
+       })

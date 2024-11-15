@@ -1,0 +1,237 @@
+﻿@using Utilities.Contants
+@{
+    Entities.Models.HotelBooking booking = (Entities.Models.HotelBooking)ViewBag.HotelBooking;
+    Entities.ViewModels.HotelESViewModel hotel = (Entities.ViewModels.HotelESViewModel)ViewBag.Hotel;
+    Entities.ViewModels.ElasticSearch.UserESViewModel? user = (Entities.ViewModels.ElasticSearch.UserESViewModel?)ViewBag.User;
+    bool is_order_manual = (bool)ViewBag.IsOrderManual;
+    bool is_allow_to_edit = (bool)ViewBag.AllowToEdit;
+    var client = (Entities.Models.Client)ViewBag.client;
+}
+<section class="main-container clearfix">
+    <h2 class="txt_18 bold mb20">Kiểm tra quỹ phòng</h2>
+    @if (client != null)
+    {
+        <div class="modal-body border pd-16 bg-white mb20 radius10">
+            <div class="bold mb15">Thông tin khách hàng</div>
+            <div class="info-basic flex align-center">
+                <div class="ava">
+                    <span class="thumb_img thumb_5x5">
+                        @if (client.Avartar != null)
+                        {
+                            <img src="@client.Avartar">
+                        }
+                        else
+                        {
+                            <img src="/images/graphics/user.jpeg">
+                        }
+                    </span>
+                </div>
+                <div class="content">
+                    <div class="name">@(client.ClientName)</div>
+                    @client.Phone - @client.Email
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+
+        <div class="modal-body border pd-16 bg-white mb20 radius10">
+            <div class="bold mb15">Thông tin khách hàng</div>
+            <div class="info-basic flex align-center">
+                <div class="ava">
+                    <span class="thumb_img thumb_5x5">
+                        <img src="/images/graphics/user.jpeg">
+                    </span>
+                </div>
+                <div class="content">
+                    <div class="name">Khách chưa được tạo tài khoản</div>
+                </div>
+            </div>
+        </div>
+    }
+    <!-- Modal body -->
+    <div class="modal-body bg-white">
+        @if (booking.Id > 0)
+        {
+            <form id="form_add_hotel_service" class="form_add_hotel_service" data-service-code="@(booking.ServiceCode==null?"":booking.ServiceCode)" data-booking-id="@booking.Id">
+                <input id="OrderId" value="@booking.OrderId" style="display:none" />
+                <div class="border pd10">
+                    <div class="flex-auto mb15">
+                        <div class="form-group hotel">
+                            <label class="lbl">Khách sạn <sup class="red">*</sup></label>
+                            <div class="wrap_input">
+
+                                <select class="select2 client-select" id="servicemanual-hotel-name" style="width:100% !important">
+                                    <option value="@(hotel.hotelid)" selected="selected">@(hotel.name)</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group number-people" style="min-width: 100px;width: 100px;">
+                            <label class="lbl">Số người <sup class="red">*</sup></label>
+                            <p type="number" class="form-control servicemanual-hotel-numberOfPeople" data-toggle="collapse" href="#collapseGuest" id="servicemanual-hotel-numberOfPeople">
+                                @(booking.NumberOfAdult+booking.NumberOfChild+booking.NumberOfInfant)
+                            </p>
+                            <div class="wrap_input" style="position:absolute; background-color:white;">
+                                <div class="info-passenger collapse" id="collapseGuest">
+                                    <div class="scrollbar-height" id="block_room_search_content">
+                                        <div class="row">
+                                            <div class="col-4 text-center adult">
+                                                <div class="sl_giohang">
+                                                    <div class="input-group-prepend">
+                                                        <div class="giam_sl minus-btn">-</div>
+                                                    </div>
+                                                    <input type="number" class="qty_input" value="@booking.NumberOfAdult" min="0">
+                                                    <div class="input-group-prepend">
+                                                        <div class="tang_sl plus-btn">+</div>
+                                                    </div>
+                                                </div>
+                                                <div class="color-gray txt_13">Người lớn</div>
+                                            </div>
+                                            <div class="col-4 text-center baby">
+                                                <div class="sl_giohang">
+                                                    <div class="input-group-prepend">
+                                                        <div class="giam_sl minus-btn">-</div>
+                                                    </div>
+                                                    <input type="number" class="qty_input" value="@booking.NumberOfChild" min="0">
+                                                    <div class="input-group-prepend">
+                                                        <div class="tang_sl plus-btn">+</div>
+                                                    </div>
+                                                </div>
+                                                <div class="color-gray txt_13">Trẻ em <br>(4-12 tuổi)</div>
+                                            </div>
+                                            <div class="col-4 text-center infant">
+                                                <div class="sl_giohang">
+                                                    <div class="input-group-prepend">
+                                                        <div class="giam_sl minus-btn">-</div>
+                                                    </div>
+                                                    <input type="number" class="qty_input" value="@booking.NumberOfInfant" min="0">
+                                                    <div class="input-group-prepend">
+                                                        <div class="tang_sl plus-btn">+</div>
+                                                    </div>
+                                                </div>
+                                                <div class="color-gray txt_13">Em bé <br>(0-4 tuổi)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group number-hotel" style="min-width: 100px;width: 100px;">
+                            <label class="lbl">Số phòng <sup class="red">*</sup></label>
+                            <div class="wrap_input">
+                                <input type="number" max="100" min="1" class="form-control servicemanual-hotel-numberOfRooms" id="servicemanual-hotel-numberOfRooms" name="servicemanual-hotel-numberOfRooms" value="@booking.NumberOfRoom">
+                            </div>
+                        </div>
+                        <div class="form-group checkin-hotel" style="min-width: 150px;width: 150px;">
+                            <label class="lbl">Ngày Checkin <sup class="red">*</sup></label>
+                            <input id="servicemanual_hotel_checkin" class="form-control date servicemanual_hotel_checkin" type="text" name="servicemanual_hotel_date" value="@booking.ArrivalDate.ToString("dd/MM/yyyy")">
+                        </div>
+                        <div class="form-group checkout-hotel" style="min-width: 150px;width: 150px;">
+                            <label class="lbl">Ngày Checkout <sup class="red">*</sup></label>
+                            <input id="servicemanual_hotel_checkout" class="form-control date servicemanual_hotel_checkout" type="text" name="servicemanual_hotel_date" value="@booking.DepartureDate.ToString("dd/MM/yyyy")">
+
+                        </div>
+                        <div class="form-group operator" style="min-width: 200px;width: 200px;">
+                            <label class="lbl">Điều hành viên <sup class="red">*</sup></label>
+                            <div class="wrap_input">
+                                <select class="select2 main-staff-hotel-select" id="main-hotel-staff" style="width:100% !important">
+                                    @if (user != null && user.id > 0)
+                                    {
+                                        <option value="@(user.id)" selected="selected">@(user.fullname + " - "+ user.email)</option>
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-auto mb15" style=" justify-content: left;">
+                        <div class="form-group other-amount" style="min-width: 200px;width: 200px; ">
+                            <label class="lbl" style="width: 100%;">Chi phí khác </label>
+                            <div class="wrap_input">
+                                <input id="servicemanual-hotel-other-amount" class="form-control currency text-right servicemanual-hotel-other-amount" type="text" name="servicemanual-hotel-other-amount" placeholder="Nhập chi phí khác" value="@(booking.TotalOthersAmount!=null ? ((double)booking.TotalOthersAmount).ToString("N0"):"0")">
+                            </div>
+                        </div>
+                        <div class="form-group discount" style="min-width: 200px;width: 200px;">
+                            <label class="lbl" style="width: 100%;">Hoa hồng CTV</label>
+                            <div class="wrap_input">
+                                <input id="servicemanual-hotel-discount" class="form-control currency text-right servicemanual-hotel-discount" type="text" name="servicemanual-hotel-discount" placeholder="Nhập chiết khấu" value="@(booking.TotalDiscount!=null ? ((double)booking.TotalDiscount).ToString("N0"):"0")">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="txt_14 bold mb10">Bảng kê dịch vụ phòng <small>(Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo)</small></div>
+                    <div class="table-responsive table-gray" id="servicemanual_hotel_roomdiv">
+                        <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+                    </div>
+                    <div class="txt_14 bold mb10">Bảng kê phụ thu, dịch vụ khác <small>(Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo)</small></div>
+                    <div class="table-responsive table-gray" id="servicemanual_hotel_roompackagesdiv">
+                        <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+
+                    </div>
+                    <div class="txt_14 bold mb10"></div>
+                    <div class="table-responsive table-gray" id="servicemanual_hotel_total_amount_block">
+                        <div class="row">
+                            <div class="col-6"></div>
+                            <div class="col-3 bold text-right">Tổng lợi nhuận dịch vụ: &nbsp;&nbsp;&nbsp;&nbsp;<strong class="service-manual-hotel-total-service-profit">0</strong></div>
+                            <div class="col-3 bold text-right">Tổng tiền dịch vụ:  &nbsp;&nbsp;&nbsp;&nbsp;<strong class="service-manual-hotel-total-service-amount">0</strong> </div>
+                        </div>
+                    </div>
+                    <div id="servicemanual-hotel-contact-clientdiv">
+                        <div class="bold txt_14 mb10">Ghi chú</div>
+                        <div class="form-group">
+                            <textarea class="form-control service-hotel-note" style="height: 200px;">@(booking != null&& booking.Note!=null? booking.Note:"")</textarea>
+                        </div>
+                        <div class="bold mb15 txt_14">Danh sách đoàn</div>
+                        <div class="table-responsive table-gray" id="servicemanual_hotel_guestdiv">
+                            <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+                        </div>
+                    </div>
+                    @*<div class="attachment-file-block border pd10">
+                            <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+                        </div>
+                        <div class="text-right" id="summit-button-div" style="margin-top: 10px;">
+                            <div class="btn btn-default btn btn-default cancel" onclick="_order_detail_hotel.Close()">Hủy</div>
+                            @if (is_order_manual && is_allow_to_edit && ViewBag.IsLock == false)
+                            {
+                                <div class="btn btn-default btn_summit_service_hotel" id="btn_summit_service_hotel" onclick="_order_detail_hotel.Summit()">Sửa</div>
+
+                            }
+                        </div>
+                    *@
+                </div>
+            </form>
+        }
+
+    </div>
+    <div class="modal-body flex justify-between medium gap_10">
+        <a href="/RequestHotelBooking/Index" class="btn-default gray" style="padding:0  12px">
+            <span>Quay lại</span>
+        </a>
+        <div>
+            @if (ViewBag.status == (int)(RequestStatus.TAO_MOI))
+            {
+                <a href="javascripts:;" class="btn btn-default blue ml-2" id="btn_summit_service_hotel" onclick="_request_hotel_detail.UpdateStatus(1,@ViewBag.id)">Nhận xử lý</a>
+            }
+            @if (ViewBag.status != (int)(RequestStatus.HOAN_THANH) && ViewBag.status != (int)(RequestStatus.HUY))
+            {
+                <a href="javascripts:;" class="btn btn-default red ml-2" id="btn_summit_service_hotel" onclick="_request_hotel_detail.UpdateStatus(4,@ViewBag.id)">Hủy</a>
+            }
+            <a href="javascripts:;" class="btn btn-default cancel ml-2" style="background: #23C16B;border-color: #23C16B;" id="btn_summit_service_hotel" onclick="_request_hotel_detail.Summit()">
+                Lưu thông tin
+            </a>
+            <a href="javascripts:;" class="btn btn-default blue ml-2" id="btn_summit_service_hotel" onclick="_request_hotel_detail.Summit(); _request_hotel_detail.UpdateStatus(2,@ViewBag.id);">Gửi thông tin cho khách</a>
+        </div>
+
+    </div>
+
+</section>
+<script type="text/javascript" src="~/modules/order_detail_hotel.js"></script>
+<script type="text/javascript" src="~/modules/order_detail_common.js"></script>
+<script type="text/javascript" src="~/modules/order_detail_html.js"></script>
+
+@section scripts {
+
+    <script type="text/javascript" src="~/modules/request_hotel_detail.js"></script>
+
+}

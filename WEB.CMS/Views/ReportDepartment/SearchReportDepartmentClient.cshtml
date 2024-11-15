@@ -1,0 +1,73 @@
+﻿@using Entities.ViewModels
+@using Entities.ViewModels.Report
+@model GenericViewModel<SearchReportDepartmentClient>
+@{ 
+    int index = 0;
+  
+    if (Model != null && Model.ListData != null && Model.ListData.Count > 0)
+    {
+        index = (Model.CurrentPage - 1) * Model.PageSize;
+    }
+}
+@if (Model.ListData == null || Model.ListData.Count <= 0)
+{
+<div class="search-null center mb40">
+    <div class="mb24">
+        <img src="/images/graphics/icon-search.png" alt="">
+    </div>
+    <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+    <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+</div> }
+else
+{
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th  rowspan="2"style="width: 50px;">STT</th>
+                    <th rowspan="2" style="width: 140px;">Khách hàng</th>
+                    <th  rowspan="2"style="width: 75px;text-align:right; ">Số lượng đơn hàng</th>
+                    <th  colspan="2" style="text-align:center">Tổng doanh thu (có VAT)</th>
+                    <th  rowspan="2"style="width: 100px; text-align: right;">Lợi nhuận (có VAT)</th>
+          
+                </tr>
+                <tr>
+                    <th style="width: 100px; text-align: right;">Giá thu khách hàng</th>
+                    <th style="width: 100px; text-align: right;">Giá thanh toán NCC</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ListData)
+                {
+                    
+                    <tr>
+                        <td>@(++index)</td>
+                        <td>@item.ClientName</td>
+                        <td style="text-align: right;">@item.TotalOrder</td>
+                        <td style="text-align: right;">@item.Amount.ToString("N0")</td>
+                        <td style="text-align: right;">@item.Price.ToString("N0")</td>
+                        <td style="text-align: right;">@item.Profit.ToString("N0")</td>
+                     
+                     
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    @await Component.InvokeAsync("PagingNew", new
+    {
+        pageModel = new Paging()
+        {
+            TotalRecord = Model.TotalRecord,
+            TotalPage = Model.TotalPage,
+            CurrentPage = Model.CurrentPage,
+            PageSize = Model.PageSize,
+            RecordName = "kết quả",
+            PageAction = "_ReportDepartment.OnPaging({0})",
+            PageSelectPageSize = "_ReportDepartment.onSelectPageSize()",
+        }
+    })
+</div>}

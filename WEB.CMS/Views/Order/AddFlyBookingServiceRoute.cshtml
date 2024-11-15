@@ -1,0 +1,37 @@
+﻿@{
+    Layout = null;
+    string tilte = (string)ViewBag.tilte;
+    Entities.Models.FlyBookingDetail? flybooking_detail = (Entities.Models.FlyBookingDetail?)ViewBag.fly_detail;
+     Entities.ViewModels.ElasticSearch.UserESViewModel? user = (Entities.ViewModels.ElasticSearch.UserESViewModel?)ViewBag.User;
+    Entities.Models.Airlines? airline = (Entities.Models.Airlines?)ViewBag.airline;
+    int leg = (int)ViewBag.leg;
+
+}
+
+<div class="bold mb10 txt_14" style="margin-bottom:15px;margin-top:15px;">@(leg == 0 ? "Chiều đi" : "Chiều về") <sup class="red">*</sup></div>
+<!-- Modal body -->
+<div class="add-service-fly-form-1route" data-leg="@leg" data-route-name="@(leg == 0 ? "Chiều đi" : "Chiều về")" data-flybooking-id="@(flybooking_detail != null ? flybooking_detail.Id : 0) ">
+    <div class="row row_min">
+        <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+            <label class="lbl mb5">Hãng bay <sup class="red">*</sup></label>
+            <select class="select2 service-fly-route-airline" name="service-fly-route-airline" style="width:100% !important">
+                @if (airline != null)
+                {
+                <option value="@(airline.Code)" selected="selected">@(airline.Code) (@(airline.NameVi))</option>
+
+                }
+            </select>
+        </div>
+        <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+            <label class="lbl mb5">Mã chuyến bay </label>
+            <input type="text" class="form-control service-fly-route-flycode" name="service-fly-route-flycode" value="@(flybooking_detail != null? flybooking_detail.Flight:"" )">
+        </div>
+        <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+            <label class="lbl mb5">Mã đặt chỗ </label>
+            <input type="text" class="form-control service-fly-route-bookingcode" name="service-fly-route-bookingcode"value="@(flybooking_detail != null? flybooking_detail.BookingCode:"" )">
+        </div>
+       
+    </div>
+  
+    
+</div>

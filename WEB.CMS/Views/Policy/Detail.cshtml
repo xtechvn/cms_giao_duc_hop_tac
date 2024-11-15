@@ -1,0 +1,229 @@
+﻿@using Entities.Models
+@using Entities.ViewModels.Policy
+@{
+    var PermisionType = (List<AllCode>)ViewBag.PermisionType;
+    var DebtType = (List<AllCode>)ViewBag.DebtType;
+    var ClientType = (List<AllCode>)ViewBag.ClientType;
+    int index = 0;
+    int index2 = 0;
+}
+@model List<PolicyDtailViewModel>
+<style>
+
+    .Zebra_DatePicker_Icon_Wrapper {
+        width: 100% !important;
+    }
+    .white-popup {
+        max-width: 1200px !important;
+    }
+</style>
+@if (Model == null)
+{
+    <form id="form_add_Policy" onsubmit="return false">
+        <div class="grid grid-don-hang gap10 mb20">
+            <div class="grid-item border">
+
+                <div class="form-default3 pd10">
+                    <div class="row">
+                        <input type="text" class="form-control PolicyName" id="PolicyId" name="PolicyId" value="0" style="display:none">
+                        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Tên <sup class="red">*</sup></label></div>
+                        <div class="col-md-8 mb10">
+                            <input type="text" class="form-control PolicyName" id="PolicyName" name="PolicyName">
+                        </div>
+                        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Hiệu lực từ ngày </label><sup class="red">*</sup></div>
+                        <div class="col-md-8 mb10" style="width:100% !important;">
+                            <input type="text" class="form-control  input EffectiveDate" id="EffectiveDate" name="EffectiveDate">
+                        </div>
+                        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Nhóm khách hàng <sup class="red">*</sup></label></div>
+                        <div class="col-md-8 mb10">
+                            <select class="select2 form-control PermisionType" id="PermisionType" name="PermisionType" onchange="_Policy.OnChange()" style="width: 100%;">
+                                <option value="">Tất cả nhóm khách hàng</option>
+                                @if (PermisionType != null)
+                                {
+                                    foreach (var item in PermisionType)
+                                    {
+                                        <option value="@item.CodeValue">@item.Description</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="table-responsive table-gray" id="data_body">
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+            <button type="submit" onclick="_Policy.OnCreate()" class="btn btn-default">Thêm</button>
+        </div>
+    </form>
+
+}
+else
+{
+    <form id="form_add_Policy" onsubmit="return false">
+        <div class="grid grid-don-hang gap10 mb20">
+            <div class="grid-item border">
+
+                <div class="form-default3 pd10">
+                    <div class="row">
+                        <input type="text" class="form-control PolicyName" id="PolicyId" name="PolicyId" value="@Model[0].PolicyId" style="display:none">
+                        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Tên <sup class="red">*</sup></label></div>
+                        <div class="col-md-8 mb10">
+                            <input type="text" class="form-control PolicyName" id="PolicyName" name="PolicyName" value="@Model[0].PolicyName">
+                        </div>
+                        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Hiệu lực từ ngày </label><sup class="red">*</sup></div>
+                        <div class="col-md-8 mb10" style="width:100% !important;">
+                            <input type="text" class="form-control  input EffectiveDate" id="EffectiveDate" name="EffectiveDate" value="@(Convert.ToDateTime(Model[0].EffectiveDate).ToString("dd/MM/yyyy"))">
+                        </div>
+                        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Nhóm khách hàng <sup class="red">*</sup></label></div>
+                        <div class="col-md-8 mb10">
+                            <select class="select2 form-control PermisionType" id="PermisionType" name="PermisionType" onchange="_Policy.OnChange()" style="width: 100%;">
+                                <option value="">Tất cả nhóm khách hàng</option>
+                                @if (PermisionType != null)
+                                {
+                                    foreach (var item in PermisionType)
+                                    {
+                                        if (item.CodeValue == Model[0].PermissionType)
+                                        {
+                                            <option selected="selected" value="@item.CodeValue">@item.Description</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.CodeValue">@item.Description</option>
+                                        }
+
+                                    }
+                                }
+
+
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="table-responsive table-gray" id="data_body">
+                        @if (Model[0].PermissionType == 1)
+                        {
+                            <table class="table table-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Loại khách hàng</th>
+                                        <th>Loại công nợ<sup class="red">*</sup></th>
+                                        <th>Hạn mức công nợ VMB<sup class="red">*</sup></th>
+                                        <th>Hạn mức công nợ KS<sup class="red">*</sup></th>
+                                        <th>Hạn mức công nợ Tour<sup class="red">*</sup></th>
+                                        <th>Hạn mức công nợ dịch vụ khác<sup class="red">*</sup></th>
+                                        <th>Hạn mức công nợ VinWonderDebtAmount<sup class="red">*</sup></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (var item in Model)
+                                    {
+
+                                    <tr class="servicemanual-policy-row">
+                                        <td class="servicemanual-policy-package">@(++index) <input class="form-control servicemanual-Policy-Id" type="text" name="servicemanual-Policy-Id" value="@item.Id" style="display:none"></td>
+                                        
+                                        <td><input class="form-control servicemanual-Policy-Clienttype" type="text" name="servicemanual-Policy-Clienttype" value="@item.ClientType" style="display:none"> @item.ClientTypeName</td>
+
+                                        <td>
+                                            <select class="form-control servicemanual-Policy-DebtType" onchange="_Policy.onEdit(@index2)" type="text" name="servicemanual-Policy-DebtType">
+                                                <option value="">Tất cả loại công nợ</option>
+                                                @foreach (var i in DebtType)
+                                                {
+                                                    if (i.CodeValue == Convert.ToInt32(item.DebtType))
+                                                    {
+                                                        <option selected="selected" value="@i.CodeValue">@i.Description</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@i.CodeValue">@i.Description</option>
+
+                                                    }
+
+                                                }
+                                            </select>
+                                        </td>
+                                        <td><input  onchange="_Policy.onEdit(@index2)"value="@item.ProductFlyTicketDebtAmount.ToString("###,###")" class="form-control text-right currency servicemanual-Policy-ProductFlyTicketDebtAmount" type="text" name="servicemanual-Policy-ProductFlyTicketDebtAmount"></td>
+                                        <td><input onchange="_Policy.onEdit(@index2)"value="@item.HotelDebtAmout.ToString("###,###")" type="text" class="form-control text-right currency servicemanual-Policy-HotelDebtAmout" name=" servicemanual-Policy-HotelDebtAmout"></td>
+                                        <td><input onchange="_Policy.onEdit(@index2)"value="@item.TourDebtAmount.ToString("###,###")" type="text" class="form-control text-right currency servicemanual-Policy-TourDebtAmount" name=" servicemanual-Policy-TourDebtAmount"></td>
+                                        <td><input onchange="_Policy.onEdit(@index2)"value="@item.TouringCarDebtAmount.ToString("###,###")" type="text" class="form-control text-right currency servicemanual-Policy-TouringCarDebtAmount" name=" servicemanual-Policy-TouringCarDebtAmount"></td>
+                                        <td><input onchange="_Policy.onEdit(@index2)"value="@item.VinWonderDebtAmount.ToString("###,###")" type="text" class="form-control text-right currency servicemanual-Policy-VinWonderDebtAmount" name=" servicemanual-Policy-VinWonderDebtAmount"></td>
+                                        
+                                    </tr>
+                                    <div style="display:none">@(index2++)</div>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        @if (Model[0].PermissionType == 2)
+                        {
+                            <table class="table table-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Loại khách hàng</th>
+
+                                        <th>Hạn mức công nợ VMB<sup class="red">*</sup></th>
+                                        <th>Hạn mức công nợ KS<sup class="red">*</sup></th>
+                                        <th>Hạn mức công nợ Tour<sup class="red">*</sup></th>
+                                        <th>Hạn mức công nợ dịch vụ khác<sup class="red">*</sup></th>
+                                        <th>Hạn mức công nợ VinWonderDebtAmount<sup class="red">*</sup></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (var item in Model)
+                                    {
+
+                                    <tr class="servicemanual-policy-row">
+                                        <td class="servicemanual-policy-package">@(++index) <input class="form-control servicemanual-Policy-Id" type="text" name="servicemanual-Policy-Id" value="@item.Id" style="display:none"></td>
+                                        <td><input class="form-control servicemanual-Policy-Clienttype" type="text" name="servicemanual-Policy-Clienttype" value="@item.ClientType" style="display:none"> @item.ClientTypeName</td>
+
+                                        <td><input value="@item.ProductFlyTicketDepositAmount.ToString("###,###")" onchange="_Policy.onEdit(@index2)" class="form-control text-right currency servicemanual-Policy-ProductFlyTicketDepositAmount" type="text" name="servicemanual-Policy-ProductFlyTicketDepositAmount"></td>
+                                        <td><input value="@item.HotelDepositAmout.ToString("###,###")" type="text" onchange="_Policy.onEdit(@index2)" class="form-control text-right currency servicemanual-Policy-HotelDepositAmout" name=" servicemanual-Policy-HotelDepositAmout"></td>
+                                        <td><input value="@item.TourDepositAmount.ToString("###,###")"onchange="_Policy.onEdit(@index2)"  type="text" class="form-control text-right currency servicemanual-Policy-TourDepositAmount" name=" servicemanual-Policy-TourDepositAmount"></td>
+                                        <td><input value="@item.TouringCarDepositAmount.ToString("###,###")"onchange="_Policy.onEdit(@index2)"  type="text" class="form-control text-right currency servicemanual-Policy-TouringCarDepositAmount" name=" servicemanual-Policy-TouringCarDepositAmount"></td>
+                                        <td><input value="@item.VinWonderDepositAmount.ToString("###,###")"onchange="_Policy.onEdit(@index2)"  type="text" class="form-control text-right currency servicemanual-Policy-VinWonderDepositAmount" name=" servicemanual-Policy-VinWonderDepositAmount"></td>
+                                    </tr>
+                                        <div style="display:none">@(index2++)</div>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+            <button type="submit" onclick="_Policy.OnUpdatePolicy()" class="btn btn-default">Lưu</button>
+        </div>
+    </form>
+  
+}
+
+<script>
+    $("#EffectiveDate").Zebra_DatePicker({
+        onSelect: function () {
+            var fromDate = $("#EffectiveDate").val()
+            var lstFromDate = fromDate.split('-')
+            $("#EffectiveDate").val(lstFromDate[2] + '/' + lstFromDate[1] + '/' + lstFromDate[0])
+
+        },
+        onClear: function () {
+
+        }
+    });
+</script>
+@section scripts {
+    <script type="text/javascript" src="/modules/Policy.js"></script>
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+
+}

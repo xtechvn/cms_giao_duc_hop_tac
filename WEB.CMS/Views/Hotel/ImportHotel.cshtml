@@ -1,0 +1,45 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.ViewModels.Hotel
+@model IEnumerable<AddHotelViewModel>
+
+@if (Model != null && Model.Any())
+{
+    var ready_checked = false;
+    if (ViewBag.CheckedAll != null) ready_checked = (bool)ViewBag.CheckedAll;
+
+    <div class="table-responsive table-default table-gray table-modal mb20" style="max-height:500px;">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+
+                    <th>Name</th>
+                    <th>Street</th>
+                    <th>Account Number</th>
+                    <th>Bank Name</th>
+                    <th>Branch</th>
+                    <th>Account Name</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td class="item_name">@item.Name</td>
+                        <td class="item_street">@item.Street</td>
+                        <td class="bank_id">@item.AccountNumber</td>
+                        <td class="bank_name">@item.BankName</td>
+                        <td class="branch">@item.Branch</td>
+                        <td class="account_name">@item.BankAccountName</td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-right">Tổng cộng:  @Model.Count() bản ghi </div>
+}

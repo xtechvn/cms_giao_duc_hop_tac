@@ -1,0 +1,381 @@
+﻿@{
+    Layout = null;
+
+    int index = 0;
+    int index_2 = 0;
+
+    List<Entities.Models.FlyBookingExtraPackages> list = (List<Entities.Models.FlyBookingExtraPackages>)ViewBag.extra_list;
+    Entities.Models.FlyBookingDetail? go = (Entities.Models.FlyBookingDetail)ViewBag.Go;
+    Entities.Models.FlyBookingDetail? back = (Entities.Models.FlyBookingDetail)ViewBag.Back;
+    double TotalAmountAdt = (double)ViewBag.TotalAmountAdt;
+    double TotalAmountChd = (double)ViewBag.TotalAmountChd;
+    double TotalAmountInf = (double)ViewBag.TotalAmountInf;
+    double TotalProfitAdt = (double)ViewBag.TotalProfitAdt;
+    double TotalProfitChd = (double)ViewBag.TotalProfitChd;
+    double TotalProfitInf = (double)ViewBag.TotalProfitInf;
+    double package_adt = (double)ViewBag.package_adt;
+    double package_chd = (double)ViewBag.package_chd;
+    double package_inf = (double)ViewBag.package_inf;
+    double TotalAmount = (double)ViewBag.TotalAmount;
+    int fly_count = (int)ViewBag.FlyDetailCount;
+    List<Entities.Models.Passenger> passengers = (List<Entities.Models.Passenger>)ViewBag.passengers;
+    Entities.Models.ContactClient contact_client = (Entities.Models.ContactClient)ViewBag.ContactClient;
+    string go_airline_name = (string)ViewBag.GoAirLineName;
+    string back_airline_name = (string)ViewBag.BackAirLineName;
+    string operator_name = (string)ViewBag.OperatorName;
+    if (operator_name.Trim() == "")
+    {
+        operator_name = "Nguyễn Cảnh Linh";
+    }
+    double adg_commission = 0;
+    double others_amount = 0;
+    if (go != null && go.Id > 0)
+    {
+        adg_commission += go.Adgcommission == null ? 0 : (double)go.Adgcommission;
+        others_amount += go.OthersAmount == null ? 0 : (double)go.OthersAmount;
+    }
+    if (back != null && back.Id > 0)
+    {
+        adg_commission += back.Adgcommission == null ? 0 : (double)back.Adgcommission;
+        others_amount += back.OthersAmount == null ? 0 : (double)back.OthersAmount;
+    }
+    double total_amount = 0;
+    double total_profit = 0;
+}
+<style>
+    .form-control:disabled {
+        background-color: #e8e8e8 !important;
+    }
+</style>
+<div>
+    <div class="bold mb10 txt_14">Ghi chú</div>
+    <div class="form-group">
+        <textarea class="form-control service-fly-note" disabled style="height: 200px;">@(go != null&& go.Note!=null? go.Note:"")</textarea>
+    </div>
+</div>
+<div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding mb20 ">
+    <table class="table table-nowrap ">
+        <thead>
+            <tr>
+                <th class="text-left" style="min-width: 250px;">Hành trình </th>
+                <th class="text-left" style="min-width: 250px;">Điểm đi</th>
+                <th class="text-left" style="min-width: 250px;">Điểm đến</th>
+                <th class="text-left" style="min-width: 250px;">Ngày đi</th>
+                <th class="text-left" style="min-width: 250px;">Ngày về</th>
+                <th class="text-left" style="min-width: 250px;">Điều hành viên</th>
+
+            </tr>
+        </thead>
+        <tbody id="set-service-fly-global-information">
+            <tr>
+                <td class="text-left">
+                    @if (fly_count == 1)
+                    {
+                        <p style="width:100% !important">Một chiều</p>
+                    }
+                    else
+                    {
+                        <p style="width:100% !important">Khứ hồi</p>
+                    }
+                </td>
+                <td class="text-left"> <p style="width:100% !important"> @go.StartPoint</p></td>
+                <td class="text-left"> <p style="width:100% !important"> @go.EndPoint</p></td>
+                <td class="text-left"> <p style="width:100% !important"> @(((DateTime)go.StartDate).ToString("dd/MM/yyyy - HH:mm"))</p></td>
+                <td class="text-left"> <p style="width:100% !important"> @(back!=null? ((DateTime)back.StartDate).ToString("dd/MM/yyyy - HH:mm") : "N/A")</p></td>
+                <td class="text-left"> <p style="width:100% !important"> @operator_name</p></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@if (fly_count > 1)
+{
+    <div class="mb15 bold txt_18 set-service-fly-detail-title">
+        Chiều đi
+    </div>
+}
+<div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding mb20 ">
+    <table class="table table-nowrap ">
+        <thead>
+            <tr>
+                <th class="text-left" style="min-width: 250px;">Hãng bay </th>
+                <th class="text-left" style="min-width: 250px;">Chuyến bay</th>
+                <th class="text-left" style="min-width: 250px;">Mã đặt chỗ</th>
+
+            </tr>
+        </thead>
+        <tbody id="set-service-fly-global-information">
+            <tr>
+                <td class="text-left">
+                    <p style="width:100% !important"> @go_airline_name</p>
+                </td>
+                <td class="text-left">  <p style="width:100% !important"> @go.Flight</p></td>
+                <td class="text-left">  <p style="width:100% !important"> @go.BookingCode</p></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+@if (fly_count > 1)
+{
+    <div class="mb15 bold txt_18 set-service-fly-detail-title">
+        Chiều về
+    </div>
+    <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding mb20 ">
+        <table class="table table-nowrap ">
+            <thead>
+                <tr>
+                    <th class="text-left" style="min-width: 250px;">Hãng bay </th>
+                    <th class="text-left" style="min-width: 250px;">Chuyến bay</th>
+                    <th class="text-left" style="min-width: 250px;">Mã đặt chỗ</th>
+
+                </tr>
+            </thead>
+            <tbody id="set-service-fly-global-information">
+                <tr>
+                    <td class="text-left">
+                        <p style="width:100% !important"> @back_airline_name</p>
+                    </td>
+                    <td class="text-left">  <p style="width:100% !important"> @back.Flight</p></td>
+                    <td class="text-left">  <p style="width:100% !important"> @back.BookingCode</p></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+<div class="flex-auto mb15" style=" justify-content: right;">
+    <div class="form-group other-amount" style="min-width: 200px;width: 200px; ">
+        <label class="lbl text-center" style="width: 100%;">Chi phí khác </label>
+        <div class="wrap_input">
+            <input id="" class="form-control currency text-right " type="text"  placeholder="Nhập chi phí khác" disabled value="@(others_amount.ToString("N0"))">
+        </div>
+    </div>
+    <div class="form-group discount" style="min-width: 200px;width: 200px;">
+        <label class="lbl text-center" style="width: 100%;">Hoa hồng CTV</label>
+        <div class="wrap_input">
+            <input id="" class="form-control currency text-right " type="text" placeholder="Nhập chiết khấu" disabled value="@(adg_commission.ToString("N0"))">
+        </div>
+    </div>
+</div>
+<div class="mb15 bold txt_18 set-service-fly-detail-title">
+    Bảng kê dịch vụ
+    <small>(Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo)</small>
+</div>
+<div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding mb20 ">
+    <table class="table table-nowrap">
+        <thead>
+            <tr>
+                <th style="width: 70px;">STT</th>
+                <th style="min-width: 200px;">Nội dung</th>
+                <th class="text-right" style="min-width: 150px;">Giá nhập<sup class="red">*</sup></th>
+                <th class="text-right" style="min-width: 150px;">Giá bán<sup class="red">*</sup></th>
+                <th class="text-right" style="width:150px !important;">Số lượng</th>
+                <th class="text-right" style="width: 250px !important;">Thành tiền giá bán</th>
+                <th class="text-right" style="width:150px !important;">Lợi nhuận</th>
+            </tr>
+        </thead>
+        <tbody class="service-fly-extrapackage-readonly-tbody">
+            @if (TotalAmountAdt > 0 && go != null)
+            {
+                <tr class="service-fly-extrapackage-readonly-row" data-extra-package-id="-1">
+                    <td class="service-fly-extrapackage-readonly-order">@(++index)</td>
+                    <td>
+                        <select class="form-control service-fly-extrapackage-readonly-packagename-select"disabled style="background-color: lightgray;width:100% !important">
+                            <option value="adt_amount" selected="selected">Người lớn</option>
+                            <option value="chd_amount">Trẻ em (2-14 tuổi)</option>
+                            <option value="inf_amount">Em bé (0-2 tuổi)</option>
+                        </select>
+                    </td>
+                    @{
+                        double amount_sale_pre = (double)TotalAmountAdt / (double)go.AdultNumber;
+                        total_amount += TotalAmountAdt;
+                        total_profit += TotalProfitAdt;
+                    }
+
+
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-baseprice"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-baseprice" value="@(package_adt.ToString("N0"))"></td>
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-saleprice"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-saleprice" value="@(amount_sale_pre.ToString("N0"))"></td>
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-quantity"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-quantity" value="@(((int)go.AdultNumber).ToString("N0"))"></td>
+                    <td class="text-right"> <input class="form-control text-right currency service-fly-packages-amount" disabled style="background-color: lightgray;" value="@TotalAmountAdt.ToString("N0")"></td>
+                    <td class="text-right service-fly-packages-profit-row">
+                        <input class="form-control text-right currency service-fly-packages-profit" disabled type="text" style="background-color: lightgray;" value="@(TotalProfitAdt.ToString("N0"))">
+                    </td>
+
+                </tr>
+            }
+            @if (TotalAmountChd > 0 && go != null)
+            {
+                <tr class="service-fly-extrapackage-readonly-row" data-extra-package-id="-2">
+                    <td class="service-fly-extrapackage-readonly-order">@(++index)</td>
+                    <td>
+                        <select class="form-control select2 service-fly-extrapackage-readonly-packagename-select"disabled style="background-color: lightgray; width: 100% !important;">
+                            <option value="adt_amount">Người lớn</option>
+                            <option value="chd_amount" selected="selected">Trẻ em (2-14 tuổi)</option>
+                            <option value="inf_amount">Em bé (0-2 tuổi)</option>
+                        </select>
+                    </td>
+
+
+                    @{
+                        double amount_sale_pre = (double)TotalAmountChd / (double)go.ChildNumber;
+                        total_amount += TotalAmountChd;
+                        total_profit += TotalProfitChd;
+                    }
+
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-baseprice"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-baseprice" value="@(package_chd.ToString("N0"))"></td>
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-saleprice"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-saleprice" value="@(amount_sale_pre.ToString("N0"))"></td>
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-quantity"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-quantity" value="@(((int)go.ChildNumber).ToString("N0"))"></td>
+                    <td class="text-right"> <input class="form-control text-right currency service-fly-packages-amount" disabled style="background-color: lightgray;" value="@TotalAmountChd.ToString("N0")"></td>
+                    <td class="text-right service-fly-packages-profit-row">
+                        <input class="form-control text-right currency service-fly-packages-profit" disabled type="text" style="background-color: lightgray;" value="@(TotalProfitChd.ToString("N0"))">
+                    </td>
+
+                </tr>
+            }
+            @if (TotalAmountInf > 0 && go != null)
+            {
+                <tr class="service-fly-extrapackage-readonly-row" data-extra-package-id="-3">
+                    <td class="service-fly-extrapackage-readonly-order">@(++index)</td>
+                    <td>
+                        <select class="form-control service-fly-extrapackage-readonly-packagename-select" disabled style="width: 100% !important; background-color: lightgray;">
+                            <option value="adt_amount">Người lớn</option>
+                            <option value="chd_amount">Trẻ em (2-14 tuổi)</option>
+                            <option value="inf_amount" selected="selected">Em bé (0-2 tuổi)</option>
+                        </select>
+                    </td>
+
+                    @{
+                        double amount_sale_pre = (double)TotalAmountInf / (double)go.InfantNumber;
+                        total_amount += TotalAmountInf;
+                        total_profit += TotalProfitInf;
+                    }
+
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-baseprice"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-baseprice" value="@(package_inf.ToString("N0"))"></td>
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-saleprice"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-saleprice" value="@(amount_sale_pre.ToString("N0"))"></td>
+                    <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-quantity"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-quantity" value="@(((int)go.InfantNumber).ToString("N0"))"></td>
+                    <td class="text-right"> <input class="form-control text-right currency service-fly-packages-amount" disabled style="background-color: lightgray;" value="@TotalAmountInf.ToString("N0")"></td>
+                    <td class="text-right service-fly-packages-profit-row">
+                        <input class="form-control text-right currency service-fly-packages-profit" disabled type="text" style="background-color: lightgray;" value="@(TotalProfitInf.ToString("N0"))">
+                    </td>
+
+                   
+                </tr>
+            }
+
+            @if (list.Count > 0)
+            {
+                foreach (var item in list)
+                {
+                    <tr class="service-fly-extrapackage-readonly-row" data-extra-package-id="@item.Id">
+                        <td class="service-fly-extrapackage-readonly-order">@(++index)</td>
+                        <td>
+                            <input type="text" class="form-control service-fly-extrapackage-readonly-packagename-select-input"disabled style="background-color: lightgray;width:100% !important;" value="@item.PackageCode">
+                        </td>
+
+                        @{
+                            double amount_sale_pre = (double)item.Amount / (double)item.Quantity;
+                            total_amount += (double)item.Amount;
+                            total_profit += item.Profit == null ?0: (double)item.Profit;
+                        }
+
+                        <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-baseprice"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-baseprice" value="@(((double)item.BasePrice).ToString("N0"))"></td>
+                        <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-saleprice"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-saleprice" value="@(amount_sale_pre.ToString("N0"))"></td>
+                        <td> <input class="form-control text-right currency service-fly-extrapackage-readonly-quantity"disabled style="background-color: lightgray;" type="text" name="service-fly-extrapackage-readonly-quantity" value="@(((int)item.Quantity).ToString("N0"))"></td>
+                        <td class="text-right"> <input class="form-control text-right currency service-fly-packages-amount" disabled style="background-color: lightgray;" value="@item.Amount.ToString("N0")"></td>
+                        <td class="text-right service-fly-packages-profit-row">
+                            <input class="form-control text-right currency service-fly-packages-profit" disabled type="text" style="background-color: lightgray;" value="@(item.Profit==null ? "0":((double)item.Profit).ToString("N0"))">
+                        </td>
+                    </tr>
+                }
+            }
+
+          
+        <tr class="service-fly-extrapackage-readonly-summary-row">
+            <td></td>
+            <td></td>
+            <td class="text-right">Tổng cộng</td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td class="text-right font-weight-bold service-fly-extrapackage-readonly-total-amount">@total_amount.ToString("N0")</td>
+            <td class="text-right font-weight-bold service-fly-extrapackage-readonly-total-profit">@total_profit.ToString("N0")</td>
+            <td></td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+<div class="mb15 bold txt_18 set-service-fly-detail-title">
+    Danh sách đoàn
+</div>
+<div class="mb15 bold txt_16 set-service-fly-detail-title" style="color:gray;">
+    Thông tin thành viên chính
+</div>
+<div class="wrap_bg wrap_bg_no-padding mb20">
+
+    <div id="set-service-fly-go-contact-client" class="row set-service-fly-detail-box" style="background-color:white; margin-top:20px;">
+        @if (contact_client != null)
+        {
+            <div class="col-2">
+                <p class="bold" style="width:100% !important"> Họ và tên</p>
+                <p style="width:100% !important"> @contact_client.Name</p>
+            </div>
+            <div class="col-2">
+                <p class="bold" style="width:100% !important"> Số điện thoại</p>
+                <p style="width:100% !important">@contact_client.Mobile</p>
+            </div>
+            <div class="col-2">
+                <p class="bold" style="width:100% !important"> Email</p>
+                <p style="width:100% !important"> @contact_client.Email</p>
+            </div>
+        }
+        else
+        {
+            <p class="mb15 bold txt_16 error error-no-contact-client" style="width:100% !important; padding-left:15px;"> Đơn hàng chưa có thông tin liên hệ, vui lòng báo nhân viên bán hàng bổ sung</p>
+        }
+
+    </div>
+</div>
+<div class="mb15 bold txt_16 set-service-fly-detail-title" style="color:gray;">
+    Danh sách thành viên
+</div>
+<div class="wrap_bg wrap_bg_no-padding mb20">
+
+    <table class="table table-nowrap set-service-fly-detail-box">
+        <thead>
+            <tr>
+                <th class="text-left" style="width: 70px;">STT</th>
+                <th class="text-left" style="min-width: 100px;">Giới tính</th>
+                <th class="text-left">Họ tên</th>
+                <th class="text-left">Ngày sinh</th>
+                <th class="text-left">Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody class="set-service-fly-go-passenger-tbody">
+            @if (passengers.Count > 0)
+            {
+                foreach (var p in passengers)
+                {
+                    <tr class="set-service-fly-passenger-row" data-passenger-id="@p.Id">
+                        <td class="text-left set-service-fly-passenger-number">@(++index_2)</td>
+                        <td class="text-left">
+                            @(p.Gender==true?"Nam":"Nữ")
+
+                        </td>
+                        <td class="text-left">@(p.Name)</td>
+                        <td class="text-left">
+                            @(p.Birthday!=null?((DateTime)p.Birthday).ToString("dd/MM/yyyy"): DateTime.Now.ToString("dd/MM/yyyy"))
+
+                        </td>
+                        <td class="text-left">@p.Note</td>
+
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<div class="attachment-sale border pd10">
+    <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+</div>
+<script>
+    _set_service_fly_detail.FlyDetailBookingCodeInitialization();
+</script>

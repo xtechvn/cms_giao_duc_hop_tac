@@ -1,0 +1,284 @@
+﻿@{
+    ViewData["Title"] = "Chi tiết bảng kê";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Utilities
+@using Utilities.Contants
+@using Entities.ViewModels.Funding
+@using System.Linq
+@model DebtStatisticViewModel
+@{
+    var counter = 0;
+    int KTT_DUYET_BANG_KE = (int)ViewBag.KTT_DUYET_BANG_KE;
+    bool isAdmin = (bool)ViewBag.isAdmin;
+}
+<section class="main-container">
+    <input type="text" name="name" value="@Model.Id" id="requestId" hidden style="display: none" />
+    <input type="text" name="TransNo" value="@Model.Code" id="debtStatisticCode" hidden style="display: none" />
+    <div class="row-main container">
+        <h2 class="txt_18 bold mb20" style="color: #FF9966 !important;">
+            <a href="/DebtStatistic/Index" style="color: #FF9966 !important;">Danh sách bảng kê</a> / Chi tiết bảng kê công nợ @Model.Code
+        </h2>
+        <div class="table-responsive table-white">
+            <table class="table table-nowrap">
+                <tbody>
+                    <tr>
+                        <td colspan="3">
+                            <strong>Mã  bảng kê: @Model.Code</strong>
+                            @if (Model.Status == (int)(DEBT_STATISTIC_STATUS.CHO_KE_TOAN_XAC_NHAN) ||
+Model.Status == (int)(DEBT_STATISTIC_STATUS.CHO_KHACH_HANG_XAC_NHAN))
+                            {
+                                <span class="status-wait">@Model.StatusName</span>
+                            }
+                            @if (Model.Status == (int)(DEBT_STATISTIC_STATUS.DA_XAC_NHAN))
+                            {
+                                <span class="status-approve">@Model.StatusName</span>
+                            }
+                            @if (Model.Status == (int)(DEBT_STATISTIC_STATUS.TU_CHOI) || Model.Status == (int)(DEBT_STATISTIC_STATUS.HUY))
+                            {
+                                <span class="status-reject">@Model.StatusName</span>
+                            }
+                            @if (Model.Status == (int)(DEBT_STATISTIC_STATUS.LUU_NHAP))
+                            {
+                                <span class="status-draft">@Model.StatusName</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 45%;">
+                            <div class="row">
+                                <div class="col-5 mb10">Tên khách hàng</div>
+                                <div class="col-7 mb10">
+                                    :  <a href="/CustomerManager/Detail?id=@Model.ClientId"><span class="blue"> @Model.ClientName</span></a>
+                                </div>
+                                <div class="col-5 mb10">Thời gian</div>
+                                <div class="col-7 mb10">: @Model.FromDateStr - @Model.ToDateStr</div>
+                                <div class="col-5 mb10">Loại tiền</div>
+                                <div class="col-7 mb10">: @Model.Currency</div>
+                                <div class="col-5 mb10">Nội dung</div>
+                                <div class="col-7 mb10">: @Model.Note</div>
+                                <div class="col-5 mb10">Ghi chú</div>
+                                <div class="col-7 mb10">
+                                    @if (!string.IsNullOrEmpty(Model.Description) && Model.Description.Length > 50)
+                                    {
+                                        <div title="@Model.Description">: @Model.Description.Substring(0, 50)...</div>
+                                    }
+                                    else
+                                    {
+                                        <div>:@Model.Description</div>
+                                    }
+                                </div>
+                                <hr />
+                                <div class="col-5 mb10">Ngày tạo</div>
+                                <div class="col-7 mb10">
+                                    :
+                                    @if (Model.CreatedDate != null)
+                                    {
+                                        @Model.CreatedDate.Value.ToString("dd-MM-yyyy HH:mm")
+                                    }
+                                </div>
+                                <div class="col-5 mb10">Người tạo</div>
+                                <div class="col-7 mb10">:  @Model.UserCreateName</div>
+                                <div class="col-5 mb10">Ngày cập nhật</div>
+                                <div class="col-7 mb10">
+                                    :
+                                    @if (Model.UpdatedDate != null)
+                                    {
+                                        @Model.UpdatedDate.Value.ToString("dd-MM-yyyy HH:mm")
+                                    }
+                                </div>
+                                <div class="col-5 mb10">Người cập nhật</div>
+                                <div class="col-7 mb10">:  @Model.UserUpdateName</div>
+                                @if (Model.Status == (int)DEBT_STATISTIC_STATUS.TU_CHOI)
+                                {
+                                    <div class="col-5 mb10">Lý do từ chối</div>
+                                    <div class="col-7 mb10">
+                                        : @Model.DeclineReason
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-5 mb10">Ngày duyệt</div>
+                                    <div class="col-7 mb10">
+                                        :
+                                        @if (Model.VerifyDate != null)
+                                        {
+                                            @Model.VerifyDate.Value.ToString("dd-MM-yyyy HH:mm")
+                                        }
+                                        else
+                                        {
+                                            <dv>N/A</dv>
+                                        }
+                                    </div>
+                                    <div class="col-5 mb10">Người duyệt</div>
+                                    <div class="col-7 mb10">
+                                        :
+                                        @if (!string.IsNullOrEmpty(Model.UserVerifyName))
+                                        {
+                                            @Model.UserVerifyName
+                                        }
+                                        else
+                                        {
+                                            <dv>N/A</dv>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="row">
+
+                                <div class="col-12">
+                                    <div class="mb10 bold">Danh sách đơn hàng</div>
+                                    <div class="table-responsive table-gray">
+                                        <table class="table table-nowrap">
+                                            <thead>
+                                                <tr>
+                                                    <th>STT</th>
+                                                    <th>Mã đơn hàng</th>
+                                                    <th>Ngày tạo</th>
+                                                    <th class="text-right">Số tiền</th>
+                                                    <th class="text-right">Đã thanh toán</th>
+                                                    <th class="text-right">Chưa thanh toán</th>
+                                                    <th>Điều hành</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model.RelateData)
+                                                {
+                                                    counter++;
+                                                    <tr>
+                                                        <td>@counter</td>
+                                                        <td>
+                                                            <a class="blue" href="/Order/@item.OrderId">
+                                                                @item.OrderNo
+                                                            </a>
+                                                        </td>
+                                                        <td>@item.CreateDateStr</td>
+                                                        <td class="text-right">@item.Amount.Value.ToString("N0")</td>
+                                                        <td class="text-right">@item.Payment.ToString("N0")</td>
+                                                        <td class="text-right">@item.NotPayment.ToString("N0")</td>
+                                                        <td>@item.OperatorIdName</td>
+                                                    </tr>
+                                                }
+                                                <tr>
+                                                    <td class="text-right" colspan="3">
+                                                        Tổng
+                                                    </td>
+                                                    <td class="text-right">@Model.RelateData.Sum(n => n.Amount.Value).ToString("N0")</td>
+                                                    <td class="text-right" id="totalAmountPayment">@Model.RelateData.Sum(n => n.Payment).ToString("N0")</td>
+                                                    <td class="text-right">@Model.RelateData.Sum(n => n.NotPayment).ToString("N0")</td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="flex flex-end">
+            <a class="blue" onclick="_debt_statistic_service.History(@Model.Id)" style="color:#0066ff !important; cursor:pointer">[Lịch sử xác nhận]</a>
+            <button type="submit" class="btn btn-default cancel ml-1" onclick="_debt_statistic_service.BackToList()">Quay lại</button>
+            @if (Model.Status == (int)DEBT_STATISTIC_STATUS.LUU_NHAP || Model.Status == (int)DEBT_STATISTIC_STATUS.TU_CHOI
+               )
+            {
+                <button type="button" class="btn btn-danger ml-1" onclick="_debt_statistic_service.Delete('@Model.Code')">
+                    Xóa
+                </button>
+            }
+            @if (Model.Status != (int)DEBT_STATISTIC_STATUS.HUY && Model.Status != (int)DEBT_STATISTIC_STATUS.DA_XAC_NHAN)
+            {
+                <button type="button" class="btn btn-danger ml-1" onclick="_debt_statistic_service.Cancel('@Model.Code')">
+                    Hủy
+                </button>
+            }
+            @if ((Model.Status == (int)DEBT_STATISTIC_STATUS.CHO_KE_TOAN_XAC_NHAN || Model.Status == (int)DEBT_STATISTIC_STATUS.CHO_KHACH_HANG_XAC_NHAN)
+                        && (isAdmin || KTT_DUYET_BANG_KE == 1))
+            {
+                <button type="button" class="btn btn-danger ml-1" onclick="_debt_statistic_service.Reject()">
+                    Từ chối
+                </button>
+            }
+            @if ((Model.Status == (int)DEBT_STATISTIC_STATUS.CHO_KE_TOAN_XAC_NHAN) && (isAdmin || KTT_DUYET_BANG_KE == 1))
+            {
+                <button type="button" class="btn btn-primary ml-1"
+                        onclick="_debt_statistic_service.Approve(@((int)DEBT_STATISTIC_STATUS.CHO_KHACH_HANG_XAC_NHAN))">
+                    Xác nhận
+                </button>
+            }
+            @if ((Model.Status == (int)DEBT_STATISTIC_STATUS.CHO_KHACH_HANG_XAC_NHAN) && (isAdmin || KTT_DUYET_BANG_KE == 1))
+            {
+                <button type="button" class="btn btn-primary ml-1"
+                        onclick="_debt_statistic_service.Approve(@((int)DEBT_STATISTIC_STATUS.DA_XAC_NHAN))">
+                    Xác nhận
+                </button>
+            }
+            @if (Model.Status == (int)DEBT_STATISTIC_STATUS.LUU_NHAP || Model.Status == (int)DEBT_STATISTIC_STATUS.TU_CHOI
+                || Model.Status == (int)DEBT_STATISTIC_STATUS.HUY)
+            {
+                <button type="button" class="btn btn-primary ml-1" onclick="_debt_statistic_service.Edit(@Model.Id)">
+                    Chỉnh sửa
+                </button>
+            }
+            <button type="button" class="btn btn-primary ml-1" onclick="_debt_statistic_service.ExportOrderList()">
+                Xuất Excel
+            </button>
+        </div>
+    </div>
+</section>
+<style>
+    .white-popup {
+        max-width: 900px !important;
+    }
+
+    .content_lightbox .head {
+        font-weight: 500 !important;
+        font-size: 16px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .content_lightbox {
+        padding: 20px !important;
+    }
+
+    .status-wait {
+        background: #EEB442 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-approve {
+        background: #5CB566 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-draft {
+        background: #C9C9C9 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-reject {
+        background: #FF0000 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+</style>
+@section scripts {
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+    <script type="text/javascript" src="~/modules/debt_statistic.js"></script>
+}

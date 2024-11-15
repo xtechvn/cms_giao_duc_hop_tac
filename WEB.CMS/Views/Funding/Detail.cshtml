@@ -1,0 +1,256 @@
+﻿@{ ViewData["Title"] = "Chi tiết giao dịch";
+    Layout = "~/Views/Shared/_Layout.cshtml";}
+@using Utilities
+@using Entities.ViewModels.Funding
+@using Entities.Models
+@model DepositFunding
+@{
+    int DUYET_NAP_QUY = (int)ViewBag.DUYET_NAP_QUY;
+}
+<section class="main-container">
+    <input type="text" name="name" value="@Model.Id" id="depositHistoryId" hidden style="display: none" />
+    <input type="text" name="TransNo" value="@Model.TransNo" id="transNo" hidden style="display: none" />
+    @if (Model.ContractPays != null && Model.ContractPays.Count > 0)
+    {
+        <input type="text" name="contractPayId" value="@Model.ContractPays.FirstOrDefault().ContractPay.PayId" id="contractPayId" hidden style="display: none" />
+    }
+    <div class="row-main container">
+        <h2 class="txt_18 bold mb20" style="color: #FF9966 !important;"><a href="/Funding/Index" style="color: #FF9966 !important;">Danh sách nạp quỹ</a> / Chi tiết giao dịch @Model.TransNo</h2>
+        <div class="table-responsive table-white">
+            <table class="table table-nowrap">
+                <tbody>
+                    <tr>
+                        <td colspan="3">
+                            <strong>Mã giao dịch: @Model.TransNo</strong>
+                            @*<span class="status-oranger">Đang xử lý</span>*@
+                            @if (Model.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.TAO_MOI))
+                            {
+                                <span class="status-oranger">Tạo mới</span>
+                            }
+                            @if (Model.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.CHO_THANH_TOAN))
+                            {
+                                <span class="status-yellow">Chờ thanh toán</span>
+                            }
+                            @if (Model.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.CHO_DUYET))
+                            {
+                                <span class="status-blue">Chờ duyệt</span>
+                            }
+                            @if (Model.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.DA_DUYET))
+                            {
+                                <span class="status-green">Đã duyệt</span>
+                            }
+                            @if (Model.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.TU_CHOI))
+                            {
+                                <span class="status-red">Từ chối</span>
+                            }
+                            @if (Model.TotalDeposit < Model.Price)
+                            {
+                                <br />
+                                <span class="status-oranger">Thanh toán thiếu</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><strong>Thông tin giao dịch</strong></td>
+                        <td><strong>Thông tin khách hàng</strong></td>
+                    </tr>
+                    <tr style="width: 100%">
+                        <td style="width: 30%">
+                            <div class="row">
+                                <div class="col-5 mb10">Số tiền nạp</div>
+                                <div class="col-7 mb10">
+                                    :
+                                    @if (Model.TotalDeposit < Model.Price)
+                                    {
+                                        <span class="red">@Model.TotalDeposit.ToString("N0")</span><span>/</span>@Model.Price.Value.ToString("N0")
+                                    }
+                                    else
+                                    {
+                                        <span class="green">@Model.TotalDeposit.ToString("N0")</span><span>/</span>@Model.Price.Value.ToString("N0")
+                                    }
+                                </div>
+                                <div class="col-5 mb10">Tiêu đề</div>
+                                <div class="col-7 mb10">: @Model.Title</div>
+                                <div class="col-5 mb10">Loại quỹ</div>
+                                <div class="col-7 mb10">: @Model.ServiceTypeStr</div>
+                                <div class="col-5 mb10">Loại giao dịch</div>
+                                <div class="col-7 mb10">: @Model.TransTypeStr</div>
+                                <div class="col-5 mb10">Hình thức thanh toán</div>
+                                <div class="col-7 mb10">: @Model.PaymentTypeStr [@Model.BankName - @Model.BankAccount]</div>
+                            </div>
+                        </td>
+                        <td style="width: 40%">
+                            <div class="row">
+                                <div class="col-5 mb10">Ngày giao dịch</div>
+                                <div class="col-7 mb10">: @Model.CreateDate.Value.ToString("dd-MM-yyyy HH:mm")</div>
+                                <div class="col-5 mb10">Người tạo</div>
+                                <div class="col-7 mb10">:  @Model.Email</div>
+                                @if (Model.Status == (int)DepositHistoryConstant.DEPOSIT_STATUS.TU_CHOI)
+                                {
+                                    <div class="col-5 mb10">Ngày từ chối</div>
+                                }
+                                else
+                                {
+                                    <div class="col-5 mb10">Ngày duyệt</div>
+                                }
+                                @if (Model.VerifyDate != null)
+                                {
+                                    <div class="col-7 mb10">: @Model.VerifyDate.Value.ToString("dd-MM-yyyy HH:mm")</div>
+                                }
+                                else
+                                {
+                                    <div class="col-7 mb10">: </div>
+                                }
+                                @if (Model.Status == (int)DepositHistoryConstant.DEPOSIT_STATUS.TU_CHOI)
+                                {
+                                    <div class="col-5 mb10">Người từ chối</div>
+                                }
+                                else
+                                {
+                                    <div class="col-5 mb10">Người duyệt</div>
+                                }
+                                <div class="col-7 mb10">: @Model.EmailVerify</div>
+                                <div class="col-5 mb10">Lý do từ chối</div>
+                                <div class="col-7 mb10">: @Model.NoteReject</div>
+                            </div>
+                        </td>
+                        <td style=" vertical-align: top;" width: 30%">
+                            <div class="row">
+                                <div class="col-5 mb10">Tên</div>
+                                <div class="col-7 mb10">
+                                    :
+                                    <a href="/CustomerManager/Detail/@Model.ClientId"><span class="blue"> @Model.ClientName</span></a>
+                                </div>
+                                <div class="col-5 mb10">Email</div>
+                                <div class="col-7 mb10">: @Model.ClientEmail</div>
+                                <div class="col-5 mb10">Điện thoại</div>
+                                <div class="col-7 mb10">: @Model.Mobile</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="bg-white border pd10" style="display: none !important;">
+            <div class="bold mb10">Các lần thanh toán:</div>
+            <div class="table-responsive table-gray" style="max-width: 600px;">
+                <table class="table table-nowrap">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Số tiền nạp</th>
+                            <th style="width: 200px;">Hình thức thanh toán</th>
+                            <th>Ngày giao dịch</th>
+                            <th>Ảnh đính kèm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Payments != null && Model.Payments.Count > 0)
+                        {
+                            var counter = 0;
+                            foreach (var item in Model.Payments)
+                            {
+                                counter++;
+                                <tr>
+                                    <td>@counter</td>
+                                    <td>@item.Amount.ToString("N0")</td>
+                                    <td>
+                                        <div>@Model.PaymentTypeStr</div>
+                                        [@Model.BankName - @Model.BankAccount]
+                                    </td>
+                                    <td>@item.PaymentDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ImageScreenShot))
+                                        {
+                                            <a href="@item.ImageScreenShot" class="blue" style="color: #056BD3 !important; cursor:pointer;">Xem</a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex flex-end">
+            </div>
+        </div>
+        <div class="bg-white border pd10">
+            <div class="bold mb10">
+                Danh sách phiếu thu
+            </div>
+            <div class="table-responsive table-gray">
+                <table class="table table-nowrap">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã phiếu</th>
+                            <th>Số tiền</th>
+                            <th>Phương thức</th>
+                            <th>Nội dung</th>
+                            <th>Ghi chú</th>
+                            <th>Ngày tạo</th>
+                            <th>Người tạo</th>
+                            <th>Ảnh đính kèm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ContractPays != null && Model.ContractPays.Count > 0)
+                        {
+                            var counter = 0;
+                            foreach (var item in Model.ContractPays)
+                            {
+                                counter++;
+                                <tr>
+                                    <td>@counter</td>
+                                    <td>
+                                        <a class="blue" href="/Receipt/Detail?contractPayId=@item.ContractPay.PayId">
+                                            @item.ContractPay.BillNo
+                                        </a>
+                                    </td>
+                                    <td class="text-right">@item.ContractPayDetail.Amount.Value.ToString("N0")</td>
+                                    <td>
+                                        <div>
+                                            @item.PaymentTypeStr
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(item.BankName))
+                                        {
+                                            <div>@item.BankName (@item.BankAccount)</div>
+                                        }
+                                    </td>
+                                    <td>@item.ContractPay.Note</td>
+                                    <td>@item.ContractPay.Description</td>
+                                    <td>@item.ContractPay.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@item.CreatedByName</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ContractPay.AttatchmentFile))
+                                        {
+                                            <a href="@item.ContractPay.AttatchmentFile" class="blue" style="color: #056BD3 !important; cursor:pointer;" target="_blank">Xem</a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex flex-end">
+                <button type="submit" class="btn btn-default cancel ml-1" onclick="_deposit_hisoty_service.BackToList()">Quay lại</button>
+                @if (Model.Status == (int)DepositHistoryConstant.DEPOSIT_STATUS.CHO_DUYET)
+                {
+                    if (Model.ContractPays == null || Model.ContractPays.Count == 0)
+                    {
+                        <button type="button" class="btn btn-default red ml-1" onclick="_deposit_hisoty_service.Reject(@Model.Id)">Từ chối</button>
+                    }
+                    if (DUYET_NAP_QUY == 1)
+                    {
+                        <button type="button" class="btn btn-default bg-main ml-1" onclick="_deposit_hisoty_service.Approve()">Phê duyệt</button>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script type="text/javascript" src="~/modules/deposit_history.js?v=2"></script>
+}

@@ -1,0 +1,431 @@
+﻿@using Entities.Models
+@using Utilities.Contants
+@using  Entities.ViewModels.Contract
+@{
+    var DebtType = (List<AllCode>)ViewBag.DebtType;
+    var PermisionType = (List<AllCode>)ViewBag.PermisionType;
+    var ClientType = (List<AllCode>)ViewBag.ClientType;
+    var Servicetype = (List<AllCode>)ViewBag.Servicetype;
+}
+@model ContractViewModel
+<style>
+    .token-input-input-token input {
+        background: #fff !important;
+        width: 100% !important;
+        font-size: 13px !important;
+        height: 30px !important;
+        line-height: 30px !important;
+        border: 1px solid #ccc !important;
+        padding: 0 5px !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+        color: #000 !important;
+        border-radius: 0.25rem !important;
+    }
+
+    .stop-scrolling {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .client-suggestion {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        max-height: 300px;
+        max-width: 40%;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .Zebra_DatePicker {
+        left: 45% !important;
+    }
+
+    .white-popup {
+        max-width: 750px !important;
+    }
+
+    .Zebra_DatePicker_Icon_Wrapper {
+        width: 100% !important;
+    }
+</style>
+<form id="Contract_form" onsubmit="return false">
+    @if (Model != null)
+    {
+
+        <div class="row">
+            <input type="text" style="display:none" class="form-control" asp-for="@Model.ContractId">
+            <input type="text" style="display:none" class="form-control" asp-for="@Model.ContractNo">
+
+            <input type="text" style="display:none" class="form-control" value="@Model.ClientType" id="ClientType">
+            <input type="text" style="display:none" class="form-control" value="@Model.DebtType" id="DebtType_Type2">
+            <input type="text" style="display:none" class="form-control" value="@Model.Id" id="id">
+
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Khách hàng  <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                <div>
+                    <select class="select2 client-select" multiple asp-for="@Model.ClientId" onchange="_ContractDetail.OnloadClientSever()" style="width:100% !important" aria-hidden="true">
+                        <option selected="selected" value="@Model.ClientId" data-select2-id="@Model.ClientId">@Model.ClientId_Name - @Model.Client_Email - @Model.Client_Phone</option>
+                    </select>
+
+                </div>
+                <label id="ClientId-error" class="error" for="ClientId"></label>
+            </div>
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Dịch vụ đăng ký <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                @*<input type="text" class="form-control" id="Service_Type">*@
+                <div>
+                    <select class="form-control select2 " name="ServiceType" asp-for="@Model.ServiceType" placeholder="Chọn dịch vụ" multiple style="width:100% !important">
+                        @if (Servicetype != null)
+                        {
+                            var ST = Array.ConvertAll(Model.ServiceType.Split(','), s => double.Parse(s));
+                            var kt = 0;
+                            foreach (var item in Servicetype)
+                            {
+                                foreach (var i in ST)
+                                {
+                                    if (item.CodeValue == i)
+                                    {
+                                        <option selected="selected" value="@item.CodeValue">@item.Description</option>
+                                        kt = Convert.ToInt32(i);
+                                    }
+                                }
+                                if (item.CodeValue != kt)
+                                {
+                                    <option value="@item.CodeValue">@item.Description</option>
+                                }
+
+                            }
+
+                        }
+                        }
+                    </select>
+                </div>
+                <label id="ServiceType-error" class="error" for="ServiceType"></label>
+            </div>
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Loại KH <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                <select class="form-control select2" name="ClienType_Name" asp-for="@Model.ClienType_Name" onchange="_ContractDetail.OnloadPolicy()">
+                    <option value="">Tất cả loại khách hàng</option>
+                    @if (ClientType != null)
+                    {
+                        foreach (var item in ClientType)
+                        {
+                            if (item.CodeValue != 5 && item.CodeValue != 6)
+                            {
+                                if (item.CodeValue == Model.ClientType)
+                                {
+                                    <option selected="selected" value="@item.CodeValue">@item.Description</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.CodeValue">@item.Description</option>
+                                }
+                            }
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Nhóm KH <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                <select class=" form-control select2" asp-for="@Model.PermisionType_Name" onchange="_ContractDetail.OnloadPolicy()" name="PermisionType_Name">
+                    <option value="">Tất cả nhóm khách hàng</option>
+                    @if (PermisionType != null)
+                    {
+                        foreach (var item in PermisionType)
+                        {
+                            if (item.CodeValue == Model.PermisionType)
+                            {
+                                <option selected="selected" value="@item.CodeValue">@item.Description</option>
+                            }
+                            else
+                            {
+                                <option value="@item.CodeValue">@item.Description</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Ngày hết hạn <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                <div>
+                    <input class="form-control " asp-for="@Model.ExpireDate" value="@(Model.ExpireDate != DateTime.MinValue ? Model.ExpireDate.ToString("dd/MM/yyyy") :string.Empty)" type="text" placeholder="Ngày hết hạn">
+                </div>
+            </div>
+
+            <div id="grid_data_loadPolicy" class=" content_lightbox row">
+                @if (Model.PermisionType == 1)
+                {
+
+
+                    <div class="col-4 mb10">
+                        <label class="lbl mt5 mb0">Điều kiện <sup class="red">*</sup></label>
+                    </div><div class="col-8 mb10">
+                    </div>
+                    <div class="col-4 mb10">
+                        <label class="lbl mt5 mb0">
+                            @if (Model.IsPrivate == 1)
+                            {
+                                <input type="checkbox" value="1" onclick="_ContractDetail.Ischeck()" checked id="IsPrivate">
+                            }
+                            else
+                            {
+                                <input type="checkbox" value="0" onclick="_ContractDetail.Ischeck()" id="IsPrivate">
+                            }
+                            &nbsp;&nbsp;Chính sách riêng
+                        </label>
+                    </div>
+                    <div class="col-8 mb10">
+                    </div>
+                    <div class="col-4 mb10"><label class="lbl mt5 mb0">Loại công nợ <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10">
+                        <select class=" form-control select2" id="DebtType_Type" name="DebtType_Type" disabled>
+                            <option value="">Tất cả loại công nợ</option>
+                            @if (DebtType != null)
+                            {
+                                foreach (var item in DebtType)
+                                {
+                                    if (Model.DebtType == item.CodeValue)
+                                    {
+                                        <option selected="selected" value="@item.CodeValue">@item.Description</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.CodeValue">@item.Description</option>
+                                    }
+
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-4 mb10 ProductFlyTicketDebtAmountView mfp-hide"><label class="lbl mt5 mb0">Hạn mức công nợ VMB <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10 ProductFlyTicketDebtAmountView mfp-hide">
+                        <input style="background: #f0f0f0;" type="text" class="form-control currency" value="@Model.ProductFlyTicketDebtAmount.ToString("###,###")" id="ProductFlyTicketDebtAmount" name="ProductFlyTicketDebtAmount" readonly>
+                    </div>
+
+                    <div class="col-4 mb10 HotelDebtAmoutView mfp-hide"><label class="lbl mt5 mb0">Hạn mức công nợ KS <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10 HotelDebtAmoutView mfp-hide">
+                        <input style="background: #f0f0f0;" type="text" class="form-control currency" value="@Model.HotelDebtAmout.ToString("###,###")" id="HotelDebtAmout" name="HotelDebtAmout" readonly>
+                    </div>
+
+
+                    //mới
+
+                    <div class="col-4 mb10 TourDebtAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ Tour <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10 TourDebtAmountView mfp-hide">
+                        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.TourDepositAmount).ToString("###,###"))" id="TourDebtAmount" name="TourDebtAmount" readonly>
+                    </div>
+
+
+
+                    <div class="col-4 mb10 TouringCarDebtAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ thuê xe du lịch <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10 TouringCarDebtAmountView mfp-hide">
+                        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.TouringCarDepositAmount).ToString("###,###"))" id="TouringCarDepositAmount" name="ProductFlyTicketDepositAmount" readonly>
+                    </div>
+
+
+
+                    <div class="col-4 mb10 VinWonderDebtAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ VinWonder <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10 VinWonderDebtAmountView mfp-hide">
+                        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.VinWonderDepositAmount).ToString("###,###"))" id="VinWonderDepositAmount" name="ProductFlyTicketDepositAmount" readonly>
+                    </div>
+
+
+                    <input type="text" class="form-control" style="display:none" value="@(Model.PolicyId)" id="PolicyId" readonly>
+                }
+                @if (Model.PermisionType == 2)
+                {
+
+                    <div class="col-4 mb10">
+                        <label class="lbl mt5 mb0">Điều kiện <sup class="red">*</sup></label>
+                    </div>
+                    <div class="col-8 mb10">
+
+                    </div>
+                    <div class="col-4 mb10">
+                        <label class="lbl mt5 mb0">
+
+                            @if (Model.IsPrivate == 1)
+                            {
+                                <input type="checkbox" value="1" onclick="_ContractDetail.Ischeck()" checked id="IsPrivate">
+                            }
+                            else
+                            {
+                                <input type="checkbox" value="0" onclick="_ContractDetail.Ischeck()" id="IsPrivate">
+                            }
+                            &nbsp;&nbsp;Chính sách riêng
+
+                        </label>
+                    </div>
+                    <div class="col-8 mb10">
+                    </div>
+
+                    <div class="col-4 mb10 ProductFlyTicketDepositAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ VMB tối thiểu <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10 ProductFlyTicketDepositAmountView mfp-hide">
+                        <input style="background: #f0f0f0;" type="text" class="form-control currency" value="@Model.ProductFlyTicketDepositAmount.ToString("###,###")" id="ProductFlyTicketDepositAmount" name="ProductFlyTicketDepositAmount" readonly>
+                    </div>
+
+                    <div class="col-4 mb10 HotelDepositAmoutView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ KS tối thiểu <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10 HotelDepositAmoutView mfp-hide">
+                        <input style="background: #f0f0f0;" type="text" class="form-control currency" value="@Model.HotelDepositAmout.ToString("###,###")" id="HotelDepositAmout" name="HotelDepositAmout" readonly>
+                    </div>
+
+                    <div class="col-4 mb10 TourDepositAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ Tour <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10 TourDepositAmountView mfp-hide">
+                        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.TourDepositAmount).ToString("###,###"))" id="TourDepositAmount" name="ProductFlyTicketDepositAmount" readonly>
+                    </div>
+
+                    <div class="col-4 mb10 TouringCarDepositAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ thuê xe du lịch <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10 TouringCarDepositAmountView mfp-hide">
+                        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.TouringCarDepositAmount).ToString("###,###"))" id="TouringCarDepositAmount" name="ProductFlyTicketDepositAmount" readonly>
+                    </div>
+
+                    <div class="col-4 mb10 VinWonderDepositAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ VinWonder <sup class="red">*</sup></label></div>
+                    <div class="col-8 mb10 VinWonderDepositAmountView mfp-hide">
+                        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.VinWonderDepositAmount).ToString("###,###"))" id="VinWonderDepositAmount" name="ProductFlyTicketDepositAmount" readonly>
+                    </div>
+
+
+                    <input type="text" class="form-control" style="display:none" value="@(Model.PolicyId)" id="PolicyId" readonly>
+                }
+
+
+            </div>
+
+
+            <div class="col-4 mb10">
+                <label class="lbl mt5 mb0">Ghi chú <sup class="red"></sup></label>
+            </div>
+        </div>
+        <div class="mb20">
+            <textarea asp-for="@Model.Note" class="form-control" style="height: 150px;"></textarea>
+        </div>
+        <div class="text-right">
+            <button type="button" onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+            <button type="button" onclick="_ContractDetail.UpdataContract(0)" class="btn btn-default UpdataContract">Lưu nháp</button>
+            <button type="button" onclick="_ContractDetail.UpdataContract(3)" class="btn btn-default UpdataContract">Gửi đi</button>
+        </div>
+        <script>
+            _ContractDetail.Isloadcheck();
+
+            $('#ServiceType').on("select2:select", function (e) {
+                _ContractDetail.CheckSeverType()
+            });
+        </script>
+
+
+    }
+    else
+    {
+        <input type="text" style="display:none" class="form-control" asp-for="@Model.ContractId">
+        <div class="row">
+            <input type="text" style="display:none" class="form-control" id="Id_PaymentAccount" value="0">
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Khách hàng  <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                <div>
+                    <select class="select2 client-select" multiple asp-for="@Model.ClientId" onchange="_Contract.OnloadClientSever()" style="width:100% !important">
+                    </select>
+                </div>
+                <label id="ClientId-error" class="error" for="ClientId"></label>
+            </div>
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Dịch vụ đăng ký <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                @*<input type="text" class="form-control" id="Service_Type">*@
+                <div>
+                    <select class="form-control select2 " name="ServiceType" asp-for="@Model.ServiceType" placeholder="Chọn dịch vụ" multiple style="width:100% !important">
+                        @if (Servicetype != null)
+                        {
+                            foreach (var item in Servicetype)
+                            {
+                                <option value="@item.CodeValue">@item.Description</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <label id="ServiceType-error" class="error" for="ServiceType"></label>
+            </div>
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Loại KH <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                <select class="form-control select2" name="ClienType_Name" asp-for="@Model.ClienType_Name" onchange="_Contract.OnloadPolicy()">
+                    <option value="">Tất cả loại khách hàng</option>
+
+                </select>
+            </div>
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Nhóm KH <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                <select class=" form-control select2" asp-for="@Model.PermisionType_Name" onchange="_Contract.OnloadPolicy()" name="PermisionType_Name">
+                    <option value="">Tất cả nhóm khách hàng</option>
+                    @if (PermisionType != null)
+                    {
+                        foreach (var item in PermisionType)
+                        {
+                            <option value="@item.CodeValue">@item.Description</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Ngày hết hạn <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                <div>
+                    <input class="form-control " asp-for="@Model.ExpireDate" type="text" placeholder="Ngày hết hạn">
+                </div>
+            </div>
+
+            <div id="grid_data_loadPolicy" style="display:none" class=" content_lightbox row">
+
+            </div>
+
+
+            <div class="col-4 mb10">
+                <label class="lbl mt5 mb0">Ghi chú <sup class="red"></sup></label>
+            </div>
+        </div>
+        <div class="mb20">
+            <textarea id="Note" class="form-control" style="height: 150px;"></textarea>
+        </div>
+        <div class="text-right mb40">
+            <button type="button" onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+            <button type="button" onclick="_Contract.CreateContract(0)" class="btn btn-default CreateContract">Lưu nháp</button>
+            <button type="button" onclick="_Contract.CreateContract(3)" class="btn btn-default CreateContract">Gửi đi</button>
+        </div>
+        <script>
+            $('#ServiceType').on("select2:select", function (e) {
+                _Contract.CheckSeverType()
+            });
+        </script>
+    }
+</form>
+<link href="/lib/select2/css/select2.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+<script>
+
+    $("#ExpireDate").Zebra_DatePicker({
+        onSelect: function () {
+            var fromDate = $("#ExpireDate").val()
+            var lstFromDate = fromDate.split('-')
+            $("#ExpireDate").val(lstFromDate[2] + '/' + lstFromDate[1] + '/' + lstFromDate[0])
+
+        },
+        onClear: function () {
+
+        }
+    });
+
+    $("#ServiceType").select2({
+        theme: 'bootstrap4',
+        placeholder: "Chọn dịch vụ",
+        selectOnClose: true,
+    });
+
+</script>
+
+<script>
+    _Contract_create.Initialization();
+
+</script>
+@section script{
+
+    <script type="text/javascript" src="~/modules/ContractDetail.js"></script>
+
+}

@@ -1,0 +1,37 @@
+﻿@using Entities
+@using Entities.ViewModels.Funding
+@using Utilities.Contants
+@model List<DebtStatisticLogViewModel>
+@{
+    var i = 1;
+}
+<div class="white-popup">
+    <div class="content_lightbox">
+        <div class="table-responsive table-default table-gray table-modal mb20">
+            <table class="table table-nowrap">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Thời gian</th>
+                        <th>Người thực hiện</th>
+                        <th>Nội dung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(i++)</td>
+                                <td>@item.CreateTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.UserName </td>
+                                <td>@item.Action </td>
+                            </tr>
+                        }}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

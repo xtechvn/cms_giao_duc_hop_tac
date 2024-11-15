@@ -1,0 +1,122 @@
+﻿@{ var allcode = (List<Entities.Models.AllCode>)ViewBag.system;
+   var BRANCH_CODE = (List<Entities.Models.AllCode>)ViewBag.BRANCH_CODE; }
+@using Utilities.Contants
+<div class="border bg-white mb20">
+    <div class="lb-form pd10">
+        <strong>Thông tin cơ bản đơn hàng</strong> <a style="display:none" class="edit blue" href="">[Lịch sử thao tác]</a>
+    </div>
+    <div class="pd10">
+        @if(ViewBag.OrderStatus!=null)
+        @switch ((int)ViewBag.OrderStatus)
+        {
+            case (int)(OrderStatus.CREATED_ORDER):
+            case (int)(OrderStatus.CONFIRMED_SALE):
+                    {
+                        <span class="status-oranger">@ViewBag.statusName </span> 
+                    }
+                break;
+                case (int)(OrderStatus.WAITING_FOR_OPERATOR):
+                    {
+
+                        <div class="status-green">@ViewBag.statusName  -  @ViewBag.PaymentStatus</div>
+                        <div class="status-green">@(ViewBag.PermisionType==null? "Không công nợ" : ViewBag.PermisionType)</div> 
+                     }
+                    break;
+                case (int)(OrderStatus.WAITING_FOR_ACCOUNTANT):
+                    {
+                        <span class="status-green">@ViewBag.statusName</span>
+                    }
+                    break;
+                case (int)(OrderStatus.FINISHED):
+                    {
+                        <span class="status-green">@ViewBag.statusName </span> 
+                        }
+                    break;
+                case ((int)(OrderStatus.CANCEL)):
+                case ((int)(OrderStatus.ACCOUNTANT_DECLINE)):
+                case ((int)(OrderStatus.OPERATOR_DECLINE)):
+                case ((int)(OrderStatus.DonRac)):
+                    {
+                        <span class="status-red">@ViewBag.statusName </span>
+                    }
+                    break;
+            }
+
+        @*<span class="status-blue">@ViewBag.DEBT_TYPE  - @ViewBag.PAYMENT_STATUS</span>*@
+        <div class="mb20">Mã đơn :<a href="#" class="blue">@ViewBag.orderNo</a> </div>
+        <div class="form-default3">
+            <div class="form-group">
+                <label class="lbl">Nhãn đơn <sup class="red">*</sup></label>
+                <div class="wrap_input">
+                    <textarea class="form-control" id="Label" style="height: 90px;">@ViewBag.Label</textarea>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="gray">Ngày bắt đầu - Ngày kết thúc</div>
+                @((ViewBag.createTime + " - " + ViewBag.ExpriryDate).TrimEnd(' ','-'))
+
+            </div>
+            <div class="form-group">
+                <label class="lbl">Chi nhánh <sup class="red">*</sup></label>
+                <div class="wrap_input">
+                    <select class="form-control select2" name="" id="" style="background: #f0f0f0;" disabled>
+                        @if(ViewBag.BranchCode != null){
+                             @foreach (var item in BRANCH_CODE)
+                            {
+                                @if (item.CodeValue == ViewBag.BranchCode)
+                                {
+                                    <option selected="selected" value="@item.CodeValue">@item.Description</option> 
+                                        
+                                }
+                                else
+                                {
+                                    <option value="@item.CodeValue">@item.Description</option>
+                                }
+                            }
+                        }else{
+                             @foreach (var item in BRANCH_CODE)
+                            {
+                          
+                                    <option value="@item.CodeValue">@item.Description</option>
+                            
+                            }
+                        }
+                       
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="lbl">Nguồn hàng <sup class="red">*</sup></label>
+                <div class="wrap_input">
+                    <select class="form-control select2" name="" id="" style="background: #f0f0f0;" disabled>
+                        @if(ViewBag.systemType != null){
+                        @foreach (var item in allcode)
+                        {
+                    @if (item.CodeValue == ViewBag.systemType)
+                    {
+                    <option selected="selected" value="@item.CodeValue">@item.Description</option>
+ }
+                                    else
+                                    {
+                    <option value="@item.CodeValue">@item.Description</option>}}
+                        }else{
+                         @foreach (var item in allcode)
+                        {
+                                <option value="@item.CodeValue">@item.Description</option>
+                          
+                        }
+                        }
+
+                    </select>
+                </div>
+            </div>
+            <div class="form-group mb0">
+                <label class="lbl">Ghi chú</label>
+                <div class="wrap_input">
+                    <textarea class="form-control" id="Note" style="height: 90px;">@ViewBag.Note</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

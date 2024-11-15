@@ -1,0 +1,40 @@
+﻿@using Entities.ViewModels;
+@model List<CloseTheBookViewModel>
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th class="text-center">Tháng</th>
+                    <th class="text-center">Từ ngày</th>
+                    <th class="text-center">Đến ngày</th>
+                    <th class="text-center">Khóa sổ</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr class="list-row">
+                            <td class="Month text-center">@item.Month</td>
+                            <td class="day-StartDate text-center">@item.StartDate</td>
+                            <td class="day-EndDate text-center">@item.EndDate</td>
+                            @if (item.Status)
+                            {
+                                <td class="text-center"><input class="checkbox checkbox-@item.Month" type="checkbox" checked  disabled/></td>
+                            }
+                            else
+                            {
+                                <td class="text-center"><input class="checkbox checkbox-@item.Month" type="checkbox" /></td>
+                            }
+
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

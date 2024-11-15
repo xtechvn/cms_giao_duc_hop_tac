@@ -1,0 +1,107 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.ViewModels
+@model IEnumerable<VinWonderPricePolicyModel>
+
+@if (Model != null && Model.Any())
+{
+    var ready_checked = false;
+    if (ViewBag.CheckedAll != null) ready_checked = (bool)ViewBag.CheckedAll;
+
+    <div class="table-responsive table-default table-gray table-modal mb20" style="max-height:500px;">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th class="text-center">
+                        <label class="check-list number">
+                            <input type="checkbox" id="ckb_vin_grid_all" @(ready_checked ? "checked" : string.Empty)>
+                            <span class="checkmark"></span>
+                            &nbsp;
+                        </label>
+                    </th>
+                    <th>Site ID</th>
+                    <th>Site Name</th>
+                    <th>Rate Code</th>
+                    <th>Service Id</th>
+                    <th>Services Code</th>
+                    <th style="min-width: 130px;">Name</th>
+                    <th>Base Price</th>
+                    <th>Weekend Rate</th>
+                    <th class="text-center" style="width:300px;">Profit B2B</th>
+                    @* <th>Amount</th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-center">
+                            <label class="check-list number">
+                                <input type="checkbox" class="ckb_vin_grid_item" @(ready_checked ? "checked" : string.Empty)>
+                                <span class="checkmark"></span>
+                                &nbsp;
+                            </label>
+                            <input type="hidden" class="item_vinwonder_price_id" value="@item.Id">
+                        </td>
+                        <td class="item_site_id">@item.SiteId</td>
+                        <td class="item_site_name">@item.SiteName</td>
+                        <td class="item_rate_code">@item.RateCode</td>
+                        <td class="item_service_id">@item.ServiceId</td>
+                        <td class="item_service_code">@item.ServiceCode</td>
+                        <td class="item_name_vin_price blue">@item.Name</td>
+                        <td class="item_base_price">@item.BasePrice.ToString("N0")</td>
+                        <td class="item_weekend_rate">@(item.WeekendRate.HasValue ? item.WeekendRate.Value.ToString("N0") : "0")</td>
+                        <td>
+                            <div class="flex align-center">
+                                <input type="text" class="form-control currency text-center item_profit"
+                               value="@item.Profit.ToString("N0")" style="width: 90px;">
+                                @if (item.UnitType == 2)
+                                {
+                                    <span class="btn_currency_item_type active status-green ml-2" data-type="2">VNĐ</span>
+                                    <span class="btn_currency_item_type status-gray ml-2" data-type="1">%</span>
+                                }
+                                else
+                                {
+                                    <span class="btn_currency_item_type status-gray ml-2" data-type="2">VNĐ</span>
+                                    <span class="btn_currency_item_type active status-green ml-2" data-type="1">%</span>
+                                }
+                                <span class="blue ml-2 btn_item_common_profit">Chính sách chung</span>
+                            </div>
+                        </td>
+                        @*<td class="text-right">
+                            @{
+                            decimal totalAmount = 0;
+                            if (item.UnitType == 2)
+                            {
+                            totalAmount = item.BasePrice + item.Profit;
+                            }
+                            else
+                            {
+                            totalAmount = (1 + item.Profit / 100) * item.BasePrice;
+                            }
+                            }
+                            <strong class="item_amount">@totalAmount.ToString("N0")</strong>
+                            @if (item.WeekendRate.HasValue && item.WeekendRate.Value != 0)
+                            {
+                            decimal totalWeekendAmount = 0;
+                            if (item.UnitType == 2)
+                            {
+                            totalWeekendAmount = item.WeekendRate.Value + item.Profit;
+                            }
+                            else
+                            {
+                            totalWeekendAmount = (1 + item.Profit / 100) * item.WeekendRate.Value;
+                            }
+                            <br />
+                            <span class="green item_weekend_amount">@totalWeekendAmount.ToString("N0")</span>
+                            }
+                            </td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-right">Tổng cộng:  @Model.Count() bản ghi </div>
+}

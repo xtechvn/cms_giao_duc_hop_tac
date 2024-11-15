@@ -1,0 +1,144 @@
+﻿@{
+    Layout = null;
+    var model = (Entities.ViewModels.PricePolicy.HotelPricePolicyCampaignModel)ViewBag.Model;
+    var contracts = (List<int>)ViewBag.Contracts;
+    var packages = (List<string>)ViewBag.Packages;
+    var rooms = (List<int>)ViewBag.Rooms;
+}
+
+@if (model != null && model.BasedProgram != null && model.BasedProgram.Count > 0)
+{
+
+    <ul>
+        @{
+            foreach (var contract in contracts)
+            {
+                <li>
+
+                    @{
+                        var packages_by_contract = model.BasedProgram.Where(x => x.ProgramId == contract);
+                        if (packages_by_contract != null && packages_by_contract.Count() > 0)
+                        {
+                                        <div class="level_1 level_1_title">
+                                            <em style="font-size:15px" class="fa fa-minus lvl_collapse" data-level="1"></em>
+                                            <nw style="font-size:15px" class="contract_no" data-value="@(packages_by_contract.First().ProgramId)"> @(packages_by_contract.First().ProgramName) &nbsp;&nbsp; <nw style="font-size: 12px" class="contract_date_range"></nw> </nw>
+                                            <a href="javascript:;" class="fa fa-plus-circle green add_new_policy_rule" data-newlevel="1"></a>
+
+                                        </div>
+                            var list_packages_code = packages_by_contract.Select(x => x.PackageCode).Distinct();
+                            foreach (var package in list_packages_code)
+                            {
+
+                                <div class="level_2 level_2_content" style="display:none;">
+                                    <div class="level_2_title">
+                                        <em style="font-size:14px" class="fa fa-minus lvl_collapse" data-level="2"></em>
+                                        <nw style="font-size:14px" class="package_name" data-value="@(packages_by_contract.First(x=>x.PackageCode==package).PackageId)">@packages_by_contract.First(x => x.PackageCode == package).PackageCode</nw>
+                                        <a href="javascript:;" class="fa fa-plus-circle green add_new_policy_rule" data-newlevel="2"></a>
+
+                                    </div>
+                                    <div class="level_3 level_3_content">
+                                        <div class="itemt">
+                                            <nw class="level_4_block">
+                                                @{
+                                                    var list_room = packages_by_contract.Where(x => x.PackageCode == package).Select(x => x.RoomId).Distinct();
+                                                    foreach (var room in list_room)
+                                                    {
+                                                        var policy_by_room = model.PricePolicy.Where(x => x.PackageCode == package && x.RoomId == room && x.ProgramId == contract);
+                                                        if (policy_by_room != null && policy_by_room.Count() > 0)
+                                                        {
+                                                            <nw class="level_4_room">
+                                                                <div class="title level_4_title mb10">
+                                                                    <em style="font-size:13px; display:none;" class="fa fa-minus lvl_collapse" data-level="4"></em>
+                                                                    <strong style="font-size:13px" class="room_name" data-productserviceid="@policy_by_room.First().ProductServiceId" data-allotmentid="@policy_by_room.First().AllotmentsId"
+                                                                            data-roomid="@policy_by_room.First().RoomId"> @policy_by_room.First().RoomName</strong>
+                                                                            <a href="javascript:;" class="fa fa-plus-circle green add_new_policy_rule" data-newlevel="4"></a>
+                                                                        </div>
+
+
+                                                                        <div class="content level_4_content" data-price="0">
+                                                                            @foreach (var price_detail in policy_by_room)
+                                                                            {
+                                                                                <div class="mb10 level_4" data-value="@price_detail.PriceDetailId" data-id="@price_detail.PriceDetailId">
+
+                                                                                    CPDV: <nw class="readonly price_detail_readonly price_detail_readonly_profit" data-profit="@price_detail.Profit" data-unitid="@(price_detail.UnitId == 2 ? "VND" : "%")">@price_detail.Profit @(price_detail.UnitId == 2 ? "VND" : "%")</nw>
+                                                                                    <div class="tag-input-price price_detail_input no_display">
+                                                                                        <input type="text" class="form-control currency price_detail_input price_detail_input_profit no_display" value="@price_detail.Profit">
+                                                                                        <div class="tag  price_detail_input_price_unit ">
+                                                                                            <a class="@(price_detail.UnitId == 2 ? "active price_detail_unit_active" : "") price_detail_event_changeprice_unit price_detail_unit_vnd"
+                                                                                               data-unitid="2" href="javascript:;">VND</a>
+                                                                                            <a class="@(price_detail.UnitId == 1 ? "active price_detail_unit_active" : "") price_detail_event_changeprice_unit price_detail_unit_percent"
+                                                                                               data-unitid="1" href="javascript:;">%</a>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    - Hiệu lực giá:
+                                                                                    <div class="tag-input-date">
+                                                                                        <nw class="readonly price_detail_readonly price_detail_readonly_fromdate"> @(price_detail.FromDate==null? DateTime.Now.ToString("dd/MM/yyyy") : ((DateTime)price_detail.FromDate).ToString("dd/MM/yyyy HH:mm")) </nw>
+                                                                                        <input class="form-control date datefilter  price_detail_input price_detail_date price_detail_input_fromdate no_display" type="text" name="price_detail_date" value="@(price_detail.FromDate==null?Model.CampaignDetail.FromDate.ToString("dd/MM/yyyy HH:mm"):((DateTime)price_detail.FromDate).ToString("dd/MM/yyyy HH:mm"))">
+                                                                                    </div>
+                                                                                    -
+                                                                                    <div class="tag-input-date">
+                                                                                        <nw class="readonly price_detail_readonly price_detail_readonly_todate">@(price_detail.FromDate==null? DateTime.Now.ToString("dd/MM/yyyy") : ((DateTime)price_detail.ToDate).ToString("dd/MM/yyyy HH:mm")) </nw>
+                                                                                        <input class="form-control date datefilter price_detail_input price_detail_date price_detail_input_todate no_display" type="text" name="price_detail_date" value="@(price_detail.ToDate==null?Model.CampaignDetail.ToDate.ToString("dd/MM/yyyy HH:mm"):((DateTime)price_detail.ToDate).ToString("dd/MM/yyyy HH:mm"))">
+                                                                                    </div>
+                                                                                    <span class="controler show  ml-2 price_detail_input_button no_display">
+                                                                                        <a href="javascript:;" class="btn-default update_price_detail">Cập nhật</a>
+                                                                                        <a href="javascript:;" class="ml-1 blue cancel_edit_price_detail" data-profit-value="@price_detail.Profit" data-profit-unitid="@price_detail.UnitId">Hủy</a>
+                                                                                    </span>
+                                                                                    <span class="controler price_detail_block price_detail_readonly_button" style=" display:none;">
+                                                                                        <a href="javascript:;" class="fa fa-pencil ml-2 green enable_edit_price_detail"></a>
+                                                                                        <a href="javascript:;" class="fa fa-trash ml-1 red delete_price_detail"></a>
+                                                                                    </span>
+                                                                                </div>
+
+                                                                            }
+
+
+                                                                        </div>
+
+
+                                                                    </nw>
+                                                        }
+                                                        else
+                                                        {
+                                                            policy_by_room = model.BasedProgram.Where(x => x.PackageCode == package && x.RoomId == room && x.ProgramId == contract);
+                                                                    <nw class="level_4_room">
+                                                                        <div class="title level_4_title mb10">
+                                                                            <em style="font-size:13px; display:none;" class="fa fa-minus lvl_collapse" data-level="4"></em>
+                                                                            <strong style="font-size:13px" class="room_name" data-productserviceid="@policy_by_room.First().ProductServiceId" data-allotmentid="@policy_by_room.First().AllotmentsId"
+                                                                                    data-roomid="@policy_by_room.First().RoomId"> @policy_by_room.First().RoomName</strong>
+                                                                                    <a href="javascript:;" class="fa fa-plus-circle green add_new_policy_rule" data-newlevel="4"></a>
+                                                                                </div>
+
+
+                                                                                <div class="content level_4_content" data-price="0">
+                                                                                   
+                                                                                </div>
+
+
+                                                                            </nw>
+                                                                        }
+
+
+                                                                    }
+                                                }
+                                            </nw>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                            }
+                        }
+
+                    }
+                </li>
+            }
+        }
+    </ul>
+}
+else
+{
+    <p class="non_provider_selected" style="color:red;">Vui lòng chọn cập nhật chương trình hoặc chọn khách sạn để hiển thị chính sách giá</p>
+}

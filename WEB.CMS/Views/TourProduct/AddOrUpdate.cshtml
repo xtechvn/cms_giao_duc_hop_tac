@@ -1,0 +1,536 @@
+﻿@{
+    ViewData["Title"] = "Quản lý sản phẩm tour";
+}
+@using Microsoft.Extensions.Options
+@using Entities.ConfigModels
+@using Entities.Models
+@using Entities.ViewModels.Tour
+@model TourProductUpsertModel
+@inject IOptions<DomainConfig> domainConfig;
+@{
+    var URL_STATIC_IMAGE = domainConfig.Value.ImageStatic;
+    var tour_types = (List<AllCode>)ViewBag.TourTypes;
+    var tour_transports = (List<AllCode>)ViewBag.TourTransports;
+    var organizing_types = (List<AllCode>)ViewBag.OrganizingTypes;
+    var client_types = (List<AllCode>)ViewBag.ClientTypes;
+    var provinces = (List<Province>)ViewBag.Provinces;
+    var endPoints = (List<Province>)ViewBag.EndPoints;
+
+    var tour_transports_selected = new List<int>();
+    if (!string.IsNullOrEmpty(Model.Transportation))
+    {
+        tour_transports_selected = Model.Transportation.Split(',').Select(s => int.Parse(s)).ToList();
+    }
+}
+
+<style>
+    .main-pad-top {
+        padding-top: 121px;
+    }
+
+    .table .td-d-flex {
+        min-height: 35px !important;
+        vertical-align: middle;
+        width: 100%;
+        justify-content: center !important;
+    }
+
+    .table input:disabled {
+        background-color: #EEEEEE !important;
+    }
+
+    .td-d-flex .fa {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+</style>
+<section>
+    <div class="row-main container">
+        <h2 class="txt_18 bold mb20">@(Model.Id > 0 ? "Cập nhật": "Thêm mới") sản phẩm tour</h2>
+        <form id="form_tour_product">
+            <div class="tab-default nav nav-tabs">
+                <a class="active" href="#tab-thongtin" data-toggle="tab">Thông tin cơ bản</a>
+                <a class="" href="#tab-addition" data-toggle="tab">Thông tin thêm</a>
+                <a class="" href="#tab-anh" data-toggle="tab">Ảnh</a>
+                <a class="" href="#tab-gia" data-toggle="tab">Lịch trình Tour</a>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane show active" id="tab-thongtin" role="tabpanel">
+                    <div class="form-default3">
+                        <div class="row row_min">
+                            <div class="grid-item col-md-7">
+                                <div class="border">
+                                    <div class="form-default3 pd10">
+                                        <div class="row row_min">
+                                            <div class="form-group col-12">
+                                                <label class="lbl">Tên tour <sup class="red">*</sup></label>
+                                                <div class="wrap_input">
+                                                    <input type="hidden" class="form-control" asp-for="@Model.Id" />
+                                                    <input type="text" class="form-control" asp-for="@Model.TourName" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label class="lbl">Số ngày <sup class="red">*</sup></label>
+                                                <div class="wrap_input">
+                                                    <select class="form-control select2_modal" asp-for="@Model.Days" style="width:100%">
+                                                        <option value="">Chọn số ngày</option>
+                                                        @for (int i = 1; i <= 15; i++)
+                                                        {
+                                                            <option value="@i">@i ngày @(i-1) đêm</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-12" style="padding: 0 5px;">
+                                                <p><strong>Lịch trình</strong></p>
+                                            </div>
+                                            <div class="col-12" id="block_insert_day_description" style="padding: 0 5px;">
+                                                @if (Model.TourSchedule != null && Model.TourSchedule.Any())
+                                                {
+                                                    foreach (var schedule in Model.TourSchedule)
+                                                    {
+                                                        <div class="form-group col-12">
+                                                            <label class="lbl">Ngày @schedule.day_num <sup class="red">*</sup></label>
+                                                            <div class="wrap_input mb10">
+                                                                <input class="form-control day_title" placeholder="Tiêu đề" value="@schedule.day_title" />
+                                                            </div>
+                                                            <div class="wrap_input">
+                                                                <textarea class="form-control day_description" id="@($"day_{schedule.day_num}_description")" style="resize:none;">@schedule.day_description</textarea>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid-item col-md-5">
+                                <div class="border mb20 form-default3 pd10">
+                                    <div class="form-group col-12">
+                                        <div class="col-6">
+                                            <label class="choose">
+                                                <div class="ava default mb10 blue">
+                                                    <img id="avatar_image" class="img-preview @(string.IsNullOrEmpty(Model.Avatar) ? "mfp-hide" : string.Empty)" title="Click để chọn ảnh đại diện" src="@(!string.IsNullOrEmpty(Model.Avatar) ? (URL_STATIC_IMAGE + Model.Avatar) : string.Empty)" />
+                                                    <a id="ava_upload" class="@(!string.IsNullOrEmpty(Model.Avatar) ? "mfp-hide" : string.Empty)" style="display:flex; align-items:center;margin-top: 30px;"><i class="fa fa-cloud-upload" style="font-size:40px;"></i> <span class="ml10" style="font-size:15px;">Ảnh đại diện</span></a>
+                                                </div>
+                                                <input class="mfp-hide" type="file" name="ImgAvatar" onchange="_tour_product_detail.OnChangeAvartar()" />
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label class="lbl">Nhà cung cấp <sup class="red">*</sup></label>
+                                        <div class="wrap_input">
+                                            <select class="form-control" asp-for="@Model.SupplierId" style="width:100%">
+                                                @if (Model.SupplierId > 0)
+                                                {
+                                                    <option value="@Model.SupplierId">@Model.SupplierName</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label class="lbl">Loại tour <sup class="red">*</sup></label>
+                                        <div class="wrap_input">
+                                            <select class="form-control select2_modal" asp-for="@Model.TourType" style="width:100%">
+                                                <option value="">Chọn loại tour</option>
+                                                @if (tour_types != null && tour_types.Any())
+                                                {
+                                                    foreach (var item in tour_types)
+                                                    {
+                                                        <option value="@item.CodeValue">@item.Description</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label class="lbl">Hình thức <sup class="red">*</sup></label>
+                                        <div class="wrap_input">
+                                            <select class="form-control select2_modal" asp-for="@Model.OrganizingType" style="width:100%">
+                                                <option value="">Chọn hình thức</option>
+                                                @if (organizing_types != null && organizing_types.Any())
+                                                {
+                                                    foreach (var item in organizing_types)
+                                                    {
+                                                        <option value="@item.CodeValue">@item.Description</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label class="lbl">Giá công bố <sup class="red">*</sup></label>
+                                        <div class="wrap_input">
+                                            <input type="text" style=" background-color: lightgray; " class="currency" disabled asp-for="@Model.Price" value="@(Model.Price > 0 ? Model.Price.ToString("N0") : string.Empty)" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label class="lbl">Giá cũ</label>
+                                        <div class="wrap_input">
+                                            <input type="text" class="currency" asp-for="@Model.OldPrice" value="@(Model.OldPrice.HasValue ? Model.OldPrice.Value.ToString("N0") : string.Empty)" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label class="lbl">Điểm khởi hành <sup class="red">*</sup></label>
+                                        <div class="wrap_input">
+                                            <select class="form-control select2_modal" asp-for="@Model.StartPoint" style="width:100%">
+                                                <option value="">Chọn điểm đi</option>
+                                                @if (provinces != null && provinces.Any())
+                                                {
+                                                    foreach (var item in provinces)
+                                                    {
+                                                        <option value="@item.Id">@item.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label class="lbl">Điểm đến <sup class="red">*</sup></label>
+                                        <div class="wrap_input">
+                                            <select class="form-control select2_modal" id="EndPoints" multiple style="width:100%">
+                                                @if (endPoints != null && endPoints.Any())
+                                                {
+                                                    foreach (var item in endPoints)
+                                                    {
+                                                        if (Model.EndPoints != null && Model.EndPoints.Any())
+                                                        {
+                                                            if (Model.EndPoints.Contains(item.Id))
+                                                            {
+                                                                <option value="@item.Id" selected>@item.Name</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@item.Id">@item.Name</option>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Id">@item.Name</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label class="lbl">Hạng sao <sup class="red">*</sup></label>
+                                        <div class="wrap_input">
+                                            <select class="form-control select2_modal" asp-for="@Model.Star" style="width:100%">
+                                                <option value="">Chọn hạng sao</option>
+                                                <option value="1">1 Star</option>
+                                                <option value="2">2 Star</option>
+                                                <option value="3">3 Star</option>
+                                                <option value="4">4 Star</option>
+                                                <option value="5">5 Star</option>
+                                                <option value="0">Không xếp hạng sao</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label class="lbl">Lịch khởi hành<sup class="red">*</sup></label>
+                                        <div class="wrap_input">
+                                            <input type="text" class="form-control" asp-for="@Model.DateDeparture" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label class="lbl">Phương tiện <span class="red">*</span></label>
+                                        <div class="wrap_input">
+                                            @if (tour_transports != null && tour_transports.Any())
+                                            {
+                                                foreach (var item in tour_transports)
+                                                {
+                                                    if (item.CodeValue == 1)
+                                                    {
+                                                        <label class="check-list">
+                                                            <input type="checkbox" class="ckb_transport_type" id="ckb__hotel_service_type" value="@item.CodeValue"
+                                                                   @(tour_transports_selected.Contains(item.CodeValue) ? "checked" : string.Empty) />
+                                                            <span class="checkmark"></span>
+                                                            @item.Description
+                                                        </label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label class="check-list">
+                                                            <input type="checkbox" class="ckb_transport_type" value="@item.CodeValue"
+                                                                   @(tour_transports_selected.Contains(item.CodeValue) ? "checked" : string.Empty) />
+                                                            <span class="checkmark"></span>
+                                                            @item.Description
+                                                        </label>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border mb20">
+                                    <div class="lb-form">Hiển thị website</div>
+                                    <div class="pd10">
+                                        <div class="row pd10">
+                                            <div class="col-md-6">
+                                                <label class="radio">
+                                                    <input type="radio" asp-for="@Model.IsDisplayWeb" value="true" />
+                                                    <span class="checkmark"></span>
+                                                    Mở
+                                                </label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="radio">
+                                                    <input type="radio" asp-for="@Model.IsDisplayWeb" value="false" />
+                                                    <span class="checkmark"></span>
+                                                    Đóng
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border mb20">
+                                    <div class="lb-form">Vị trí hiển thị</div>
+                                    <div class="pd10">
+                                        <div class=" pd10">
+                                            <label class="lbl">B2B</label>
+                                            <div class="pd10">
+                                                <div class="col-md-12">
+                                                    <select class="form-control" asp-for="@Model.PositionB2B">
+                                                        <option value="0">Không đặt vị trí</option>
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                        <option value="4">4</option>
+                                                        <option value="5">5</option>
+                                                        <option value="6">6</option>
+                                                        <option value="7">7</option>
+                                                        <option value="8">8</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <label class="lbl">B2C</label>
+                                            <div class="pd10">
+                                                <div class="col-md-12">
+                                                    <select class="form-control" asp-for="@Model.PositionB2C">
+                                                        <option value="0">Không đặt vị trí</option>
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                        <option value="4">4</option>
+                                                        <option value="5">5</option>
+                                                        <option value="6">6</option>
+                                                        <option value="7">7</option>
+                                                        <option value="8">8</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab-addition" role="tabpanel">
+                    <div class="form-default3">
+                        <div class="row row_min">
+                            <div class="grid-item col-md-12">
+                                <div class="border mb20">
+                                    <div class="form-default3 pd10">
+                                        <div class="row row_min">
+                                            <div class="form-group col-12">
+                                                <label class="lbl bold">Mô tả <sup class="red">*</sup></label>
+                                                <div class="wrap_input">
+                                                    <textarea class="form-control" asp-for="@Model.Description"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label class="lbl bold">Bao gồm</label>
+                                                <div class="wrap_input">
+                                                    <textarea class="form-control" asp-for="@Model.Include"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label class="lbl bold">Không bao gồm</label>
+                                                <div class="wrap_input">
+                                                    <textarea class="form-control" asp-for="@Model.Exclude"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label class="lbl bold">Điều kiện hoàn hủy</label>
+                                                <div class="wrap_input">
+                                                    <textarea class="form-control" asp-for="@Model.Refund"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label class="lbl bold">Chính sách phụ thu</label>
+                                                <div class="wrap_input">
+                                                    <textarea class="form-control" asp-for="@Model.Surcharge"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label class="lbl bold">Lưu ý</label>
+                                                <div class="wrap_input">
+                                                    <textarea class="form-control" asp-for="@Model.Note"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab-anh" role="tabpanel">
+                    <div class="form-default3">
+                        <div class="row row_min">
+                            <div class="form-group col-12">
+                                <label class="border flex align-center justify-center pd10 mb15 blue" style="min-height: 100px;">
+                                    <input class="mfp-hide" type="file" name="ImageData" onchange="_tour_product_detail.OnAddImage()" multiple />
+                                    <i class="fa fa-cloud-upload" style="font-size:40px;"></i> <span class="ml10" style="font-size:15px;">Click để tải ảnh lên</span>
+                                </label>
+                                <div class="row list-choose" id="grid_image_preview">
+                                    @if (Model.OtherImages != null && Model.OtherImages.Any())
+                                    {
+                                        foreach (var url in Model.OtherImages)
+                                        {
+                                            <div class="col-md-2 col-6 mb10 image_preview">
+                                                <div class="choose-ava">
+                                                    <img class="img_other" src="@(URL_STATIC_IMAGE + url)">
+                                                    <button type="button" class="delete" onclick="this.closest('.image_preview').remove();">×</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab-gia" role="tabpanel">
+                    <div class="form-default3" style="display:flex">
+                        <h4 style="width:40%;">
+                            Lịch trình và bảng giá Tour <a href="javascript:;" class="fa fa-plus-circle green tour-product-price-item-add"></a>
+                        </h4>
+
+                    </div>
+                    <div class="form-default3">
+                        <div class="row row_min">
+                            <div class="form-group col-12">
+                                <table class="table table-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th> STT </th>
+                                            <th class="text-center" style="min-width: 200px;"> Áp dụng cho loại khách </th>
+                                            <th class="text-center" style="min-width: 200px;"> Ngày khởi hành (Ngày bắt đầu) </th>
+                                            <th class="text-center" style="min-width: 200px; "> Áp dụng Đến ngày </th>
+                                            <th class="text-center" style="min-width: 100px;"> Tour Daily </th>
+                                            <th class="text-center" style="min-width: 200px;"> Giá trên 01 người lớn </th>
+                                            <th class="text-center" style="min-width: 200px;"> Giá trên 01 trẻ em </th>
+                                            <th class="text-center" style="min-width: 80px;"> Ngày tạo </th>
+                                            <th class="text-center" style="min-width: 80px;"> Ngày cập nhật </th>
+                                            <th class="text-center" style="min-width: 150px;"> Tác vụ  </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tour-product-price">
+                                        <tr class="tour-product-price-tr" data-id="0">
+                                            <td>
+                                                <div class="d-flex align-center td-d-flex tour-product-price-id">
+                                                    0
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-center td-d-flex">
+                                                    <select id="tour-product-price-item" class="select select2 tour-product-price-item-clienttypes" disabled style="width: 100%;">
+                                                        @if (client_types != null && client_types.Count > 0)
+                                                        {
+                                                            foreach (var item in client_types)
+                                                            {
+                                                                if (item.CodeValue == 5)
+                                                                {
+                                                                    <option value="@item.CodeValue" selected>@item.Description</option>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@item.CodeValue">@item.Description</option>
+
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                </div>
+
+                                            </td>
+
+                                            <td>
+                                                <div class="d-flex align-center td-d-flex">
+                                                    <input class="form-control tour-product-price-item-fromdate" disabled type="text" name="tour-product-price-item-fromdate" value="@(DateTime.Now.ToString("dd/MM/yyyy"))">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-center td-d-flex">
+                                                    <input class="form-control tour-product-price-item-todate" disabled type="text" name="tour-product-price-item-todate" value="@(DateTime.Now.AddDays(1).ToString("dd/MM/yyyy"))">
+                                                </div>
+                                            </td>
+
+                                            <td class="txt_14">
+                                                <div class="d-flex align-center td-d-flex">
+                                                    <input type="checkbox" class="tour-product-price-item-isdaily" name="isdaily" disabled="disabled" value="0">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-center td-d-flex">
+                                                    <input class="form-control currency tour-product-price-item-adult-price" type="text" name="tour-product-price-item-adult-price" disabled value="0">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-center td-d-flex">
+                                                    <input class="form-control currency tour-product-price-item-child-price" type="text" name="tour-product-price-item-child-price" disabled value="0">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-center td-d-flex">
+                                                    @(DateTime.Now.ToString("dd/MM/yyyy"))
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-center td-d-flex">
+                                                    @(DateTime.Now.ToString("dd/MM/yyyy"))
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-center td-d-flex">
+                                                    <a href="javascript:;" class="fa fa-plus-circle green tour-product-price-item-add"></a>
+                                                    <a href="javascript:;" class="fa fa-pencil ml-2 green tour-product-price-item-edit"></a>
+                                                    <a href="javascript:;" class="fa fa-trash ml-1 red tour-product-price-item-delete"></a>
+                                                    <a href="javascript:;" class="fa fa-check ml-2 green tour-product-price-item-confirm"></a>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="text-center" style="width: 100%;position: fixed;bottom: 0px;background: #ebebeb; padding:20px 0;z-index: 999999;">
+        <a type="button" class="btn btn-default btn btn-default cancel mr10" href="/TourProduct">Quay lại</a>
+        @if (Model.Id <= 0 || Model.Status == 7)
+        {
+            <button type="button" class="btn btn-default green mr10" onclick="_tour_product_detail.OnSave(7)">
+                <i class="fa fa-save"></i> Lưu nháp
+            </button>
+        }
+        <button type="button" class="btn btn-default" onclick="_tour_product_detail.OnSave(0)">
+            <i class="fa fa-save"></i> Lưu
+        </button>
+    </div>
+</section>
+
+@section scripts {
+    <script type="text/javascript" src="~/modules/tour_product_detail.js"></script>
+}

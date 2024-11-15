@@ -1,0 +1,81 @@
+﻿@{
+    Layout = null;
+}
+
+@using Entities.Models
+@model HotelSurcharge
+<form id="form_hotel_surcharge">
+    <div class="grid-item">
+        <div class="row pd10">
+            <div class="form-group col-6">
+                <label class="lbl">Mã phụ thu</label>
+                <div class="wrap_input">
+                    <input type="text" class="form-control" asp-for="@Model.Code" />
+                </div>
+            </div>
+            <div class="form-group col-6">
+                <label class="lbl">Giá bán</label>
+                <div class="wrap_input">
+                    <input type="text" class="form-control currency" asp-for="@Model.Price" value="@(Model.Price.HasValue ? Model.Price.Value.ToString("N0") : string.Empty)" />
+                </div>
+            </div>
+            <div class="form-group col-12">
+                <label class="lbl">Tên phụ thu <sup class="red">*</sup></label>
+                <div class="wrap_input">
+                    <input type="hidden" asp-for="@Model.Id" />
+                    <input type="hidden" asp-for="@Model.HotelId" />
+                    <input type="text" class="form-control" asp-for="@Model.Name" />
+                </div>
+            </div>
+            <div class="form-group col-12">
+                <label class="lbl">Mô tả</label>
+                <div class="wrap_input">
+                    <textarea class="form-control" style="height: 90px;" asp-for="@Model.Description"></textarea>
+                </div>
+            </div>
+            <div class="form-group col-12">
+                <label class="lbl">Hiệu lực</label>
+                <div class="row">
+                    <div class="col-6">
+                        <p>Từ ngày: </p>
+                        <div class="wrap_input">
+                            <input id="hotel-surcharge-from-date" type="text" class="form-control"  value="@(Model.FromDate==null?DateTime.Now.ToString("dd/MM/yyyy"):((DateTime)Model.FromDate).ToString("dd/MM/yyyy"))">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <p>Đến ngày: </p>
+                        <div class="wrap_input">
+                            <input id="hotel-surcharge-to-date" type="text" class="form-control" value="@(Model.ToDate==null?DateTime.Now.ToString("dd/MM/yyyy"):((DateTime)Model.ToDate).ToString("dd/MM/yyyy"))">
+                        </div>
+                    </div>
+                </div>
+              
+            </div>
+            <div class="form-group col-12">
+                <label class="lbl">Trạng thái</label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="radio">
+                            <input type="radio" asp-for="@Model.Status" value="0" />
+                            <span class="checkmark"></span>
+                            Mở
+                        </label>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="radio">
+                            <input type="radio" asp-for="@Model.Status" value="1" />
+                            <span class="checkmark"></span>
+                            Đóng
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-right">
+        <button type="button" class="btn btn-default btn btn-default cancel" data-dismiss="modal">Bỏ qua</button>
+        <button type="button" class="btn btn-default" onclick="hotel_surcharge.Upsert()">
+            @(Model.Id > 0 ? "Cập nhật" : "Thêm mới")
+        </button>
+    </div>
+</form>

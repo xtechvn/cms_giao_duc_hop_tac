@@ -1,0 +1,85 @@
+﻿@using Entities.Models
+@using Entities.ViewModels.Funding
+
+@model SupplierDetailViewModel
+<form id="UserAgent_Detail" onsubmit="return false">
+    @if (Model != null)
+    {
+        <div class="row">
+            <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Nhà cung cấp hiện tại </label></div>
+            <div class="col-md-8 mb10">
+                <input type="text" class="form-control" value="@Model.FullName" disabled>
+            </div>
+            <div class="col-md-4 mb10"><label id="sothue_cmnd" class="lbl mt5 mb0">Nhà cung cấp mới </label><sup class="red">*</sup></div>
+            <div class="col-md-8 mb10">
+                <div class="wrap_input">
+                    <select class="select2 client-select" id="supplier-select" name="supplier-select" multiple="multiple" style="width:100% !important">
+                    </select>
+                </div>
+                <label id="UserId_new-error" class="error" for="UserId_new"></label>
+            </div>
+
+        </div>
+        <div class="text-center">
+            <button onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+            <button onclick="_SetService_Detail.OnUpdataSupplier()" class="btn btn-default">Lưu</button>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Nhà cung cấp hiện tại </label></div>
+            <div class="col-md-8 mb10">
+                <input type="text" class="form-control" disabled>
+            </div>
+            <div class="col-md-4 mb10"><label id="sothue_cmnd" class="lbl mt5 mb0">Nhà cung cấp mới </label><sup class="red">*</sup></div>
+            <div class="col-md-8 mb10">
+                <div class="wrap_input">
+                    <select class="select2 client-select" id="supplier-select" name="supplier-select" multiple="multiple" style="width:100% !important">
+                    </select>
+                </div>
+                <label id="UserId_new-error" class="error" for="UserId_new"></label>
+            </div>
+
+        </div>
+        <div class="text-center">
+            <button onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+            <button onclick="_SetService_Detail.OnUpdataSupplier()" class="btn btn-default">Lưu</button>
+        </div>
+    }
+
+</form>
+
+<script>
+
+    $("#supplier-select").select2({
+        theme: 'bootstrap4',
+        placeholder: "Tên nhà cung cấp",
+        maximumSelectionLength: 1,
+            ajax: {
+                url: "/PaymentRequest/GetSuppliersSuggest",
+                type: "post",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    var query = {
+                        name: params.term,
+                    }
+
+                    // Query parameters will be ?search=[term]&type=public
+                    return query;
+                },
+                processResults: function (response) {
+                    return {
+                        results: $.map(response, function (item) {
+                            return {
+                                text: item.name,
+                                id: item.id,
+                            }
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+</script>

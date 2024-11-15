@@ -1,0 +1,193 @@
+﻿@{
+    Layout = null;
+
+    Entities.ViewModels.ElasticSearch.UserESViewModel user = (Entities.ViewModels.ElasticSearch.UserESViewModel)ViewBag.User;
+    Entities.Models.Tour tour = (Entities.Models.Tour)ViewBag.Tour;
+    List<Entities.Models.AllCode> tour_type_list = (List<Entities.Models.AllCode>)ViewBag.TourType;
+    List<Entities.Models.AllCode> organizing_type_list = (List<Entities.Models.AllCode>)ViewBag.OrganizingType;
+    Entities.Models.TourProduct? tour_product = (Entities.Models.TourProduct?)ViewBag.TourProduct;
+    bool is_order_manual = (bool)ViewBag.IsOrderManual;
+    bool is_allow_to_edit = (bool)ViewBag.AllowToEdit;
+    bool is_self_design = (bool)ViewBag.IsSelfDesigned;
+}
+
+<style>
+    .stop-scrolling {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .tour_service {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+    .input-disabled-background {
+        background-color: #f7f7f7 !important;
+    }
+
+ 
+</style>
+<div class="modal fade tour_service" id="add-service-tour" data-service-code="@(tour!=null?(tour.ServiceCode==null?"":tour.ServiceCode):"")" data-tour-id="@(tour!=null?tour.Id:0)" aria-modal="true" role="dialog" style="display: block; padding-left: 17px;">
+    <div class="modal-dialog" style="max-width: 95%;">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Thêm dịch vụ tour du lịch</h4>
+                <button type="button" class="close" onclick="_order_detail_tour.Close()">×</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row row_min">
+                    <label class="check-list mb10 mr25">
+                        <input type="radio" name="enable-tour-product" class="on-enable-tour-product" value="0" @(is_self_design ? "" : "checked")>
+                        <span class="checkmark"></span>
+                        Sản phẩm tour có sẵn
+                    </label>
+                    <label class="check-list mb10 mr25" style="margin-left: 30px;">
+                        <input type="radio" name="enable-tour-product" class="on-enable-tour-product" value="1" @(is_self_design ? "checked" : "")>
+                        <span class="checkmark"></span>
+                        Sản phẩm tour thiết kế
+                    </label>
+                </div>
+                <div class="row row_min ">
+                    <div class="col-lg-3 col-md-6 mb15 tour-product-box">
+                        <label class="lbl mb5">Sản phẩm Tour </label>
+                        <img src="/images/icons/loading.gif" style="width: 25px;height: 25px;margin-left: 15px; display:none;" class="img_loading_select_tour_product">
+                        <select class="select2 service-tour-exists-tour" name="" style="width: 100%;">
+                            @if (tour_product != null && tour_product.Id > 0)
+                            {
+                            <option value="@tour_product.Id" selected="selected">@tour_product.TourName</option>
+
+                            }
+                        </select>
+
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb15 tour-product-box-manual">
+                        <label class="lbl mb5">Sản phẩm Tour  <sup class="red">*</sup></label>
+                        <img src="/images/icons/loading.gif" style="width: 25px;height: 25px;margin-left: 15px; display:none;" class="img_loading_select_tour_product">
+                        <input class="form-control service-tour-product-name-manual" type="text" name="service-tour-product-name-manual" value="@(tour_product != null && tour_product.Id > 0? tour_product.TourName:"")">
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb15">
+                        <label class="lbl mb5">Loại tour <sup class="red">*</sup></label>
+                        <select class="select2 service-tour-type" style="width: 100%;">
+                            @foreach (var type in tour_type_list)
+                            {
+                                if (tour != null && tour.TourType == type.CodeValue)
+                                {
+                            <option value="@type.CodeValue" selected="selected">@type.Description</option>
+
+                                }
+                                else
+                                {
+                            <option value="@type.CodeValue">@type.Description</option>
+
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb15">
+                        <label class="lbl mb5">Điểm đi <sup class="red">*</sup></label>
+                        <select class="service-tour-startpoint" style="width: 100%;">
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb15">
+                        <label class="lbl mb5">Điểm đến <sup class="red">*</sup></label>
+                        <select class="service-tour-endpoint" multiple="multiple" style="width: 100%;">
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb15">
+                        <label class="lbl mb5">Hình thức tổ chức <sup class="red">*</sup></label>
+                        <select class="select2 service-tour-organizing_type" style="width: 100%;">
+                            @foreach (var type in organizing_type_list)
+                            {
+                                if (tour != null && tour.OrganizingType == type.CodeValue)
+                                {
+                            <option value="@type.CodeValue" selected="selected">@type.Description</option>
+
+                                }
+                                else
+                                {
+                            <option value="@type.CodeValue">@type.Description</option>
+
+                                }
+                            }
+
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb15">
+                        <label class="lbl mb5">Ngày bắt đầu <sup class="red">*</sup></label>
+                        <div class="datepicker-wrap" style="width:100%">
+                            <input class="form-control datepicker-input service-tour-startdate" type="text" value="@(tour!=null && tour.Id>0?((DateTime)tour.StartDate).ToString("dd/MM/yyyy"):DateTime.Now.ToString("dd/MM/yyyy") )">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb15">
+                        <label class="lbl mb5">Ngày kết thúc <sup class="red">*</sup></label>
+                        <div class="datepicker-wrap" style="width:100%">
+                            <input class="form-control datepicker-input service-tour-enddate" type="text" value="@(tour!=null && tour.Id>0?((DateTime)tour.EndDate).ToString("dd/MM/yyyy"):DateTime.Now.ToString("dd/MM/yyyy") )">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb15">
+                        <label class="lbl mb5">Điều hành viên <sup class="red">*</sup></label>
+                        <select class="select2 service-tour-main-staff" name="" style="width: 100%;">
+                            @if (user != null && user.id > 0)
+                            {
+                            <option value="@(user.id)" selected="selected">@(user.fullname + " - "+ user.email)</option>
+                            }
+
+                        </select>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                        <label class="lbl mb5">Chi phí khác </label>
+                        <input id="servicemanual-tour-other-amount" class="form-control currency text-right servicemanual-tour-other-amount" type="text" name="servicemanual-tour-other-amount" placeholder="Nhập chi phí khác" value="@(tour!=null && tour.Id>0 && tour.OthersAmount!=null?((double)tour.OthersAmount).ToString("N0"):"0")">
+
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                        <label class="lbl mb5">Hoa hồng CTV </label>
+                        <input id="servicemanual-tour-commission" class="form-control currency text-right servicemanual-tour-commission" type="text" name="servicemanual-tour-commission" placeholder="Nhập chiết khấu" value="@(tour!=null && tour.Id>0&& tour.Commission!=null?((double)tour.Commission).ToString("N0"):"0")">
+
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                        <label class="lbl mb5">Quỹ CSKH </label>
+                        <input id="servicemanual-tour-fundCustomerCare" class="form-control currency text-right servicemanual-tour-fundCustomerCare" type="text" name="servicemanual-tour-fundCustomerCare" placeholder="Quỹ chăm sóc khách hàng" value="@(tour!=null && tour.Id>0&& tour.FundCustomerCare!=null?((double)tour.FundCustomerCare).ToString("N0"):"0")" disabled>
+
+                    </div>
+                </div>
+                <div class="bold mb15 txt_14">Bảng kê dịch vụ</div>
+                <div class="table-responsive table-gray service-tour-packages">
+                    <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+
+                </div>
+                <div class="txt_14 bold mb10"></div>
+                <div class="table-responsive table-gray" id="servicemanual-tour-total-amount-block">
+                    <div class="row">
+                        <div class="col-6"></div>
+                        <div class="col-3 bold text-right">Tổng tiền dịch vụ:  &nbsp;&nbsp;&nbsp;&nbsp;<strong class="service-manual-tour-total-service-amount">0</strong> </div>
+                        <div class="col-3 bold text-right">Tổng lợi nhuận dịch vụ: &nbsp;&nbsp;&nbsp;&nbsp;<strong class="service-manual-tour-total-service-profit">0</strong></div>
+                    </div>
+                </div>
+                <div class="bold mb15 txt_14">Ghi chú</div>
+                <div class="form-group">
+                    <textarea class="form-control service-tour-note" style="height: 200px;">@(tour != null&& tour.Note!=null?tour.Note:"")</textarea>
+                </div>
+                <div class="bold mb15 txt_14">Danh sách đoàn</div>
+                <div class="table-responsive table-gray service-tour-tourists">
+                    <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+
+                </div>
+                <div class="attachment-file-block border pd10">
+                    <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+                </div>
+                <div class="text-right" id="service-tour-button-div" style="margin-top: 10px;">
+                    <div type="submit" class="btn btn-default btn btn-default cancel" onclick="_order_detail_tour.Close()">Bỏ qua</div>
+                    @if (is_order_manual && is_allow_to_edit && (ViewBag.IsLock == null || ViewBag.IsLock == false))
+                    {
+                        <div type="submit" class="btn btn-default btn-summit-service-tour" onclick="_order_detail_tour.Summit()">@(tour!=null&&tour.Id>0?"Sửa":"Thêm")</div>
+
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

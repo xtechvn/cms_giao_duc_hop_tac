@@ -1,0 +1,183 @@
+﻿@{
+    ViewData["Title"] = "Chi tiết đặt dịch vụ vé máy bay";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int fly_count = (int)ViewBag.FlyCount;
+    bool allow_to_finish_payment = (bool)ViewBag.AllowToFinishPayment;
+    long go_service_id = (long)ViewBag.GoServiceId;
+    long back_service_id = (long)ViewBag.BackServiceId;
+    long client_id = (long)ViewBag.ClientId;
+    double refund_amount = (long)ViewBag.RefundAmount;
+}
+@using Entities.ViewModels.SetServices
+@model SetServiceFlyBookingDetailViewModel
+<style>
+    .set-service-fly-detail-box {
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-left: 10px;
+        margin-left: 0;
+    }
+
+    .set-service-fly-detail-title {
+        padding-top: 15px;
+    }
+
+    .input-disabled-background {
+        background-color: #f0f0f0 !important;
+        color: black !important;
+    }
+</style>
+<div class="row-main container">
+    <div class="table-responsive table-white">
+        <input id="service-fly-detail-data" style="display:none" 
+               data-user="@ViewBag.user" data-order-id="@Model.OrderId" data-sale="@Model.OperatorName " data-status="@Model.FlyBookingStatus" data-group-booking-id="@Model.GroupBookingId" 
+               data-servicecode="@Model.ServiceCode" data-goserviceid="@go_service_id.ToString()" data-backserviceid="@back_service_id.ToString()" data-totalamount="@Model.TotalOrderAmount"
+               data-orderid="@Model.OrderId" data-clientid="@client_id"
+               >
+        <table class="table table-nowrap">
+            <tbody>
+                <tr>
+                    <td colspan="3">
+                        <strong>Dịch vụ vé máy bay: @Model.ServiceCode</strong>
+                        @if (Model.FlyBookingStatus == 0)
+                        {<span class="status-oranger">@Model.FlyBookingStatusName</span>}
+                        @if (Model.FlyBookingStatus == 1)
+                        {<span class="status-oranger">@Model.FlyBookingStatusName</span>}
+                        @if (Model.FlyBookingStatus == 2)
+                        {<span class="status-blue">@Model.FlyBookingStatusName</span>}
+                        @if (Model.FlyBookingStatus == 3)
+                        {<span class="status-green">@Model.FlyBookingStatusName</span>}
+                        @if (Model.FlyBookingStatus == 8)
+                        {<span class="status-green">@Model.FlyBookingStatusName</span>}
+                        @if (Model.FlyBookingStatus == 4)
+                        {<span class="status-green">@Model.FlyBookingStatusName</span>}
+                        @if (Model.FlyBookingStatus == 5)
+                        {<span class="status-red">@Model.FlyBookingStatusName</span>}
+
+                    </td>
+                </tr>
+                <tr>
+                    <td style="min-width: 400px;">
+                        <div class="row">
+                            <div class="col-4 mb10 gray">Nhà cung cấp</div>
+                            <div class="col-8 mb10" id="suplier-detail" data-suplier-name="@Model.SuplierName" data-suplier-id="@Model.SuplierId">: @Model.SuplierName</div>
+                            <div class="col-4 mb10 gray">Ngày đi</div>
+                            <div class="col-8 mb10">: @(Model.StartDate.ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                            <div class="col-4 mb10 gray">Ngày về</div>
+                            <div class="col-8 mb10">:  @(fly_count>1? Model.EndDate.ToString("dd/MM/yyyy HH:mm:ss"):"N/A")</div>
+                            <div class="col-4 mb10 gray">Nhân viên bán</div>
+                            <div class="col-8 mb10">: @Model.SalerName</div>
+                            <div class="col-4 mb10 gray">Điều hành viên</div>
+                            <div class="col-8 mb10">: @Model.OperatorName  <a class="blue" href="javascript:;" onclick="_set_service_fly_detail.PopupChangeOperator('@Model.OperatorName',)"><i class="fa fa-edit blue"></i></a></div>
+                        </div>
+                    </td>
+                    <td style="min-width: 400px;">
+                        <div class="row">
+                            <div class="col-4 mb10 gray">Tổng giá trị đơn hàng</div>
+                            <div class="col-8 mb10">: @Model.TotalOrderAmount.ToString("N0")</div>
+                            <div class="col-4 mb10 gray">Tổng giá trị dịch vụ</div>
+                            <div class="col-8 mb10" id="saler-order-amount" data-amount="@(Model.BaseTotalAmount.ToString())">: @Model.BaseTotalAmount.ToString("N0")</div>
+                            <div class="col-4 mb10 gray">Tổng chi dịch vụ thực tế</div>
+                            <div class="col-8 mb10" id="operator-order-amount" data-amount="@(Model.OperatorOrderTotalAmount>0?Model.OperatorOrderTotalAmount.ToString():Model.BaseTotalAmount.ToString())">: @(Model.OperatorOrderTotalAmount>0?Model.OperatorOrderTotalAmount.ToString("N0"):Model.BaseTotalAmount.ToString("N0"))</div>
+                            <div class="col-4 mb10 gray">Tổng Lợi nhuận thực tế</div>
+                            <div class="col-8 mb10" id="operator-total-profit" data-profit="@Model.OperatorOrderProfit.ToString("N0")">: @Model.OperatorOrderProfit.ToString("N0")</div>
+                            <div class="col-4 mb10 gray">Lợi nhuận Saler nhập</div>
+                            <div class="col-8 mb10">: @Model.TotalSalerProfit.ToString("N0")</div>
+                            <div class="col-4 mb10 gray">Hoàn trả khách hàng</div>
+                            <div class="col-8 mb10">: @Model.Refund.ToString("N0")</div>
+                            <div class="col-4 mb10 gray">Nhà cung cấp hoàn tiền</div>
+                            <div class="col-8 mb10">: @ViewBag.amountNcc.ToString("N0")</div>
+                        </div>
+                    </td>
+                    <td style="min-width: 400px;">
+                        <div class="row">
+                            <div class="col-5 mb10 gray">Người tạo</div>
+                            <div class="col-7 mb10">: @Model.UserCreate</div>
+                            <div class="col-5 mb10 gray">Ngày tạo</div>
+                            <div class="col-7 mb10 ">: @(Convert.ToDateTime(Model.CreatedDate).ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                            <div class="col-5 mb10 gray">Người cập nhật</div>
+                            <div class="col-7 mb10">: @(Model.UserUpdate ==null?"N/A": Model.UserUpdate)</div>
+                            <div class="col-5 mb10 gray">Ngày cập nhật</div>
+                            <div class="col-7 mb10">: @(Model.UserUpdate == null ? "N/A" : Model.UpdatedDate.ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-default" style="border-bottom: 1px solid #CCCCCC;">
+        <div class="row" style=" width: 100%; ">
+            <div class="tab-default col-md-9 mb0 mt10">
+                <a href="javascript:;" class="service-fly-detail-change-tab-button  service-fly-detail-button-order active" data-loaded="0" data-tab-id="0">Đơn hàng</a>
+                <a href="javascript:;" class="service-fly-detail-change-tab-button  service-fly-detail-button-need-to-order" data-loaded="0" data-tab-id="1">Dịch vụ cần đặt</a>
+                <a href="javascript:;" class="service-fly-detail-change-tab-button  service-fly-detail-button-ordered" data-loaded="0" data-tab-id="2">Dịch vụ đã đặt</a>
+                <a href="javascript:;" class="service-fly-detail-change-tab-button  service-fly-detail-button-payment" data-loaded="0" data-tab-id="3">Thanh toán</a>
+                <a href="javascript:;" class="service-fly-detail-change-tab-button  service-fly-detail-button-servicecode" data-loaded="0" data-tab-id="4">Code dịch vụ</a>
+                <a href="javascript:;" class="service-fly-detail-change-tab-button  service-fly-detail-button-refund" data-loaded="0" data-tab-id="5">Hoàn trả khách hàng</a>
+                @*<a href="javascript:;" class="service-fly-detail-change-tab-button  service-fly-detail-button-marketing" data-loaded="0" data-tab-id="6">Chi Phí Marketing</a>*@
+         
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="service-fly-detail-tab service-fly-detail-tab-order">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; " class="loading" />
+        </div>
+        <div class="service-fly-detail-tab service-fly-detail-tab-need-to-order" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; " class="loading" />
+        </div>
+        <div class="service-fly-detail-tab service-fly-detail-tab-ordered" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; " class="loading" />
+        </div>
+        <div class="service-fly-detail-tab service-fly-detail-tab-payment" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; " class="loading" />
+        </div>
+        <div class="service-fly-detail-tab service-fly-detail-tab-servicecode" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; " class="loading" />
+        </div>   
+        <div class="service-fly-detail-tab service-fly-detail-tab-refund" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; " class="loading" />
+        </div> 
+        <div class="service-fly-detail-tab service-fly-detail-tab-marketing" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; " class="loading" />
+        </div>
+    </div>
+    <div class="form-group align-right mt20 block pin-btn-bottom ">
+        <b class="btn btn-default cancel ml-1" onclick="_set_service_fly_detail.Back()">Quay lại</b>
+        @if (Model.FlyBookingStatus != (int)Utilities.Contants.ServiceStatus.Payment && Model.FlyBookingStatus != (int)Utilities.Contants.ServiceStatus.Cancel && Model.FlyBookingStatus != (int)Utilities.Contants.ServiceStatus.Decline)
+        {
+            <button type="button" class="btn btn-default red ml-1 " onclick="_SetService_Detail.OnResetStatusPopup('',3,@Model.OrderId,'@Model.GroupBookingId')">Từ chối</button>
+        }
+
+        @if (Model.FlyBookingStatus == (int)Utilities.Contants.ServiceStatus.WaitingExcution)
+        {
+            <button type="button" class="btn btn-default ml-1" onclick="_set_service_fly_detail.GrantOrderPermission($(this))">Nhận đặt dịch vụ</button>
+        }
+        @if (Model.FlyBookingStatus == (int)Utilities.Contants.ServiceStatus.OnExcution)
+        {
+            <button type="button" class="btn btn-default ml-1" onclick="_set_service_fly_detail.SendServiceCode($(this))">Trả code dịch vụ</button>
+        }
+        @if ((Model.FlyBookingStatus == (int)Utilities.Contants.ServiceStatus.ServeCode || Model.FlyBookingStatus == (int)Utilities.Contants.ServiceStatus.ServeCodeKH) && allow_to_finish_payment)
+        {
+            <button type="button" class="btn btn-default ml-1" onclick="_set_service_fly_detail.ChangeToPayment($(this))">Quyết toán</button>
+        }
+        else if (Model.FlyBookingStatus == (int)Utilities.Contants.ServiceStatus.ServeCode || Model.FlyBookingStatus == (int)Utilities.Contants.ServiceStatus.ServeCodeKH)
+        {
+            <button type="button" class="btn btn-default ml-1 disabled" onclick="return false;" disabled style="">Quyết toán</button>
+        }
+
+    </div>
+</div>
+
+
+@section scripts {
+
+    <script type="text/javascript" src="/modules/set_service_fly.js"></script>
+    <script type="text/javascript" src="/modules/SetServiceDetail.js"></script>
+    <script type="text/javascript" src="/modules/payment_request.js"></script>
+    <script type="text/javascript" src="/js/zebra_datepicker.min.js"></script>
+    <script>_set_service_fly_detail.Initialization()</script>
+    <script type="text/javascript" src="~/modules/add_payment_request.js"></script>
+
+
+}

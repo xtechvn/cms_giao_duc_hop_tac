@@ -1,0 +1,158 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.ViewModels
+@using Entities.ViewModels.Hotel
+@using Microsoft.Extensions.Options
+@using Entities.ConfigModels
+@model GenericViewModel<HotelGridModel>
+@inject IOptions<DomainConfig> domainConfig;
+@{
+    var URL_STATIC_IMAGE = domainConfig.Value.ImageStatic;
+}
+<div id="report-search-data" class="table-responsive table-default table-gray">
+    <table class="table table-nowrap">
+        <thead>
+            <tr>
+                <th style="min-width: 30px;">STT</th>
+                <th>ID</th>
+                <th style="width:10%;">Ảnh đại diện</th>
+                <th style="min-width: 250px;">Tên Khách sạn</th>
+                <th>Năm thành lập</th>
+                <th>Địa điểm</th>
+                <th>Liên hệ</th>
+                <th>Nhân viên phụ trách</th>
+                <th>Người tạo</th>
+                <th>Ngày tạo</th>
+                <th>Người cập nhật</th>
+                <th>Ngày cập nhật</th>
+                <th>Số ngày còn hiệu lực</th>
+                <th style="min-width: 100px;">Tác vụ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ListData != null && Model.ListData.Count > 0)
+            {
+                var counter = (Model.CurrentPage - 1) * Model.PageSize;
+                foreach (var item in Model.ListData)
+                {
+                    counter++;
+                    <tr class="hotel-data-id-tr">
+                        <td>@counter</td>
+                        <td class="hotel-data-id" data-id="@item.Id">@item.Id</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.ImageThumb))
+                            {
+                                <img title="Click để chọn ảnh đại diện" src="@(!string.IsNullOrEmpty(item.ImageThumb) ? (item.ImageThumb) : string.Empty)" />
+                            }
+                        </td>
+                        <td>
+                            <div>
+                                <a href="/hotel/detail/@item.Id" class="blue txt_14">
+                                    @item.Name
+                                    @if (item.IsDisplayWebsite)
+                                    {
+                                        <i class="" fa fa-check-square-o""></i>
+                                    }
+                                </a>
+                            </div>
+
+                            @if (item.Star != null && item.Star > 0)
+                            {
+                                <div class="star oranger">
+                                    @for (var i = 1; i <= item.Star; i++)
+                                    {
+                                        <i class="fa fa-star"></i>
+                                    }
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(item.Street))
+                            {
+                                <div>
+                                    <i class="fa fa-map-marker"></i>
+                                    <span>@item.Street</span>
+                                </div>
+                            }
+                            <div class="div-program-hotel-id-@item.Id">
+                                Chương trình:
+                                <div class="box-placeholder placeholder" style="height:12px"></div>
+                            </div>
+                            <div class="program-hotel-id-@item.Id">
+                                <div class="box-placeholder placeholder" style="height:50px"></div>
+                            </div>
+                            <div id="show-Program-@item.Id"></div>
+                        </td>
+                        <td>
+                            @item.EstablishedYear
+                        </td>
+                        <td>@item.ProvinceName</td>
+                        <td>
+                            <div>@item.Mobile</div>
+                            <div>@item.Email</div>
+                        </td>
+                        <td>@item.SalerName</td>
+                        <td>@item.CreatedName</td>
+                        <td>
+                            @(item.CreatedDate.HasValue && item.CreatedDate != DateTime.MinValue ? item.CreatedDate.Value.ToString("dd-MM-yyyy HH:mm") : string.Empty)
+                        </td>
+                        <td>@item.UpdatedName</td>
+                        <td>
+                            @(item.UpdatedDate.HasValue && item.UpdatedDate != DateTime.MinValue ? item.UpdatedDate.Value.ToString("dd-MM-yyyy HH:mm") : string.Empty)
+                        </td>
+                        <td class="text-center">
+                            @if (item.Todate != null && item.Todate > DateTime.Now)
+                            {
+                                var day = ((DateTime)item.Todate - DateTime.Now.AddDays(-1)).TotalDays;
+                                <p>@((int)day)</p>
+                            }
+                            else
+                            {
+                                if (item.Todate != null)
+                                {
+                                    <span class="red">Hết hạn</span>
+                                }
+                                else
+                                {
+                                    <span class="red">Chưa có chính sách giá</span>
+                                }
+                            }
+                        </td>
+                        <td>
+                            <a class="delete blue" onclick="hotel_management.OnAddOrUpdate('@item.Id')"><i class="fa fa-edit"></i></a> &nbsp;&nbsp;
+                            @*<a class="red" ><i class="fa fa-times"></i></a>*@
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="12" class="text-center">
+                        <div class="search-null center mt40 mb40">
+                            <div class="mb24">
+                                <img src="/images/graphics/icon-search.png" alt="">
+                            </div>
+                            <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+                            <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@await Component.InvokeAsync("Paging", new
+{
+    pageModel = new Paging()
+    {
+        TotalRecord = Model.TotalRecord,
+        TotalPage = Model.TotalPage,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        RecordName = "kết quả lọc",
+        PageAction = "hotel_management.OnPaging({0})"
+    }
+})
+<script>hotel_management.loadingprogram();</script>

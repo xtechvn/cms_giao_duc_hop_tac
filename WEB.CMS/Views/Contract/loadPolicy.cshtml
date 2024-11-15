@@ -1,0 +1,112 @@
+﻿@using Utilities
+@using Entities.Models
+@using Entities.ViewModels.CustomerManager
+@model PolicyDetail
+@{
+
+    var DebtType = (List<AllCode>)ViewBag.DebtType;
+}
+
+@if (ViewBag.PermisionType == 1)
+{
+
+    <div class="col-4 mb10">
+        <label class="lbl mt5 mb0">Điều kiện <sup class="red">*</sup></label>
+    </div>
+    <div class="col-8 mb10">
+    </div>
+    <div class="col-4 mb10">
+        <label class="lbl mt5 mb0"><input type="checkbox" value="1" class="form" onclick="_Contract.Ischeck()" id="IsPrivate">&nbsp;&nbsp;Chính sách riêng</label>
+    </div>
+    <div class="col-8 mb10">
+    </div>
+    <div class="col-4 mb10"><label class="lbl mt5 mb0">Loại công nợ <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10">
+        <select class=" form-control select2" id="DebtType_Type" name="DebtType_Type" disabled style="background: #f0f0f0;">
+            <option value="">Tất cả loại công nợ</option>
+            @if (DebtType != null)
+            {
+                foreach (var item in DebtType)
+                {
+                    if (Model.DebtType == item.CodeValue)
+                    {
+                        <option selected="selected" value="@item.CodeValue">@item.Description</option>
+                    }
+                    else
+                    {
+                        <option value="@item.CodeValue">@item.Description</option>
+                    }
+
+                }
+            }
+        </select>
+    </div>
+    <div class="col-4 mb10 ProductFlyTicketDebtAmountView mfp-hide"><label class="lbl mt5 mb0">Hạn mức công nợ VMB <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10 ProductFlyTicketDebtAmountView mfp-hide">
+        <input type="text" class="form-control currency" value="@((Convert.ToInt32(Model.ProductFlyTicketDebtAmount)).ToString("###,###"))" id="ProductFlyTicketDebtAmount" name="ProductFlyTicketDebtAmount" readonly style="background: #f0f0f0;">
+    </div>
+    <div class="col-4 mb10 HotelDebtAmoutView mfp-hide"><label class="lbl mt5 mb0">Hạn mức công nợ KS <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10 HotelDebtAmoutView mfp-hide">
+        <input type="text" class="form-control currency" value="@((Convert.ToInt32(Model.HotelDebtAmout)).ToString("###,###"))" id="HotelDebtAmout" name="HotelDebtAmout" readonly style="background: #f0f0f0;">
+    </div>
+    //mới
+    <div class="col-4 mb10 TourDebtAmountView mfp-hide"><label class="lbl mt5 mb0">Hạn mức công nợ Tour <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10 TourDebtAmountView mfp-hide">
+        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.TourDebtAmount).ToString("###,###"))" id="TourDebtAmount" name="ProductFlyTicketDepositAmount" readonly style="background: #f0f0f0;">
+    </div>
+    <div class="col-4 mb10 TouringCarDebtAmountView mfp-hide"><label class="lbl mt5 mb0">Hạn mức công nợ dịch vụ khác <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10 TouringCarDebtAmountView mfp-hide">
+        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.TouringCarDebtAmount).ToString("###,###"))" id="TouringCarDebtAmount" name="ProductFlyTicketDepositAmount" readonly style="background: #f0f0f0;">
+    </div>
+    <div class="col-4 mb10 VinWonderDebtAmountView mfp-hide"><label class="lbl mt5 mb0">Hạn mức công nợ VinWonder <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10 VinWonderDebtAmountView mfp-hide">
+        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.VinWonderDebtAmount).ToString("###,###"))" id="VinWonderDebtAmount" name="ProductFlyTicketDepositAmount" readonly style="background: #f0f0f0;">
+    </div>
+    <input type="text" class="form-control" style="display:none" value="@(Model.PolicyId)" id="PolicyId" readonly>
+}
+@if (ViewBag.PermisionType == 2)
+{
+    <div class="col-4 mb10">
+        <label class="lbl mt5 mb0">Điều kiện <sup class="red">*</sup></label>
+    </div>
+    <div class="col-8 mb10">
+
+    </div>
+    <div class="col-4 mb10">
+        <label class="lbl mt5 mb0"><input type="checkbox" value="1" class="form" onclick="_Contract.Ischeck()" id="IsPrivate">&nbsp;&nbsp;Chính sách riêng</label>
+    </div>
+    <div class="col-8 mb10">
+    </div>
+    <div class="col-4 mb10 ProductFlyTicketDepositAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ VMB tối thiểu <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10 ProductFlyTicketDepositAmountView mfp-hide">
+        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.ProductFlyTicketDepositAmount).ToString("###,###"))" id="ProductFlyTicketDepositAmount" name="ProductFlyTicketDepositAmount" readonly style="background: #f0f0f0;">
+    </div>
+    <div class="col-4 mb10 HotelDepositAmoutView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ KS tối thiểu <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10 HotelDepositAmoutView mfp-hide">
+        <input type="text" class="form-control currency" value="@(Convert.ToInt32(Model.HotelDepositAmout).ToString("###,###"))" id="HotelDepositAmout" name="HotelDepositAmout" readonly style="background: #f0f0f0;">
+    </div>
+    //mới
+    <div class="col-4 mb10 TourDepositAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ Tour <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10 TourDepositAmountView mfp-hide">
+        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.TourDepositAmount).ToString("###,###"))" id="TourDepositAmount" name="ProductFlyTicketDepositAmount" readonly style="background: #f0f0f0;">
+    </div>
+    <div class="col-4 mb10 TouringCarDepositAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ dịch vụ khác <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10 TouringCarDepositAmountView mfp-hide">
+        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.TouringCarDepositAmount).ToString("###,###"))" id="TouringCarDepositAmount" name="ProductFlyTicketDepositAmount" readonly style="background: #f0f0f0;">
+    </div>
+    <div class="col-4 mb10 VinWonderDepositAmountView mfp-hide"><label class="lbl mt5 mb0">Số dư ký quỹ VinWonder <sup class="red">*</sup></label></div>
+    <div class="col-8 mb10 VinWonderDepositAmountView mfp-hide">
+        <input type="text" class="form-control currency" value="@(Convert.ToInt32( Model.VinWonderDepositAmount).ToString("###,###"))" id="VinWonderDepositAmount" name="ProductFlyTicketDepositAmount" readonly style="background: #f0f0f0;">
+    </div>
+
+    <input type="text" class="form-control" style="display:none" value="@(Model.PolicyId)" id="PolicyId" readonly>
+}
+<link href="/lib/select2/css/select2.css" rel="stylesheet" type="text/css" />
+@if (ViewBag.type == 0)
+{
+    <script>_Contract.CheckSeverType()</script>
+}
+else
+{
+    <script>_ContractDetail.CheckSeverType()</script>
+}

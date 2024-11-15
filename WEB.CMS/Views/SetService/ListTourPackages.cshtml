@@ -1,0 +1,180 @@
+﻿@using Entities.ViewModels.HotelBookingRoom
+@using Entities.ViewModels
+@using Entities.Models
+@{ int i = 0;
+    int i2 = 0;
+    var ListTourGuests = (List<TourGuests>)ViewBag.ListTourGuests;
+    var ContactClient = (ContactClient)ViewBag.ContactClient;
+    Entities.Models.Tour tour = (Entities.Models.Tour)ViewBag.Tour;
+}
+
+@model List<TourPackages>
+<style>
+    .form-control:disabled {
+        background-color: #e8e8e8 !important;
+    }
+</style>
+<div class="bold mb15 txt_14">Ghi chú</div>
+<div class="form-group">
+    <textarea class="form-control service-tour-note" disabled style="height: 200px;">@(tour != null&& tour.Note!=null?tour.Note:"")</textarea>
+</div>
+<div class="flex-auto mb15" style=" justify-content: right;">
+    <div class="form-group other-amount" style="min-width: 200px;width: 200px; ">
+        <label class="lbl text-center" style="width: 100%;">Chi phí khác </label>
+        <div class="wrap_input">
+            <input id="servicemanual-hotel-other-amount" class="form-control currency text-right servicemanual-hotel-other-amount" disabled type="text" name="servicemanual-hotel-other-amount" placeholder="Nhập chi phí khác" value="@(tour != null&& tour.OthersAmount!=null ? ((double)tour.OthersAmount).ToString("N0"):"0")">
+        </div>
+    </div>
+    <div class="form-group discount" style="min-width: 200px;width: 200px;">
+        <label class="lbl text-center" style="width: 100%;">Hoa hồng CTV</label>
+        <div class="wrap_input">
+            <input id="servicemanual-hotel-discount" class="form-control currency text-right servicemanual-hotel-discount" disabled type="text" name="servicemanual-hotel-discount" placeholder="Nhập chiết khấu" value="@(tour != null&& tour.Commission!=null ?  ((double)tour.Commission).ToString("N0"):"0")">
+        </div>
+    </div>
+</div>
+
+<span><strong>Bảng kê dịch vụ phòng</strong> (Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo)</span>
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 30px;">STT</th>
+                    <th>Nội dung</th>
+                    @*<th class="text-right">Đơn giá</th>*@
+                    <th class="text-right">Số lượng</th>
+                    <th class="text-right">Lợi nhuận</th>
+                    <th class="text-right">Thành tiền</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+    <tr>
+        <td>1</td>
+        <td>@Model[0].PackageName</td>
+        @*<td class="text-right">@(Convert.ToDouble(item.BasePrice).ToString("N0"))</td>*@
+        <td class="text-right">@Model[0].Quantity</td>
+        <td rowspan="@Model.Count" class="text-right">@(((double)Model.Sum(s=>s.Profit)).ToString("N0"))</td>
+        <td rowspan="@Model.Count" class="text-right">@(((double)Model.Sum(s => s.Amount)).ToString("N0"))</td>
+    </tr>
+
+                    @for (int item = 1; item < Model.Count; item++)
+                    {
+                        i++;
+    <tr>
+        <td>@i</td>
+        <td>@Model[item].PackageName</td>
+        @*<td class="text-right">@(Convert.ToDouble(item.BasePrice).ToString("N0"))</td>*@
+        <td class="text-right">@Model[item].Quantity</td>
+    </tr>
+}
+
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right">Tổng cộng</td>
+                                        <td class="text-right">@ViewBag.SumUnitPrice.ToString("N0")</td>
+                                    </tr>
+}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h3 class="txt_18 bold mb20">
+    Danh sách đoàn
+</h3>
+<p>Thông tin thành viên chính</p>
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th>Họ và tên</th>
+                    <th>Ngày sinh</th>
+                    <th>Giới tính</th>
+                    <th>Số CCCD</th>
+                    <th>Số phòng</th>
+                    <th>Điện thoại</th>
+                    <th>Email</th>
+                    <th>Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tbody>
+                @if (ContactClient != null)
+                {
+    <tr>
+        <td>@ContactClient.Name</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>@ContactClient.Mobile</td>
+        <td>@ContactClient.Email</td>
+        <td></td>
+    </tr>
+}
+            </tbody>
+        </table>
+    </div>
+</div>
+<p>Thông tin danh sách  thành viên khác</p>
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th style="width:100px;">STT</th>
+                    <th style="width:250px;">Họ và tên</th>
+                    <th style="width:200px;">Ngày sinh</th>
+                    <th style="width:100px;">Giới tính</th>
+                    <th style="width:200px;">Số CCCD</th>
+                    <th style="width:200px;">Số phòng</th>
+                    <th>Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ListTourGuests != null)
+                {
+                    foreach (var hg in ListTourGuests)
+                    {
+                        i2++;
+    <tr>
+        <td style="width:100px;">@i2</td>
+        <td style="width:250px;">@hg.FullName</td>
+        <td style="width:200px;">@(Convert.ToDateTime(hg.Birthday).ToString("dd/MM/yyyy HH:mm:ss"))</td>
+        @if (hg.Gender != null)
+        {
+            if (hg.Gender == 0)
+            {
+
+
+<td style="width:100px;">Nam</td>
+ }
+else
+{
+<td style="width:100px;">Nữ</td>
+ }
+
+}
+else
+{
+<td style="width:100px;"></td>
+}
+        <td style="width:200px">@hg.Cccd</td>
+        <td style="width:200px">@hg.RoomNumber</td>
+        <td>@hg.Note</td>
+    </tr>
+}
+}
+            </tbody>
+        </table>
+    </div>
+</div>
+@*Tệp đính kèm*@
+<div class="attachment-sale border pd10">
+</div>

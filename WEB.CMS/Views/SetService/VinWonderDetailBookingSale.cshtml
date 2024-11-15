@@ -1,0 +1,144 @@
+﻿@{
+    Layout = null;
+    Entities.Models.VinWonderBooking? booking = (Entities.Models.VinWonderBooking?)ViewBag.Booking;
+    List<Entities.Models.VinWonderBookingTicket> list = (List<Entities.Models.VinWonderBookingTicket>)ViewBag.Packages;
+    List<Entities.Models.VinWonderBookingTicketCustomer> guest = (List<Entities.Models.VinWonderBookingTicketCustomer>)ViewBag.Guests;
+    double profit = list != null && list.Count > 0 ? list.Sum(x => (double)x.Profit) : 0;
+    double amount = list != null && list.Count > 0 ? list.Sum(x => (double)x.Amount) : 0;
+    int index = 0;
+
+}
+<style>
+    .form-control:disabled {
+        background-color: #e8e8e8 !important;
+    }
+</style>
+<div>
+    <div class="bold mb10 txt_14">Ghi chú</div>
+    <div class="form-group">
+        <textarea class="form-control service-vinwonder-readonly service-vinwonder-readonly-readonly-note" disabled style="height: 200px;" rows="6">@(booking!=null && booking.Note!=null? booking.Note:"")</textarea>
+    </div>
+</div>
+<div class="row row_min">
+    <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+        <label class="lbl mb5">Địa điểm<sup class="red">*</sup></label>
+        <select id="add-service-vinwonder-readonly-select-location" class="select select2 add-service-vinwonder-readonly-select-location"disabled name="add-service-vinwonder-readonly-select-service" style="width: 100%; background-color: lightgray;">
+            @if (booking != null && booking.Id > 0)
+            {
+                <option value="@(booking.SiteCode)" selected="selected">@(booking.SiteName)</option>
+            }
+        </select>
+    </div>
+    <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+        <label class="lbl mb5">Chi phí khác </label>
+        <input id="servicemanual-vinwonder-readonly-other-amount" class="form-control currency text-right servicemanual-vinwonder-readonly-other-amount" disabled type="text" name="servicemanual-vinwonder-readonly-other-amount" placeholder="Nhập chi phí khác" value="@(booking.OthersAmount!=null ? ((double)booking.OthersAmount).ToString("N0"):"0")">
+    </div>
+    <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+        <label class="lbl mb5">Hoa hồng CTV </label>
+        <input id="servicemanual-vinwonder-readonly-discount" class="form-control currency text-right servicemanual-vinwonder-readonly-discount" disabled type="text" name="servicemanual-vinwonder-readonly-discount" placeholder="Nhập chiết khấu" value="@(booking.Commission!=null ? ((double)booking.Commission).ToString("N0"):"0")">
+
+    </div>
+</div>
+<div>
+    <div class="bold mb15 txt_14">Bảng kê dịch vụ <small>((Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo))</small></div>
+    <div class="table-responsive table-gray service-vinwonder-readonly service-vinwonder-readonly-packages">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">STT</th>
+                    <th style="min-width: 200px;">Nội dung</th>
+                    <th class="text-left" style="min-width: 100px;">Thời gian sử dụng</th>
+                    <th class="text-right" style="min-width: 150px;">Giá nhập<sup class="red">*</sup></th>
+                    <th class="text-right" style="min-width: 150px;">Giá bán<sup class="red">*</sup></th>
+                    <th class="text-right" style="width:150px !important;">Số lượng</th>
+                    <th class="text-right" style="width: 250px !important;">Thành tiền giá bán</th>
+                    <th class="text-right" style="width:150px !important;">Lợi nhuận</th>
+                </tr>
+            </thead>
+            <tbody class="service-vinwonder-readonly service-vinwonder-readonly-packages-tbody">
+
+                @if (list.Count > 0)
+                {
+                    foreach (var item in list)
+                    {
+                        <tr class="service-vinwonder-rd-packages-row" data-extra-package-id="@item.Id">
+                            <td class="service-vinwonder-rd-packages-order">@(++index)</td>
+                            <td>
+                                <input type="text" class="form-control service-vinwonder-rd-packages-packagename"style="background-color: lightgray; width: 100% !important;" disabled  value="@item.Name">
+                            </td>
+                            <td>
+                                <input class="form-control service-vinwonder-rd-packages-date"style="background-color: lightgray;" disabled  type="text" name="service-vinwonder-rd-packages-date" value="@(item.DateUsed==null?"" :((DateTime)item.DateUsed).ToString("dd/MM/yyyy HH:mm"))">
+                            </td>
+                            @{
+                                double amount_sale_pre = (double)item.Amount / (double)item.Quantity;
+                            }
+                            <td> <input class="form-control text-right currency service-vinwonder-rd-rd-extrapackage-baseprice"style="background-color: lightgray;" disabled  type="text" name="service-vinwonder-rd-extrapackage-baseprice" value="@(((double)item.BasePrice).ToString("N0"))"></td>
+                            <td> <input class="form-control text-right currency service-vinwonder-rd-extrapackage-saleprice"style="background-color: lightgray;" disabled  type="text" name="service-vinwonder-rd-extrapackage-saleprice" value="@(amount_sale_pre.ToString("N0"))"></td>
+                            <td> <input class="form-control text-right currency service-vinwonder-rd-extrapackage-quantity"style="background-color: lightgray;" disabled  type="text" name="service-vinwonder-rd-extrapackage-quantity" value="@(((int)item.Quantity).ToString("N0"))"></td>
+
+
+                            <td class="text-right"> <input class="form-control text-right currency service-vinwonder-rd-packages-amount" style="background-color: lightgray;" disabled value="@(((double)item.Amount).ToString("N0"))"></td>
+
+                            <td class="text-right service-vinwonder-rd-packages-profit-row">
+                                <input class="form-control text-right currency service-vinwonder-rd-packages-profit" type="text" style="background-color: lightgray;" disabled value="@(item.Profit==null ? "0":((double)item.Profit).ToString("N0"))">
+                            </td>
+
+                        </tr>
+                    }
+                }
+                <tr class="service-vinwonder-packages-summary-row">
+                    <td></td>
+                    <td>
+                        <a href="javascript:;" class="blue ml-2 mb10" onclick="_service_manual_create_vinwonder.AddvinwonderBookingpackages();"><i class="fa fa-plus-circle green"></i> Thêm dòng</a>
+                    </td>
+                    <td class="text-right">Tổng cộng</td>
+                    <td class="text-right"></td>
+                    <td class="text-right"></td>
+                    <td class="text-right"></td>
+                    <td class="text-right font-weight-bold service-vinwonder-packages-total-amount">@(amount.ToString("N0"))</td>
+                    <td class="text-right font-weight-bold service-vinwonder-packages-total-profit">@(profit.ToString("N0"))</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="bold mb15 txt_14">Danh sách đoàn</div>
+<div class="table-responsive table-gray service-vinwonder-readonly service-vinwonder-readonly-guests">
+    <table class="table table-nowrap">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th style="min-width: 200px;">Họ và tên </th>
+                <th style="min-width: 150px;">Email</th>
+                <th style="min-width: 150px;">Số điện thoại</th>
+                <th style="min-width: 200px;">Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody class="service-vinwonder-readonly service-vinwonder-readonly-guest-tbody">
+            @if (guest != null && guest.Count > 0)
+            {
+                foreach (var item in guest)
+                {
+                    <tr class="service-vinwonder-readonly service-vinwonder-readonly-guest-row" data-extra-guest-id="@item.Id">
+                        <td class="service-vinwonder-readonly service-vinwonder-readonly-guest-order">@(++index)</td>
+                        <td class="">
+                            <input type="text" class="form-control service-vinwonder-readonly service-vinwonder-readonly-guest-name" style="width:100% !important" value="@item.FullName">
+                        </td>
+                        <td>
+                            <input type="text" class="form-control service-vinwonder-readonly service-vinwonder-readonly-guest-email" style="width:100% !important" value="@item.Email">
+
+                        </td>
+
+                        <td><input class="form-control service-vinwonder-readonly service-vinwonder-readonly-guest-phone" type="text" name="service-vinwonder-readonly service-vinwonder-readonly-guest-phone" value="@item.Phone"></td>
+                        <td><input type="text" class="form-control service-vinwonder-readonly service-vinwonder-readonly-guest-note" value="@item.Note"></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+
+</div>
+<div class="attachment-sale border pd10">
+    <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+</div>

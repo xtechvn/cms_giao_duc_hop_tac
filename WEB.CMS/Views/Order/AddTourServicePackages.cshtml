@@ -1,0 +1,122 @@
+﻿@{
+    Layout = null;
+    Entities.Models.TourPackages Adult = (Entities.Models.TourPackages)ViewBag.Adult;
+    Entities.Models.TourPackages Child = (Entities.Models.TourPackages)ViewBag.Child;
+    Entities.Models.TourPackages Infant = (Entities.Models.TourPackages)ViewBag.Infant;
+    List<string> default_code = (List<string>)ViewBag.DefaultPackagesCode;
+    List<Entities.Models.TourPackages> list_extra = (List<Entities.Models.TourPackages>)ViewBag.TourExtraPackages;
+    List<Entities.Models.TourPackages> list = (List<Entities.Models.TourPackages>)ViewBag.List;
+    double base_price = (double)ViewBag.BasePrice;
+    double amount = (double)ViewBag.Amount;
+    double profit = (double)ViewBag.Profit;
+    int index = 0;
+}
+<style>
+    .form-control:disabled {
+        background-color: #e8e8e8 !important;
+    }
+</style>
+
+<table class="table table-nowrap">
+    <thead>
+        <tr>
+            <th style="width: 80px;">STT</th>
+            <th style="min-width: 200px;">Nội dung</th>
+            <th class="text-right" style="width: 100px;">Số lượng</th>
+            <th class="text-right" style="width: 200px;">Tổng tiền giá nhập</th>
+            <th class="text-right" style="width: 200px;">Tổng tiền giá bán</th>
+            <th class="text-right" style="width: 200px;">Lợi nhuận</th>
+            <th class="text-right"></th>
+        </tr>
+    </thead>
+    <tbody class="service-tour-extrapackage-tbody">
+        <tr class="service-tour-extrapackage-passenger service-tour-extrapackage-row" data-adt-id="@(Adult!=null?Adult.Id.ToString():"0")" data-chd-id="@(Child!=null?Child.Id.ToString():"0")" data-inf-id="@(Infant!=null?Infant.Id.ToString():"0")">
+            <td class="service-tour-extrapackage-order">@(++index)</td>
+            <td>
+                <div class="row col-12 col-md-12">
+                    <div class="" style="padding-top: 5px; padding-bottom: 5px; width: 100% !important;">
+                        <input type="text" class="form-control service-tour-adt" disabled data-package-code="adt_amount" style="width: 100% !important; background-color: lightgray;" value="Người lớn">
+                    </div>
+                    <div class="" style="padding-top: 5px; padding-bottom: 5px; width: 100% !important;">
+                        <input type="text" class="form-control service-tour-chd" disabled data-package-code="chd_amount" style="width: 100% !important; background-color: lightgray;" value="Trẻ em">
+                    </div>
+                    <div class="" style="padding-top: 5px; padding-bottom: 5px; width: 100% !important;">
+                        <input type="text" class="form-control service-tour-inf" disabled data-package-code="inf_amount" style="width: 100% !important; background-color: lightgray;" value="Em bé">
+                    </div>
+                    <div class="" style="display:none;">
+                        <input class="form-control text-right currency service-tour-extrapackage-baseprice" style="display:none;" type="text" name="service-tour-extrapackage-baseprice" value="1">
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style="width:100% !important;" class="col-12 col-md-12">
+                    <div class="row" style="padding-top:5px;padding-bottom:5px;">
+                        <input type="text" class="form-control currency text-right service-tour-adt-quanity" data-package-code="adt_amount" style="width:100% !important;" value="@(Adult!=null&& Adult.Id>0?Adult.Quantity.ToString(): "0")">
+                    </div>
+                    <div class="row" style="padding-top:5px;padding-bottom:5px;">
+                        <input type="text" class="form-control currency text-right service-tour-chd-quanity" data-package-code="chd_amount" style="width:100% !important" value="@(Child!=null&& Child.Id>0?Child.Quantity.ToString(): "0")">
+                    </div>
+                    <div class="row" style="padding-top:5px;padding-bottom:5px;">
+                        <input type="text" class="form-control currency text-right service-tour-inf-quanity" data-package-code="inf_amount" style="width:100% !important" value="@(Infant!=null&& Infant.Id>0?Infant.Quantity.ToString(): "0")">
+                    </div>
+                </div>
+            </td>
+            <td class="text-right"> <input class="form-control text-right currency service-tour-extrapackage-price" value="@(((amount-profit)>0?(amount-profit):0).ToString("N0"))"></td>
+            <td class="text-right"> <input class="form-control text-right currency service-tour-extrapackage-amount" value="@(amount.ToString("N0"))"></td>
+            <td class="text-right service-tour-extrapackage-profit-row"> <input class="form-control text-right currency service-tour-extrapackage-profit" disabled type="text" value="@(profit.ToString("N0"))"></td>
+
+            <td class="text-right">
+                <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_tour.DeleteTourPackage($(this));"></a>
+            </td>
+        </tr>
+        @if (list_extra.Count > 0)
+        {
+            foreach (var item in list_extra)
+            {
+                <tr class="service-tour-extrapackage-row" data-extra-package-id="@item.Id">
+                    <td class="service-tour-extrapackage-order">@(++index)</td>
+                    <td>
+                        <input type="text" class="form-control service-tour-extrapackage-packagename-select-input" style="width:100% !important" value="@item.PackageName">
+                    </td>
+                    <td>
+                        <input class="form-control text-right currency service-tour-extrapackage-baseprice" type="text" style="display:none;" name="service-tour-extrapackage-baseprice" value="@(((double)item.BasePrice).ToString("N0"))">
+                        <input class="form-control text-right currency service-tour-extrapackage-quantity" type="text" name="service-tour-extrapackage-quantity" value="@(((int)item.Quantity).ToString("N0"))">
+                    </td>
+                    @{
+                        var item_price = (item.Amount != null ? (double)item.Amount : 0) - (item.Profit != null ? (double)item.Profit : 0);
+                        if (item_price <= 0) item_price = 0;
+                    }
+                    <td class="text-right"> <input class="form-control text-right currency service-tour-extrapackage-price" value="@(item_price.ToString("N0"))"></td>
+                    <td class="text-right"> <input class="form-control text-right currency service-tour-extrapackage-amount" value="@(((double)item.Amount).ToString("N0"))"></td>
+
+
+                    <td class="text-right service-tour-extrapackage-profit-row"> <input class="form-control text-right currency service-tour-extrapackage-profit" disabled type="text" value="@((item.Profit!=null?(double)item.Profit:0).ToString("N0"))"></td>
+                    <td class="text-right">
+                        <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_tour.DeleteTourPackage($(this));"></a>
+                    </td>
+                </tr>
+            }
+        }
+
+        <tr class="service-tour-extrapackage-summary-row">
+            <td></td>
+            <td>
+                <a href="javascript:;" class="blue ml-2 mb10" onclick="_order_detail_tour.AddTourExtraPackage($(this));"><i class="fa fa-plus-circle green"></i> Thêm dịch vụ khác</a>
+            </td>
+            <td class="text-right bold">Tổng cộng</td>
+            <td class="text-right service-tour-total-extrapackage-amount-before-vat bold">
+                @(list.Count > 0 ? ((double)(list.Sum(x => x.UnitPrice))).ToString("N0") : "0")
+
+            </td>
+            <td class="text-right service-tour-total-extrapackage-amount-after-vat bold">
+                @(list.Count > 0 ? ((double)(list.Sum(x => x.Amount))).ToString("N0") : "0")
+
+            </td>
+
+            <td class="text-right service-tour-total-extrapackage-profit bold">
+                @(list.Count >0?(list.Sum(x=>x.Profit!=null ? (double)x.Profit:0)).ToString("N0"):"0")
+            </td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,186 @@
+﻿@{
+    Layout = null;
+    int FlyDetailCount = (int)ViewBag.FlyDetailCount;
+    Entities.Models.FlyBookingDetail go = (Entities.Models.FlyBookingDetail)ViewBag.Go;
+    Entities.Models.FlyBookingDetail back = (Entities.Models.FlyBookingDetail)ViewBag.Back;
+    Entities.ViewModels.ElasticSearch.UserESViewModel user = (Entities.ViewModels.ElasticSearch.UserESViewModel)ViewBag.User;
+    Entities.Models.AirPortCode? flybooking_from = (Entities.Models.AirPortCode?)ViewBag.flybooking_from;
+    Entities.Models.AirPortCode? flybooking_to = (Entities.Models.AirPortCode?)ViewBag.flybooking_to;
+    bool is_order_manual=(bool)ViewBag.IsOrderManual;
+    bool is_allow_to_edit=(bool)ViewBag.AllowToEdit;
+    double adg_commission = 0;
+    double others_amount = 0;
+    if(go!=null && go.Id > 0)
+    {
+        adg_commission += go.Adgcommission == null ? 0 : (double)go.Adgcommission;
+        others_amount += go.OthersAmount == null ? 0 : (double)go.OthersAmount;
+    }
+    if (back != null && back.Id > 0)
+    {
+        adg_commission += back.Adgcommission == null ? 0 : (double)back.Adgcommission;
+        others_amount += back.OthersAmount == null ? 0 : (double)back.OthersAmount;
+    }
+}
+
+<style>
+    .stop-scrolling {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .fly_booking_service {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+   
+</style>
+<div class="modal fade fly_booking_service" id="flybooking-service" aria-modal="true" role="dialog" style="display: block;">
+    <div class="modal-dialog" style="max-width: 95%;">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Thêm dịch vụ vé máy bay</h4>
+                <button type="button" class="close" onclick="_order_detail_fly.Close()">×</button>
+            </div>
+            <div id="add-service-fly-form-select-route" data-service-code="@(go==null?"":(go.ServiceCode==null?"":go.ServiceCode.Trim()))" data-group-fly="@(go==null?"":go.GroupBookingId.Trim())">
+                <div class="modal-body">
+                    <form id="service-fly-form">
+                        <div class="row row_min">
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Hành trình <sup class="red">*</sup></label>
+                                <select id="add-service-fly-select-route" class="select select2 add-service-fly-select-route" name="add-service-fly-select-route" style="width: 100%;">
+                                    @if (FlyDetailCount == 1)
+                                    {
+                                        <option value="1" selected="selected">Một chiều</option>
+                                        <option value="2">Khứ hồi</option>
+
+                                    }
+                                    else
+                                    {
+                                        <option value="1">Một chiều</option>
+                                        <option value="2" selected="selected">Khứ hồi</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Điểm đi <sup class="red">*</sup></label>
+                                <select class="select2 service-fly-select-route-from" name="service-fly-select-route-from" style="width: 100%;">
+                                    @if (go != null)
+                                    {
+                                        <option value="@go.StartPoint" selected="selected">@flybooking_from.DistrictVi - (@go.StartPoint)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Điểm đến <sup class="red">*</sup></label>
+                                <select class="select2 service-fly-select-route-to" name="service-fly-select-route-to" style="width: 100%;">
+                                    @if (flybooking_to != null)
+                                    {
+                                        <option value="@go.EndPoint" selected="selected">@flybooking_to.DistrictVi - (@go.EndPoint)</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Ngày đi <sup class="red">*</sup></label>
+                                <div class="datepicker-wrap" style="width:100%">
+                                    <input class="form-control datepicker-input service-fly-route-date-time-single service-fly-route-from-date" type="text" name="service-fly-route-from-date" value="@(go != null?((DateTime)go.StartDate).ToString("dd/MM/yyyy HH:mm"):DateTime.Now.ToString("dd/MM/yyyy HH:mm") ) ">
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Ngày về <sup class="red">*</sup></label>
+                                <div class="datepicker-wrap" style="width:100%">
+                                    @if (back != null)
+                                    {
+                                        <input class="form-control datepicker-input service-fly-route-date-time-single service-fly-route-single-date service-fly-route-to-date" @(FlyDetailCount == 1 ? "disabled style=background-color:lightgray;" : "" ) type="text" name="service-fly-route-from-date" value="@(go!=null ? ((DateTime)back.StartDate).ToString("dd/MM/yyyy HH:mm"):((DateTime)go.EndDate).ToString("dd/MM/yyyy HH:mm")) ">
+
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control datepicker-input service-fly-route-date-time-single service-fly-route-single-date service-fly-route-to-date" @(FlyDetailCount == 1 ? "disabled style=background-color:lightgray;" : "" ) type="text" name="service-fly-route-from-date" value="@DateTime.Now.ToString("dd/MM/yyyy HH:mm")">
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Điều hành viên <sup class="red">*</sup></label>
+                                <select id="add-service-fly-main-staff" class="select select2 add-service-fly-main-staff" name="add-service-fly-main-staff" style="width: 100%;">
+                                    @if (user != null && user.id > 0)
+                                    {
+                                        <option value="@(user.id)" selected="selected">@(user.fullname + " - "+ user.email)</option>
+                                    }
+
+                                </select>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Chi phí khác </label>
+                                <input id="servicemanual-fly-other-amount" class="form-control currency text-right servicemanual-fly-other-amount" type="text" name="servicemanual-fly-other-amount" placeholder="Nhập chi phí khác" value="@(others_amount.ToString("N0"))">
+
+                            </div> 
+                            <div class="col-xl-2 col-lg-3 col-md-6 mb15">
+                                <label class="lbl mb5">Hoa hồng CTV </label>
+                                <input id="servicemanual-fly-commission" class="form-control currency text-right servicemanual-fly-commission" type="text" name="servicemanual-fly-commission" placeholder="Nhập chiết khấu" value="@(adg_commission.ToString("N0"))">
+
+                            </div>
+                        </div>
+                        <div>
+                            <div id="add-service-fly-route-go" style="" class="add-service-fly-route-go">
+
+                                <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+                            </div>
+                            <div id="add-service-fly-route-back" style="@(FlyDetailCount==2?"":"display:none;")  " class="add-service-fly-route-go">
+                                <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+
+
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bold mb15 txt_14">Bảng kê dịch vụ <small>((Đơn giá đã bao gồm thuế phí + Phí dịch vụ Adavigo))</small></div>
+                            <div class="table-responsive table-gray service-fly-route-extrapackage" data-fly-booking-id="@(go!=null? go.Id:0)">
+                                <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+                            </div>
+                        </div>
+                        <div class="txt_14 bold mb10"></div>
+                        <div class="table-responsive table-gray" id="servicemanual-fly-total-amount-block">
+                            <div class="row">
+                                <div class="col-6"></div>
+                                <div class="col-3 bold text-right">Tổng tiền dịch vụ:  &nbsp;&nbsp;&nbsp;&nbsp;<strong class="service-manual-fly-total-service-amount">0</strong> </div>
+                                <div class="col-3 bold text-right">Tổng lợi nhuận dịch vụ: &nbsp;&nbsp;&nbsp;&nbsp;<strong class="service-manual-fly-total-service-profit">0</strong></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bold mb10 txt_14">Ghi chú</div>
+                            <div class="form-group">
+                                <textarea class="form-control service-fly-note" style="height: 200px;" rows="6">@(go != null&& go.Note!=null? go.Note:"")</textarea>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="bold mb10 txt_14">Danh sách đoàn</div>
+                            <div class="table-responsive table-gray service-fly-passenger-div">
+                                <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+
+                            </div>
+                        </div>
+
+                    </form>
+                    <div class="attachment-file-block border pd10">
+                        <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+                    </div>
+                    <div style="padding-top: 20px; margin-top:10px;">
+
+                        <div id="service-fly-button-div" class="text-right ">
+                            <div class="btn btn-default btn btn-default cancel" onclick="_order_detail_fly.Close()">Bỏ qua</div>
+                            @if (is_order_manual && is_allow_to_edit && (ViewBag.IsLock == null || ViewBag.IsLock == false))
+                            {
+                                <div class="btn btn-default btn btn-summit-service-fly" onclick="_order_detail_fly.Summit()">Thêm</div>
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+

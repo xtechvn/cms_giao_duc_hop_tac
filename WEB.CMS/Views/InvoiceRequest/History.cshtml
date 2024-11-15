@@ -1,0 +1,47 @@
+﻿@using Utilities
+@using Utilities.Contants
+@{ var listRequestHistory = (List<InvoiceRequestHistoryViewModel>)ViewBag.listRequestHistory;
+    var i = 1;
+}
+@using Entities
+@using Entities.Models
+@using Entities.ViewModels.Invoice
+<div class="white-popup" style="max-width: 800px;">
+    <div class="content_lightbox">
+        <div class="table-responsive table-default table-gray table-modal mb20">
+            <table class="table table-nowrap">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Thời gian</th>
+                        <th>Người thực hiện</th>
+                        <th>Nội dung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (listRequestHistory != null)
+                    {
+                        @foreach (var item in listRequestHistory)
+                        {
+                            <tr>
+                                <td>@(i++)</td>
+                                <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.UserCreateName</td>
+                                <td>
+                                    @if (item.Actioin.Contains("Từ chối"))
+                                    {
+                                        <span class="status-reject">@item.Actioin</span>
+                                    }
+                                    else
+                                    {
+                                        @item.Actioin
+                                    }
+                                </td>
+                            </tr>
+                        }}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

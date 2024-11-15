@@ -1,0 +1,98 @@
+﻿@{
+    Layout = null;
+    List<Entities.Models.VinWonderBookingTicket> list = (List<Entities.Models.VinWonderBookingTicket>)ViewBag.ExtraList;
+    double profit = list != null && list.Count > 0 ? list.Sum(x => (double)x.Profit) : 0;
+    double amount = list != null && list.Count > 0 ? list.Sum(x => (double)x.Amount) : 0;
+    int index = 0;
+}
+<table class="table table-nowrap">
+    <thead>
+        <tr>
+            <th style="width: 70px;">STT</th>
+            <th style="min-width: 200px;">Nội dung</th>
+            <th class="text-left" style="min-width: 100px;">Thời gian sử dụng</th>
+            <th class="text-right" style="min-width: 150px;">Giá nhập<sup class="red">*</sup></th>
+            <th class="text-right" style="min-width: 150px;">Giá bán<sup class="red">*</sup></th>
+            <th class="text-right" style="width:150px !important;">Số lượng</th>
+            <th class="text-right" style="width: 250px !important;">Thành tiền giá bán</th>
+            <th class="text-right" style="width:150px !important;">Lợi nhuận</th>
+            <th class="text-right"></th>
+        </tr>
+    </thead>
+    <tbody class="service-vinwonder-packages-tbody">
+
+        @if (list.Count > 0)
+        {
+            foreach (var item in list)
+            {
+        <tr class="service-vinwonder-packages-row" data-extra-package-id="@item.Id">
+            <td class="service-vinwonder-packages-order">@(++index)</td>
+            <td>
+                <input type="text" class="form-control service-vinwonder-packages-packagename" style="width:100% !important" value="@item.Name">
+            </td>
+            <td>
+                <input class="form-control service-vinwonder-packages-date" type="text" name="service-vinwonder-packages-date" value="@(item.DateUsed==null?"" :((DateTime)item.DateUsed).ToString("dd/MM/yyyy HH:mm"))">
+            </td>
+            @{
+                double amount_sale_pre = (double)item.Amount / (double)item.Quantity;
+            }
+            <td> <input class="form-control text-right currency service-vinwonder-extrapackage-baseprice" type="text" name="service-vinwonder-extrapackage-baseprice" value="@(((double)item.BasePrice).ToString("N0"))"></td>
+            <td> <input class="form-control text-right currency service-vinwonder-extrapackage-saleprice" type="text" name="service-vinwonder-extrapackage-saleprice" value="@(amount_sale_pre.ToString("N0"))"></td>
+            <td> <input class="form-control text-right currency service-vinwonder-extrapackage-quantity" type="text" name="service-vinwonder-extrapackage-quantity" value="@(((int)item.Quantity).ToString("N0"))"></td>
+
+
+            <td class="text-right"> <input class="form-control text-right currency service-vinwonder-packages-amount" style="background-color: lightgray;" disabled value="@(((double)item.Amount).ToString("N0"))"></td>
+
+            <td class="text-right service-vinwonder-packages-profit-row">
+                <input class="form-control text-right currency service-vinwonder-packages-profit" type="text" style="background-color: lightgray;" disabled value="@(item.Profit==null ? "0":((double)item.Profit).ToString("N0"))">
+            </td>
+
+            <td class="text-right">
+                <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_vinwonder.DeletevinwonderBookingpackages($(this));"></a>
+            </td>
+        </tr>
+            }
+        }
+        else
+        {
+    <tr class="service-vinwonder-packages-row" data-extra-package-id="0">
+        <td class="service-vinwonder-packages-order">@(++index)</td>
+        <td>
+            <input type="text" class="form-control service-vinwonder-packages-packagename" style="width:100% !important" value="">
+        </td>
+        <td>
+            <input class="form-control service-vinwonder-packages-date" type="text" name="service-vinwonder-packages-date" value="@(DateTime.Now.ToString("dd/MM/yyyy HH:mm"))">
+        </td>
+        <td> <input class="form-control text-right currency service-vinwonder-extrapackage-baseprice" type="text" name="service-vinwonder-extrapackage-baseprice" value=""></td>
+        <td> <input class="form-control text-right currency service-vinwonder-extrapackage-saleprice" type="text" name="service-vinwonder-extrapackage-saleprice" value=""></td>
+        <td> <input class="form-control text-right currency service-vinwonder-extrapackage-quantity" type="text" name="service-vinwonder-extrapackage-quantity" value=""></td>
+        <td class="text-right"> <input class="form-control text-right currency service-vinwonder-packages-amount" style="background-color: lightgray;" disabled value=""></td>
+
+        <td class="text-right service-vinwonder-packages-profit-row">
+            <input class="form-control text-right currency service-vinwonder-packages-profit" style="background-color: lightgray;" disabled type="text" value="">
+        </td>
+
+        <td class="text-right">
+            <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_vinwonder.DeletevinwonderBookingpackages($(this));"></a>
+        </td>
+    </tr>
+        }
+
+    <tr class="service-vinwonder-packages-summary-row">
+        <td></td>
+        <td>
+            <a href="javascript:;" class="blue ml-2 mb10" onclick="_order_detail_vinwonder.AddvinwonderBookingpackages();"><i class="fa fa-plus-circle green"></i> Thêm dòng</a>
+        </td>
+        <td class="text-right">Tổng cộng</td>
+        <td class="text-right"></td>
+        <td class="text-right"></td>
+        <td class="text-right"></td>
+        <td class="text-right font-weight-bold service-vinwonder-packages-total-amount">@(amount.ToString("N0"))</td>
+        <td class="text-right font-weight-bold service-vinwonder-packages-total-profit">@(profit.ToString("N0"))</td>
+        <td></td>
+    </tr>
+
+    </tbody>
+</table>
+
+

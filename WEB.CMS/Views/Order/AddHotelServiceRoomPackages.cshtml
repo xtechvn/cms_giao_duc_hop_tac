@@ -1,0 +1,120 @@
+﻿@{
+    Layout = null;
+    List<Entities.Models.HotelBookingRoomExtraPackages> packages = (List<Entities.Models.HotelBookingRoomExtraPackages>)ViewBag.ExtraPackages;
+    int index = 0;
+    double total_operator_amount = 0;
+
+}
+<style>
+    .hotel_service {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+</style>
+<table class="table table-nowrap">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th class="text-center" style="min-width: 150px;">Tên dịch vụ<sup class="red">*</sup></th>
+            <th class="text-center" style="min-width: 150px;">Gói<sup class="red">*</sup></th>
+            <th class="text-center" style="min-width: 150px;">Thời gian sử dụng<sup class="red">*</sup></th>
+            <th class="text-right" style="min-width: 150px;">Giá nhập<sup class="red">*</sup></th>
+            <th class="text-right" style="min-width: 150px;">Giá bán<sup class="red">*</sup></th>
+            <th class="text-right" style="min-width: 150px;">Số ngày</th>
+            <th class="text-right" style="min-width: 100px;">Số lượng<sup class="red">*</sup></th>
+            <th class="text-right">Tổng tiền giá nhập</th>
+            <th class="text-right">Tổng tiền giá bán</th>
+            <th class="text-right">Lợi nhuận</th>
+
+            <th>Tác vụ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (packages.Count > 0)
+        {
+            foreach (var p in packages)
+            {
+        <tr class="servicemanual-hotel-extrapackage-tr" data-extrapackage-id="@p.Id" data-extrapackage-packageid="@p.PackageCompanyId">
+            <td class="servicemanual-hotel-extrapackage-td-order">@(++index)</td>
+            <td>
+                <input class="form-control servicemanual-hotel-extrapackage-type-name" type="text" name="servicemanual-hotel-extrapackage-code" placeholder="Nhập nội dung dịch vụ" value="@p.PackageCode">
+            </td>
+            <td class="servicemanual-hotel-extrapackage-td-code">
+                <div class="d-flex align-center  servicemanual-hotel-extrapackage-div-code">
+                    <input class="form-control servicemanual-hotel-extrapackage-code" type="text" name="servicemanual-hotel-extrapackage-code" placeholder="Nhập tên gói" value="@p.PackageId">
+                </div>
+
+            </td>
+            <td class="servicemanual-hotel-extrapackage-td-daterange">
+                <div class="d-flex align-center">
+                    <input class="form-control servicemanual-hotel-extrapackage-daterange" type="text" name="servicemanual-hotel-extrapackage-daterange" value="@(p.StartDate==null?"" :((DateTime)p.StartDate).ToString("dd/MM/yyyy")+" -") @(p.EndDate==null?"" : ((DateTime)p.EndDate).ToString("dd/MM/yyyy"))">
+                </div>
+            </td>
+            <td class="servicemanual-hotel-extrapackage-td-operator-price">
+                <div class="d-flex align-center">
+                    <input class="form-control currency servicemanual-hotel-extrapackage-operator-price text-right" type="text" name="servicemanual-hotel-extrapackage-operator-price" placeholder="Nhập giá nhập vào" value="@(p.OperatorPrice!=null ? ((double)p.OperatorPrice).ToString("N0"): ((double)p.Amount- (double)p.Profit).ToString("N0"))">
+                </div>
+            </td>
+            <td class="servicemanual-hotel-extrapackage-td-sale-price">
+                <div class="d-flex align-center">
+                    <input class="form-control currency servicemanual-hotel-extrapackage-sale-price text-right" type="text" name="servicemanual-hotel-extrapackage-sale-price" placeholder="Nhập giá bán" value="@(p.SalePrice!=null  ? ((double)p.SalePrice).ToString("N0"): ((double)p.Amount- (double)p.Profit).ToString("N0"))">
+                </div>
+            </td>
+            <td class="servicemanual-hotel-extrapackage-td-nights">
+                <div class="d-flex align-center">
+                    <input class="input-disabled-background form-control currency servicemanual-hotel-extrapackage-nights text-right " type="text" name="servicemanual-hotel-extrapackage-nights" disabled value="@(p.Nights!=null  ? ((double)p.Nights).ToString("N0"):"1")">
+                </div>
+            </td>
+            <td class="servicemanual-hotel-extrapackage-td-number-of-extrapackages">
+                <div class="d-flex align-center">
+                    <input class="form-control currency servicemanual-hotel-extrapackage-number-of-extrapackages text-right" type="text" name="servicemanual-hotel-extrapackage-number-of-extrapackages" value="@(p.Quantity!=null  ? ((double)p.Quantity).ToString("N0"):"1")">
+                </div>
+            </td>
+            <td class="servicemanual-hotel-extrapackage-td-operator-amount">
+                @{ 
+                    var operator_amount = ((p.OperatorPrice == null ? 0 : (double)p.OperatorPrice) * (p.Quantity == null ? 1 : (double)p.Quantity) * (p.Nights == null ? 0 : (double)p.Nights));
+                    total_operator_amount += operator_amount;
+                }
+                <div class="d-flex align-center">
+                    <input class="input-disabled-background form-control currency servicemanual-hotel-extrapackage-operator-amount text-right" type="text" name="servicemanual-hotel-extrapackage-operator-amount" disabled value="@(operator_amount.ToString("N0"))">
+                </div>
+            </td>
+            <td class="servicemanual-hotel-extrapackage-td-total-amount">
+                <div class="d-flex align-center">
+                    <input class="input-disabled-background form-control currency servicemanual-hotel-extrapackage-total-amount text-right" type="text" name="servicemanual-hotel-extrapackage-total-amount" disabled value="@(((double)p.Amount).ToString("N0"))">
+                </div>
+            </td>
+            <td class="servicemanual-hotel-extrapackage-td-profit">
+                <div class="d-flex align-center">
+                    <input class="input-disabled-background form-control currency servicemanual-hotel-extrapackage-profit text-right" type="text" name="servicemanual-hotel-extrapackage-profit" disabled value="@(((double)p.Profit).ToString("N0"))">
+                </div>
+            </td>
+            <td class="txt_14">
+                <a class="fa fa-trash-o servicemanual-hotel-extrapackage-delete-extrapackage" href="javascript:;"></a>
+            </td>
+        </tr>
+            }
+        }
+
+    <tr class="servicemanual-hotelpackage-total-summary">
+        <td></td>
+        <td colspan="3">
+            <div class="row">
+                <div class="col-md-9">
+                    <a href="javascript:;" class="blue ml-2 mb10 servicemanual-hotel-extrapackage-add-new"><i class="fa fa-plus-circle green"></i> Thêm phụ thu / Dịch vụ</a>
+                </div>
+                <div class="col-md-3 text-right"><strong>Tổng cộng</strong></div>
+            </div>
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td class="text-right" style="font-weight: bold;" id="servicemanual-hotel-extrapackage-operator-amount-final">@(total_operator_amount.ToString("N0"))</td>
+        <td class="text-right" style="font-weight: bold;" id="servicemanual-hotel-extrapackage-total-amount-final">@(((double)packages.Sum(x => x.Amount)).ToString("N0"))</td>
+        <td class="text-right" style="font-weight: bold;" id="servicemanual-hotel-extrapackage-total-profit-final">@(((double)packages.Sum(x => x.Profit)).ToString("N0"))</td>
+        <td></td>
+    </tr>
+
+    </tbody>
+</table>

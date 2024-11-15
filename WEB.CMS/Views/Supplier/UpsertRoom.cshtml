@@ -1,0 +1,230 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.ConfigModels
+@using Entities.Models
+@using Entities.ViewModels.Funding
+@using Microsoft.Extensions.Options
+@model SupplierRoomModel
+@inject IOptions<DomainConfig> domainConfig;
+@{
+    var bed_types = (List<AllCode>)ViewBag.RoomBedTypes;
+    var package_types = (List<AllCode>)ViewBag.RoomPackageTypes;
+    var hotels = (List<SupplierHotelModel>)ViewBag.Hotels;
+
+    var URL_STATIC_IMAGE = domainConfig.Value.ImageStatic;
+
+    var selected_packages = new List<int>();
+    if (!string.IsNullOrEmpty(Model.Extends))
+    {
+        selected_packages = Model.Extends.Split(',').Select(s => int.Parse(s)).ToList();
+    }
+}
+<form id="form_supplier_room">
+    <div class="tab-default nav nav-tabs">
+        <a class="active" href="#tab-thongtin" data-toggle="tab">Thông tin phòng</a>
+        <a class="" href="#tab-tienich" data-toggle="tab">Tiện ích</a>
+        <a class="" href="#tab-anh" data-toggle="tab">Ảnh phòng</a>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane show active" id="tab-thongtin" role="tabpanel">
+            <div class="form-default3">
+                <div class="row row_min">
+                    <div class="form-group supplier_up_file">
+                        <div class="col-6 center">
+                            <label class="choose">
+                                <div class="ava default mb10" style="border: 1px dashed #ccc;">
+                                    <img id="avatar_room_image" class="img-preview"
+                                         title="Click để chọn ảnh đại diện"
+                                         src="@(!String.IsNullOrEmpty(Model.Avatar) ? (URL_STATIC_IMAGE+Model.Avatar) : string.Empty)"
+                                         onerror="_imageError(this)" />
+                                </div>
+                                <input class="mfp-hide" type="file" name="ImgAvatar" onchange="_supplier_detail.OnChangeRoomAvartar()" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-6">
+                        <label class="lbl">Khách sạn <sup class="red">*</sup></label>
+                        <div class="wrap_input">
+                            <select class="form-control select2_modal" asp-for="@Model.HotelId" style="width:100%">
+                                <option value="">Chọn khách sạn</option>
+                                @if (hotels != null && hotels.Any())
+                                {
+                                    foreach (var item in hotels)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-6">
+                        <label class="lbl">Hạng phòng <sup class="red">*</sup></label>
+                        <div class="wrap_input">
+                            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                            <input type="text" class="form-control" asp-for="@Model.TypeOfRoom">
+                        </div>
+                    </div>
+                    <div class="form-group col-6">
+                        <label class="lbl">Loại giường <sup class="red">*</sup></label>
+                        <div class="wrap_input">
+                            <select class="form-control select2_modal" asp-for="@Model.BedRoomType" style="width:100%">
+                                <option value="">Chọn loại giường</option>
+                                @if (bed_types != null && bed_types.Any())
+                                {
+                                    foreach (var item in bed_types)
+                                    {
+                                        <option value="@item.CodeValue">@item.Description</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-6">
+                        <label class="lbl">Số người lớn/ phòng <sup class="red">*</sup></label>
+                        <div class="wrap_input">
+                            <input type="text" class="form-control" asp-for="@Model.NumberOfAdult">
+                        </div>
+                    </div>
+                    <div class="form-group col-6">
+                        <label class="lbl">Số trẻ em/ phòng</label>
+                        <div class="wrap_input">
+                            <input type="text" class="form-control" asp-for="@Model.NumberOfChild">
+                        </div>
+                    </div>
+                    <div class="form-group col-6">
+                        <label class="lbl">Số lượng phòng</label>
+                        <div class="wrap_input">
+                            <input type="text" class="form-control" asp-for="@Model.NumberOfRoom">
+                        </div>
+                    </div>
+                    <div class="form-group col-6">
+                        <label class="lbl">Diện tích (m2)</label>
+                        <div class="wrap_input">
+                            <input type="text" class="form-control" asp-for="@Model.RoomArea">
+                        </div>
+                    </div>
+                    <div class="form-group col-12">
+                        <label class="lbl">Mô tả</label>
+                        <div class="wrap_input">
+                            <textarea class="form-control" style="height: 90px;" asp-for="@Model.Description"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group col-12">
+                        <div class="border mb20">
+                            <div class="lb-form">Hiển thị website</div>
+                            <div class="pd10">
+                                <div class="row pd10">
+                                    <div class="col-md-6">
+                                        <label class="radio">
+                                            <input type="radio" asp-for="@Model.IsDisplayWebsite" value="false" />
+                                            <span class="checkmark"></span>
+                                            Không hiển thị website
+                                        </label>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="radio">
+                                            <input type="radio" asp-for="@Model.IsDisplayWebsite" value="true" />
+                                            <span class="checkmark"></span>
+                                            Hiển thị website
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-12">
+                        <div class="border mb20">
+                            <div class="lb-form">Trạng thái kích hoạt</div>
+                            <div class="pd10">
+                                <div class="row pd10">
+                                    <div class="col-md-6">
+                                        <label class="radio">
+                                            <input type="radio" asp-for="@Model.IsActive" value="true" />
+                                            <span class="checkmark"></span>
+                                            Họat động
+                                        </label>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="radio">
+                                            <input type="radio" asp-for="@Model.IsActive" value="false" />
+                                            <span class="checkmark"></span>
+                                            Tạm ngừng
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab-tienich" role="tabpanel">
+            <label class="check-list mb10">
+                <input type="checkbox" id="btn_room_extend_ckb_all">
+                <span class="checkmark"></span>
+                Chọn tất cả
+            </label>
+            <p><strong>Tiện ích phòng</strong></p>
+            <div class="grid grid__2 gap10 mb20" id="block_room_extend_ckb">
+                @if (package_types != null && package_types.Any())
+                {
+                    foreach (var item in package_types)
+                    {
+                        if (item.CodeValue == 1)
+                        {
+                            <label class="check-list">
+                                <input type="checkbox" class="ckb_extend_type" id="ckb__hotel_service_type" value="@item.CodeValue"
+                           @(selected_packages.Contains(item.CodeValue) ? "checked" :string.Empty) />
+                                <span class="checkmark"></span>
+                                @item.Description
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="check-list">
+                                <input type="checkbox" class="ckb_extend_type" value="@item.CodeValue"
+                           @(selected_packages.Contains(item.CodeValue) ? "checked" :string.Empty) />
+                                <span class="checkmark"></span>
+                                @item.Description
+                            </label>
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="tab-pane" id="tab-anh" role="tabpanel">
+            <div class="form-default3">
+                <div class="row row_min">
+                    <div class="form-group col-12">
+                        <label class="border flex align-center justify-center pd10 mb15" style="min-height: 100px;">
+                            <input class="mfp-hide" type="file" name="ImageRoom" onchange="_supplier_detail.OnAddRoomImage()" multiple />
+                            Kéo tệp vào đây hoặc nhấp để tải lên
+                        </label>
+                        <div class="row list-choose" id="suplier_room_list_image">
+                            @if (!String.IsNullOrEmpty(Model.RoomAvatar))
+                            {
+                                var urls = Model.RoomAvatar.Split(",");
+                                foreach (var url in urls)
+                                {
+                                    <div class="col-md-3 col-6 mb10 image_preview">
+                                        <div class="choose-ava">
+                                            <img class="img_other" src="@(URL_STATIC_IMAGE + url)">
+                                            <button type="button" class="delete" onclick="this.closest('.image_preview').remove();">×</button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-right">
+        <button type="button" class="btn btn-default btn btn-default cancel" data-dismiss="modal">Bỏ qua</button>
+        <button type="button" class="btn btn-default" onclick="_supplier_detail.UpsertRoom()">
+            @(Model.Id > 0 ? "Cập nhật" : "Thêm mới")
+        </button>
+    </div>
+</form>

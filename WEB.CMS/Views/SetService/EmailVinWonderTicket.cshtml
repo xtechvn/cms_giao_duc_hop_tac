@@ -1,0 +1,159 @@
+﻿@{
+    Layout = null;
+    Entities.ViewModels.VinWonder.VinWonderTicketPreviewModel mail = (Entities.ViewModels.VinWonder.VinWonderTicketPreviewModel)ViewBag.Mail;
+    List<string> image_extensions = new List<string>() { "png", "jpg", "gif", "jpeg", "PNG", "JPG", "GIF", "JPEG" };
+    List<string> video_extensions = new List<string>() { "mp4", "vod", "mkv", "avi", "MP4", "VOD", "MKV", "AVI" };
+    string default_file_image = "/images/icons/document.png";
+    long order_id = (long)ViewBag.OrderId;
+    long booking_id = (long)ViewBag.BookingId;
+}
+
+<style>
+
+    .white-popup {
+        max-width: 800px !important;
+    }
+    .stop-scrolling {
+        height: 100%;
+        overflow: hidden;
+    }
+    .vinwonder-email {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+</style>
+
+<div class="modal fade vinwonder-email" id="vinwonder-email" aria-modal="true" role="dialog" style="display: block;" data-orderid="@order_id" data-bookingid="@booking_id">
+    <div class="modal-dialog" style="max-width: 40%;">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Gửi Email vé VinWonder</h4>
+                <button type="button" class="close" onclick="_set_service_vinwonder_email.Close()">×</button>
+            </div>
+            <div>
+                <div class="modal-body">
+                    <form onsubmit="return false">
+                        <p style="font-size:12px; @((mail!=null && mail.contact_client!=null && mail.contact_client.Id>0)? " display:none;":"")" class="red">Thông tin phụ trách chính của đơn hàng chưa có vui lòng tiến hành bổ xung</p>
+                        <div>
+                            <label class="lbl">Tiêu đề <sup class="red">*</sup></label>
+                            <div class="wrap_input">
+                                <input id="subject" type="text" class="form-control" name="subject" placeholder="Tên tiêu đề" value="@(mail!=null && mail.subject!=null? mail.subject:"")">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="lbl">Người nhận<sup class="red">*</sup></label>
+                            <div class="wrap_input">
+                                <select id="to_email" class="select2" multiple="multiple" style="width:100% !important">
+                                    @if (mail != null && mail.to_email != null && mail.to_email.Count > 0)
+                                    {
+                                        foreach (var to_email in mail.to_email)
+                                        {
+                                            <option value="@to_email.email">@to_email.username - @to_email.email </option>
+
+                                        }
+                                    }
+                                </select>
+                                <label id="to_email_error" class="error" style="display: none;"></label>
+                            </div>
+                            <label class="lbl">CC<sup class="red">*</sup></label>
+                            <div class="wrap_input">
+                                <select id="cc_email" class="select2 " multiple="multiple" style="width:100% !important">
+                                    @if (mail != null && mail.cc_email != null && mail.cc_email.Count > 0)
+                                    {
+                                        foreach (var cc_email in mail.cc_email)
+                                        {
+                                            <option value="@cc_email.email">@cc_email.username - @cc_email.email </option>
+
+                                        }
+                                    }
+                                </select>
+                                <label id="cc_email_error" class="error" style="display: none;"></label>
+                            </div>
+                            <label class="lbl">BCC<sup class="red">*</sup></label>
+                            <div class="wrap_input">
+                                <select id="bcc_email" class="select2" multiple="multiple" style="width:100% !important">
+                                    @if (mail != null && mail.bcc_email != null && mail.bcc_email.Count > 0)
+                                    {
+                                        foreach (var bcc_email in mail.bcc_email)
+                                        {
+                                            <option value="@bcc_email.email">@bcc_email.username - @bcc_email.email </option>
+                                        }
+                                    }
+                                </select>
+                                <label id="bcc_email_error" class="error" style="display: none;"></label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="lbl">Nội dung Email</label>
+                            <div class="wrap_input">
+                                @Html.Raw((mail != null && mail.body != null) ? mail.body : "")
+                            </div>
+                        </div>
+                        <div>
+                            <label class="lbl">Tệp đính kèm</label>
+                            <div id="lightgallery-file" class="row list-choose lightgallery">
+                                @if (mail != null && mail.file_attachment != null && mail.file_attachment.Count > 0)
+                                {
+
+                                    foreach (var item in mail.file_attachment)
+                                    {
+                                        if (image_extensions.Contains(item.ext))
+                                        {
+                                            <div class="col-sm-3 col-4 mb10" style="max-width:150px;" data-src="@item.url">
+
+                                                <div class="choose-ava lightgallery">
+                                                    <input id="Path" value="@item.url" style="display:none" />
+                                                    <img src="@item.thumb" />
+                                                </div>
+                                                @{
+                                                    var file_name = item.url.Remove(0, item.url.LastIndexOf('/') + 1);
+                                                }
+                                                <p>@(file_name.Substring(0, file_name.Length <= 20 ? file_name.Length : 20))</p>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-sm-3 col-4 mb10 " style="max-width:150px;" data-src="@item.url">
+                                                <div class="choose-ava lightgallery">
+                                                    <input id="Path" value="@item.url" style="display:none" />
+                                                    <a href="@item.url" download>
+                                                        <img src="@default_file_image" />
+                                                    </a>
+                                                </div>
+                                                @{
+                                                    var file_name = item.url.Remove(0, item.url.LastIndexOf('/') + 1);
+                                                }
+                                                <p>@(file_name.Substring(0, file_name.Length <= 20 ? file_name.Length : 20))</p>
+
+                                            </div>
+                                        }
+
+                                    }
+                                }
+
+
+                            </div>
+
+                        </div>
+                        <div class="line-bottom"></div>
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-default cancel" onclick="_set_service_vinwonder_email.Close();">Đóng</button>
+                            @if (mail.can_sendemail)
+                            {
+                                <button type="submit" id="send_email_vinwonder_ticket" onclick="_set_service_vinwonder_email.ConfirmSendEmail();" class="btn btn-default">Gửi</button>
+                            }
+                        </div>
+                        <div id="sendemail-loading" class="text-center sendemail-loading" style="display:none; font-size:16px; font-weight:bold;">
+                            <a class="loading_export_vinwonder" href="javascript:;">
+                                <img src="/images/icons/loading.gif" style="width: 30px;height: 30px; margin-left:15px;" class="img_loading_summit coll">
+                                <nw id="loading_exportvw" style="color:red;"></nw>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,135 @@
+﻿@using Entities.ViewModels
+@using Utilities.Contants
+@{
+    var counter = 1;
+    Layout = null;
+}
+@model List<PaymentRequestViewModel>
+<div class="mb15 bold txt_18">
+    Danh sách yêu cầu chi
+    @*<a class="fa fa-plus-circle green txt_18 ml-1" href="#"></a>*@
+    <button type="button" class=" green txt_18 ml-1 border-0" onclick="_set_service_fly_detail.AddNewPayment()" style="color: #5cb566 !important">
+        <i class="fa fa-plus-circle"></i>
+    </button>
+</div>
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã phiếu</th>
+                    <th>Ngày tạo</th>
+                    <th>Nội dung</th>
+                    <th class="text-right">Số tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count > 0)
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>
+                                <a class="blue" href="/PaymentRequest/Detail?paymentRequestId=@item.Id">
+                                    @item.PaymentCode
+                                </a>
+                            </td>
+                            <td>@item.CreatedDate.Value.ToString("dd-MM-yyyy HH:mm")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Note) && item.Note.Length > 100)
+                                {
+                                    <div title="@item.Note">@item.Note.Substring(0, 50)...</div>
+                                }
+                                else
+                                {
+                                    @item.Note
+                                }
+                            </td>
+                            <td class="text-right">@item.Amount.ToString("N0")</td>
+                            <td>
+                                @if (item.Status == (int)(PAYMENT_REQUEST_STATUS.CHO_KTT_DUYET) ||
+                             item.Status == (int)(PAYMENT_REQUEST_STATUS.CHO_TBP_DUYET))
+                                {
+                                    <span class="status-wait">@item.PaymentRequestStatus</span>
+                                }
+                                @if (item.Status == (int)(PAYMENT_REQUEST_STATUS.CHO_CHI) || item.Status == (int)(PAYMENT_REQUEST_STATUS.DA_CHI))
+                                {
+                                    <span class="status-approve">@item.PaymentRequestStatus</span>
+                                }
+                                @if (item.Status == (int)(PAYMENT_REQUEST_STATUS.TU_CHOI))
+                                {
+                                    <span class="status-reject">@item.PaymentRequestStatus</span>
+                                }
+                                @if (item.Status == (int)(PAYMENT_REQUEST_STATUS.LUU_NHAP))
+                                {
+                                    <span class="status-draft">@item.PaymentRequestStatus</span>
+                                }
+                            </td>
+                            <td>
+                                <a class="fa fa-print txt_14" href="#"></a>
+                                @*<a class="fa fa-pencil txt_14 ml-1" href="#"></a>*@
+                                <button type="button" class=" ml-1 border-0" style=" background: none;"
+                                        onclick="_payment_request_service.Edit(@item.Id)">
+                                    <i class="fa fa-pencil txt_14 ml-1"></i>
+                                </button>
+                                <button type="button" class=" ml-1 green border-0" style=" background: none;"
+                                        onclick="_payment_request_service.Delete('@item.PaymentCode')">
+                                    <i class="fa fa-trash-o txt_14 ml-1"></i>
+                                </button>
+                                @*<a class="fa fa-trash-o txt_14 ml-1" href="#"></a>*@
+                            </td>
+                        </tr>
+                        counter++;
+                    }
+                }
+                else
+                {
+                    <tr class="text-center">
+                        <td colspan="7">Không tìm thấy phiếu yêu cầu chi nào</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style scoped>
+    .status-wait {
+        background: #EEB442 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-approve {
+        background: #5CB566 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-draft {
+        background: #C9C9C9 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+
+    .status-reject {
+        background: #FF0000 !important;
+        min-width: 130px;
+        padding: 3px 15px;
+        border-radius: 15px;
+        color: #fff;
+    }
+</style>
+<script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+<script type="text/javascript" src="~/modules/payment_request.js"></script>

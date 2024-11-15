@@ -1,0 +1,119 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.ViewModels.Hotel
+@model IEnumerable<HotelViewModel>
+
+<style>
+    .item_selected_hotel {
+        padding: 10px 5px;
+        border-bottom: 1PX SOLID #CCC;
+    }
+
+        .item_selected_hotel:last-child {
+            border-bottom: none;
+        }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+</style>
+
+<div class="tab-default nav nav-tabs">
+    <a class="active" href="#tab-hotel" data-toggle="tab">Khách sạn</a>
+    <a class="mfp-hide" href="#tab-tour" data-toggle="tab">Tour du lịch</a>
+</div>
+<div class="tab-content">
+    <div class="tab-pane show active" id="tab-hotel" role="tabpanel">
+        <div class="form-default3">
+            <div class="row row_min">
+                <div class="col-md-12 mb20">
+                    <select class="form-control" id="service_hotel_suggest" style="width:100%">
+                    </select>
+                </div>
+
+                <div class="col-md-12 mb20" id="grid_selected_hotel">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <div class="item_selected_hotel red" data-value="@item.Id">
+                                <span class="blue">@item.Name</span>
+                                <a class="cursor-pointer" onclick="$(this).parent().remove()"><i class="fa fa-times" style="float:right;"></i></a>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="col-md-12 text-right">
+                    <button type="button" class="btn btn-default btn btn-default cancel" data-dismiss="modal">Bỏ qua</button>
+                    <button type="button" class="btn btn-default" onclick="_supplier_service_detail.Upsert()">
+                        <i class="fa fa-save"></i> Lưu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane mfp-hide" id="tab-tour" role="tabpanel">
+        <div class="form-default3">
+            <div class="row row_min">
+                <div class="grid-item col-md-12">
+                    <div class="border mb20">
+                        nothing hể
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" defer>
+    $(document).ready(function(){
+        $("#service_hotel_suggest").select2({
+            placeholder: "Tìm kiếm khách sạn",
+            ajax: {
+                url: "/Hotel/Suggest",
+                type: "get",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    var query = {
+                        text: params.term,
+                        size: 10
+                    }
+                    return query;
+                },
+                processResults: function (data) {
+                    var data = {
+                        results: $.map(data, function (item) {
+                            return {
+                                text: item.name,
+                                id: item.id,
+                            }
+                        })
+                    }
+                    return data;
+                }
+            }
+        });
+    });
+
+    $("#service_hotel_suggest").change(function(){
+        let seft = $(this);
+        let gridSelectHotel = $('#grid_selected_hotel');
+        let value = seft.val();
+        let text = seft.find(":selected").text();
+
+        let arr_value = [];
+        gridSelectHotel.find('.item_selected_hotel').each(function(){
+            arr_value.push($(this).data('value'));
+        });
+
+        if(!arr_value.includes(parseInt(value))){
+            gridSelectHotel.append(`<div class="item_selected_hotel red" data-value="${value}">
+                <span class="blue">${text}</span>
+                <a class="cursor-pointer" onclick="$(this).parent().remove()"><i class="fa fa-times" style="float:right;"></i></a>
+            </div>`);
+        }
+    });
+</script>

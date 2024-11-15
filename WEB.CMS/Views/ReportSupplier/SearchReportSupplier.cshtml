@@ -1,0 +1,98 @@
+﻿@using Entities.ViewModels
+@using  Entities.ViewModels.Report
+@model GenericViewModel<SearchRevenueBySupplierViewModel>
+@if (Model.ListData == null)
+{
+<div class="search-null center mb40">
+    <div class="mb24">
+        <img src="/images/graphics/icon-search.png" alt="">
+    </div>
+    <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+    <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+</div> }
+else
+{
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th rowspan="2"style="width: 50px;">STT</th>
+                    <th rowspan="2"style="width: 140px;">Mã nhà cung cấp</th>
+                    <th rowspan="2"style="width: 140px;">Tên nhà cung cấp</th>
+                    <th rowspan="2"style="width: 100px;">TK công nợ</th>
+                    <th colspan="2" style="width: 100px; text-align: center;">Số dư đầu kỳ</th>
+                    <th colspan="2" style="width: 100px; text-align: center;">Phát sinh trong kỳ</th>
+                    <th colspan="2" style="width: 100px; text-align: center;">Số dư cuối kỳ</th>
+                    <th rowspan="2"style="width: 100px;">Thao tác</th>
+                </tr>
+                <tr>
+                    <th style="width: 100px; text-align: right;">Nợ</th>
+                    <th style="width: 100px; text-align: right;">Có</th>
+
+                    <th style="width: 100px; text-align: right;">Nợ</th>
+                    <th style="width: 100px; text-align: right;">Có</th>
+
+                    <th style="width: 100px; text-align: right;">Nợ</th>
+                    <th style="width: 100px; text-align: right;">Có</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ListData != null && Model.ListData.Count > 0)
+                {
+                     <tr style="background: blanchedalmond;" >
+                         <td></td>
+                         <td></td>
+                         <td style="font-weight: bold">
+                             Tổng cộng
+                         </td>
+                         <td></td>
+                         <td style="text-align: right; font-weight: bold">@ViewBag.SumAmountOpeningBalanceDebit</td>
+                         <td style="text-align: right; font-weight: bold">@ViewBag.SumAmountOpeningBalanceCredit</td>
+                         <td style="text-align: right; font-weight: bold">@ViewBag.SumAmountDebit</td>
+                         <td style="text-align: right; font-weight: bold">@ViewBag.SumAmountCredit</td>
+                         <td style="text-align: right; font-weight: bold">@ViewBag.SumAmountClosingBalanceDebit</td>
+                         <td style="text-align: right; font-weight: bold">@ViewBag.SumAmountClosingBalanceCredit</td>
+                         <td></td>
+                     </tr>
+                    var STT = (Model.CurrentPage - 1) * Model.PageSize;
+                    foreach (var item in Model.ListData)
+                    {
+                        <tr>
+                            <td>@(++STT)</td>
+                            <td>@item.SupplierId</td>
+                            <td>@item.FullName</td>
+                            <td>@item.DebtAccount</td>
+                           
+                            <td style="text-align: right;">@item.AmountOpeningBalanceDebit.ToString("N0")</td>
+                            <td style="text-align: right;">@item.AmountOpeningBalanceCredit.ToString("N0")</td>
+                            <td style="text-align: right;">@item.AmountDebit.ToString("N0")</td>
+                            <td style="text-align: right;">@item.AmountCredit.ToString("N0")</td>
+                            
+                            <td style="text-align: right;">@item.AmountClosingBalanceDebit.ToString("N0")</td>
+                            <td style="text-align: right;">@item.AmountClosingBalanceCredit.ToString("N0")</td>
+                           
+                            <td><a class="blue" onclick="_report_supplier.OpenPopup('@item.SupplierId','@item.FullName','@item.AmountOpeningBalanceCredit','@item.AmountDebit','@item.AmountCredit','@item.AmountClosingBalanceCredit')" href="javascript:;">xem chi tiết</a></td>
+                        </tr>
+                    }
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @await Component.InvokeAsync("PagingNew", new
+    {
+        pageModel = new Paging()
+        {
+            TotalRecord = Model.TotalRecord,
+            TotalPage = Model.TotalPage,
+            CurrentPage = Model.CurrentPage,
+            PageSize = Model.PageSize,
+            RecordName = "Kết quả",
+            PageAction = "_report_supplier.OnPaging({0})",
+            PageSelectPageSize = "_report_supplier.onSelectPageSize()",
+        }
+    })
+</div>}

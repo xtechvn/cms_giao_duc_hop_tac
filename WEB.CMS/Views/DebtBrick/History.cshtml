@@ -1,0 +1,57 @@
+﻿@using Entities
+@using Entities.ViewModels.Funding
+@using Utilities.Contants
+@{
+    var i = 1;
+    var listDebtBrickLogViewModel = (List<DebtBrickLogViewModel>)ViewBag.listDebtBrickLogViewModel;
+}
+<div class="white-popup">
+    <div class="content_lightbox">
+        <div class="table-responsive table-default table-gray table-modal mb20">
+            <table class="table table-nowrap">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Thời gian</th>
+                        <th>Nội dung</th>
+                        @*<th>Ghi chú</th>*@
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (listDebtBrickLogViewModel != null)
+                    {
+                        @foreach (var item in listDebtBrickLogViewModel)
+                        {
+                            <tr>
+                                <td>@(i++)</td>
+                                <td>@item.CreatedTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @if (item.ObjectType == ObjectType.UNDO_DEBTBRICKLOG_ORDER)
+                                    {
+                                        <p>
+                                            @item.UserName đã gạch nợ @item.Amount.ToString("N0") cho đơn hàng
+                                            <a class="blue" href="/Order/Orderdetails?id=@item.OrderId">
+                                                @item.OrderNo
+                                            </a>
+                                        </p>
+                                    }
+                                    @if (item.ObjectType == ObjectType.DEBTBRICKLOG_ORDER)
+                                    {
+                                        <p>
+                                            @item.UserName
+                                            đã bỏ gạch nợ @item.Amount.ToString("N0") cho đơn hàng
+                                            <a class="blue" href="/Order/Orderdetails?id=@item.OrderId">
+                                                @item.OrderNo
+                                            </a>
+                                        </p>
+                                    }
+                                </td>
+                                @*<td>@item.Note </td>*@
+                            </tr>
+                        }}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

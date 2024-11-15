@@ -1,0 +1,134 @@
+﻿@using Entities.Models
+@{
+    ViewData["Title"] = "Báo cáo doanh thu theo sản phẩm";
+}
+<style>
+    .btn_reset {
+        position: absolute;
+        right: 32px;
+        top: 7px;
+        width: 20px;
+        height: 20px;
+        border: 0;
+        outline: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        background: #C4C4C4
+    }
+
+    .stop-scrolling {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .filter .select2 {
+        padding-left: 100px !important;
+    }
+
+    .filter .lbl {
+        width: 100px !important;
+    }
+</style>
+<h2 class="txt_18 bold mb20" style="padding-left: 20px;">Báo cáo doanh thu theo sản phẩm</h2>
+<section style=" overflow-x: hidden;">
+    <div id="filter" class="row-main container filter">
+        <div class="flex ">
+            <div class="form-group mb10 mr-2" style="min-width: 400px;">
+                <select class="select2" id="token-input-hotel" style="width:100% !important" multiple="multiple">
+                </select>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width: 350px;">
+                <div class="datepicker-wrap add-lbl">
+                    <span class="lbl">Ngày tạo</span>
+                    <input class="form-control date text-left date-select" style="padding-left: 100px !important;" id="create_date"
+                           type="text" name="create_date" value="" placeholder="Ngày tạo" />
+                </div>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width: 350px;">
+                <div class="datepicker-wrap add-lbl">
+                    <span class="lbl">Ngày in</span>
+                    <input class="form-control date text-left date-select" style="padding-left: 100px !important;" id="check_in_date"
+                           type="text" name="check_in_date" value="" placeholder="Ngày in" />
+                </div>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width: 350px;">
+                <div class="datepicker-wrap add-lbl">
+                    <span class="lbl">Ngày out</span>
+                    <input class="form-control date text-left date-select" style="padding-left: 100px !important;" id="check_out_date"
+                           type="text" name="check_out_date" value="" placeholder="Ngày out" />
+                </div>
+            </div>
+
+            <div class="mb10 mr-2" style="min-width: 220px;">
+                <button class="btn btn-default" type="button" onclick="_report_hotel_revenue.ExportExcel()" id="btnExport">
+                    <i class="fa fa-file-excel-o" id="icon-export" title="Xuất excel">
+                    </i>
+                </button>
+                <button type="button" class="btn btn-default bg-main" onclick="_report_hotel_revenue.ActionSearch(1)">
+                    <svg class="icon-svg" style="vertical-align: sub;">
+                        <use xlink:href="/images/icons/icon.svg#search"></use>
+                    </svg>
+                    Tìm kiếm
+                </button>
+            </div>
+
+
+        </div>
+        <div>
+            <div id="grid-data">
+            </div>
+            <img src="~/images/icons/loading.gif" style="margin-left:45%; width: 100px; height: 100px; display:none" class="loading" id="imgLoading" />
+        </div>
+
+    </div>
+</section>
+@section scripts{
+    <script type="text/javascript" src="~/modules/report_hotel_revenue.js"></script>
+    <script>
+        $('input[name="create_date"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="create_date"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerCreated = false;
+        });
+        $('input[name="create_date"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerCreated = true;
+        });
+        $('input[name="check_in_date"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="check_in_date"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerCheckInDate = false;
+        });
+        $('input[name="check_in_date"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerCheckInDate = true;
+        });
+        $('input[name="check_out_date"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="check_out_date"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerCheckOutDate = false;
+        });
+        $('input[name="check_out_date"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerCheckOutDate = true;
+        });
+    </script>
+}

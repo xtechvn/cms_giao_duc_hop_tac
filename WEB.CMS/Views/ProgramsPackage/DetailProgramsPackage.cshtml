@@ -1,0 +1,726 @@
+﻿@using Entities.ViewModels.Programs
+@using Utilities.Contants
+@{
+    var Model = (List<ProgramsPackageModel>)ViewBag.data;
+    var applydate = (List<ProgramsPackageViewModel>)ViewBag.applydate;
+    int count = 0;
+
+}
+<style>
+    .white-popup {
+        width: 900px !important;
+    }
+
+    .ProgramsPackage-tbody td {
+        border: 0px !important;
+    }
+
+    .ProgramsPackage-th th {
+        border: 0px !important;
+    }
+</style>
+<meta charset="UTF-8">
+<div class="wrap_bg mb20" style="box-shadow: 0px 4px 4px 4px rgba(0,0,0,0.2)!important;">
+    <form id="ProgramsPackage_form" onsubmit="return false">
+
+
+        @if (Model != null)
+        {
+
+            <div class="form-default">
+                @if (ViewBag.type == 3)
+                {
+                    <input value="0" id="ProgramId" style="display:none" />
+                    <input value="@ViewBag.FromDateDB2" id="FromDateDB" style="display:none" />
+                    <input value="@ViewBag.ToDateDB2" id="ToDateDB" style="display:none" />
+                }
+                else
+                {
+                    <input value="@ViewBag.id" id="ProgramId" style="display:none" />
+                    <input value="@Convert.ToDateTime(applydate[0].FromDate).ToString("yyyy-MM-dd")" id="FromDateDB" style="display:none" />
+                    <input value="@Convert.ToDateTime(applydate[0].ToDate).ToString("yyyy-MM-dd")" id="ToDateDB" style="display:none" />
+                }
+                <input value="@ViewBag.id" id="ProgramId" style="display:none" />
+                <input value="@ViewBag.SupplierId" id="SupplierID" style="display:none" />
+                <input value="@ViewBag.ServiceName" id="ServiceName" style="display:none" />
+                
+
+                @if (Model[0].ProgramsPackage != null)
+                {
+                    var data = Model[0].ProgramsPackage.Where(s => s.RoomType == ViewBag.RoomType).ToList();
+                    <input value="@data[0].RoomTypeId" id="RoomTypeIdv1" style="display:none" />
+                    <div class="form-group">
+                        <label class="lbl mt0">Mã gói</label>
+                        <div class="wrap_input" style="width:76%">
+                            <input value="@data[0].PackageCode" id="PackageCode" class="form-control PackageCode" disabled />
+                            <label id="PackageCode-error" class="error" for="PackageCode"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl mt0">Tên gói</label>
+                        <div class="wrap_input" style="width:76%">
+                            <input value="@data[0].PackageName" id="PackageName" class="form-control PackageName" />
+                            <label id="PackageName-error" class="error" for="PackageName"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl">Hạng phòng</label>
+                        <div class="wrap_input" style="width: 76%">
+                            <select class="form-control RoomType" id="RoomType" name="RoomType">
+                                <option selected="selected" value="@data[0].RoomTypeId">@data[0].RoomType</option>
+                            </select>
+                            <label id="RoomType-error" class="error" for="RoomType"></label>
+                        </div>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group">
+                        <label class="lbl mt0">Mã gói</label>
+                        <div class="wrap_input" style="width:76%">
+                            <input value="" id="PackageCode" class="form-control PackageCode" disabled />
+                            <label id="PackageCode-error" class="error" for="PackageCode"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl mt0">Tên gói</label>
+                        <div class="wrap_input" style="width:76%">
+                            <input value="" id="PackageName" class="form-control PackageName" />
+                            <label id="PackageName-error" class="error" for="PackageName"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl">Hạng phòng</label>
+                        <div class="wrap_input" style="width: 76%">
+                            <select class="form-control RoomType" id="RoomType" name="RoomType">
+                            </select>
+                            <label id="RoomType-error" class="error" for="RoomType"></label>
+                        </div>
+
+                    </div>
+                }
+
+
+
+                <div class="form-group">
+                    <label class="lbl">Thời gian áp dụng</label>
+                    @if (ViewBag.type == 3)
+                    {
+                        <div class="datepicker-wrap row">
+                            <input class="form-control date text-left filter_date_daterangepicker" id="ApplyDate" type="text" style="width: 12%; margin-left:15px; min-width: 180px !important "
+                                   name="datetimeApprove" placeholder="Thời gian áp dụng" />
+                            <label id="ApplyDate-error" class="error" for="ApplyDate"></label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="datepicker-wrap row">
+                            <input class="form-control date text-left filter_date_daterangepicker" id="ApplyDate" type="text" style="width: 12%; margin-left:15px; min-width: 180px !important " disabled
+                                   name="datetimeApprove" placeholder="Thời gian áp dụng" />
+                            @foreach (var i in applydate)
+                            {
+                                if (i.FromDate == applydate[0].FromDate)
+                                {
+                                    <button disabled="disabled" style="cursor: not-allowed" class="btn  btn-default btn_ApplyDate cancel btn_@Convert.ToDateTime(i.FromDate).ToString("dd-MM-yyyy")" href="javascript:;" onclick="_DetailPrograms.CheckAppLy('@Convert.ToDateTime(i.FromDate).ToString("dd-MM-yyyy")','@Convert.ToDateTime(i.FromDate).ToString("dd/MM/yyyy")' , '@Convert.ToDateTime(i.ToDate).ToString("dd/MM/yyyy")',@i.OpenStatus)">@Convert.ToDateTime(i.FromDate).ToString("dd/MM/yyyy") - @Convert.ToDateTime(i.ToDate).ToString("dd/MM/yyyy")</button>
+
+                                }
+                                else
+                                {
+                                    <button class="btn btn-default btn_ApplyDate cancel btn_@Convert.ToDateTime(i.FromDate).ToString("dd-MM-yyyy")" href="javascript:;" onclick="_DetailPrograms.CheckAppLy('@Convert.ToDateTime(i.FromDate).ToString("dd-MM-yyyy")','@Convert.ToDateTime(i.FromDate).ToString("dd/MM/yyyy")' , '@Convert.ToDateTime(i.ToDate).ToString("dd/MM/yyyy")',@i.OpenStatus)">@Convert.ToDateTime(i.FromDate).ToString("dd/MM/yyyy") - @Convert.ToDateTime(i.ToDate).ToString("dd/MM/yyyy")</button>
+
+                                }
+                            }
+                            <label id="ApplyDate-error" class="error" for="ApplyDate"></label>
+                        </div>
+                    }
+
+
+                </div>
+
+                <div class="form-group mb10">
+                    <label class="lbl mt0">Trạng thái</label>
+                    <div class="wrap_input flex">
+                        @if (Model[0].ProgramsPackageStatus == 0)
+                        {
+                            <label class="radio radio-block">
+                                <input type="radio" class="optradio" name="optradio" value="0" checked="checked">
+                                <span class="checkmark"></span>
+                                Mở bán
+                            </label>
+                            <label class="radio radio-block ml-4">
+                                <input type="radio" class="optradio" name="optradio" value="1">
+                                <span class="checkmark"></span>
+                                Đã đóng
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="radio radio-block">
+                                <input type="radio" class="optradio" name="optradio" value="0">
+                                <span class="checkmark"></span>
+                                Mở bán
+                            </label>
+                            <label class="radio radio-block ml-4">
+                                <input type="radio" class="optradio" name="optradio" value="1" checked="checked">
+                                <span class="checkmark"></span>
+                                Đã đóng
+                            </label>
+                        }
+
+                    </div>
+                </div>
+                <div class="form-group not-full">
+                    <div class="table-responsive table-default table-gray">
+                        <table style="width:100%;">
+                            <thead>
+                                <tr class="ProgramsPackage-th">
+
+                                    <th style="width: 150px; text-align: center; background: white;">Giá nhập</th>
+                                    <th style="background:white;">Theo thứ</th>
+                                    <th style="text-align: center; width: 35%; background: white;"></th>
+                                    <th class="action" style="text-align: center; width: 15%; background: white;"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="ProgramsPackage-tbody">
+                                @if (Model[0].ProgramsPackage != null && Model[0].ProgramsPackage.Count > 0)
+                                {
+                                    var data_list = Model[0].ProgramsPackage.Where(s => s.RoomType == ViewBag.RoomType && s.Type == 1).GroupBy(s => new { s.Price, s.RoomType, s.FromDate }).Select(i => i.First()).ToList();
+                                    foreach (var item in Model[0].ProgramsPackage.Where(s => s.RoomType == ViewBag.RoomType && s.Type == 1).GroupBy(s => new { s.Price, s.RoomType, s.FromDate }).Select(i => i.First()).ToList())
+                                    {
+                                        if (Convert.ToDateTime(item.FromDate).ToString("dd/MM/yyyy") == Convert.ToDateTime(applydate[0].FromDate).ToString("dd/MM/yyyy"))
+                                        {
+                                            <tr class="ProgramsPackage-Edit-row @Convert.ToDateTime(item.FromDate).ToString("dd-MM-yyyy")">
+
+                                                <td>
+                                                    <input class="ProgramsPackage-Edit-Id" value="@item.id" style="display:none" />
+                                                    <input placeholder="Giá nhập" maxlength="12" class="form-control currency text-right ProgramsPackage-Edit-Amout" id="ProgramsPackage" value="@item.Price.ToString("N0")" />
+                                                </td>
+                                                <td>
+                                                    <select style="width:100%;" multiple class="form-control WeekDay-@Convert.ToDateTime(item.FromDate).ToString("dd-MM-yyyy") ProgramsPackage-Edit-WeekDay" name="ProgramsPackage-WeekDay">
+
+                                                        @if (@item.WeekDay.Contains("Thứ 2"))
+                                                        {
+                                                            <option selected value="2">Thứ 2</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="2">Thứ 2</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("Thứ 3"))
+                                                        {
+                                                            <option selected value="3">Thứ 3</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="3">Thứ 3</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("Thứ 4"))
+                                                        {
+                                                            <option selected value="4">Thứ 4</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="4">Thứ 4</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("Thứ 5"))
+                                                        {
+                                                            <option selected value="5">Thứ 5</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="5">Thứ 5</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("Thứ 6"))
+                                                        {
+                                                            <option selected value="6">Thứ 6</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="6">Thứ 6</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("Thứ 7"))
+                                                        {
+                                                            <option selected value="7">Thứ 7</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="7">Thứ 7</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("CN"))
+                                                        {
+                                                            <option selected value="0">CN</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="0">CN</option>
+                                                        }
+
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select style="width:100%;" class="form-control ProgramsPackage-Add-WeekDay_2 WeekDay_@Convert.ToDateTime(item.FromDate).ToString("dd-MM-yyyy")" placeholder="Chọn nhanh thứ">
+                                                    </select>
+                                                </td>
+                                                <td class="action ">
+                                                    <a href="javascript:;" class="blue ml-2 mb10 buttun_add" onclick="_ProgramsPackage.AddProgramsPackage2($(this));"><i class="fa fa-plus-circle green"></i> </a>
+                                                    <a class="fa fa-trash-o" href="javascript:;" onclick="_ProgramsPackage.DeleteProgramsPackage($(this));"></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr class="ProgramsPackage-Edit-row-2 mfp-hide @Convert.ToDateTime(item.FromDate).ToString("dd-MM-yyyy")">
+
+                                                <td>
+                                                    <input class="ProgramsPackage-Edit-Id" value="@item.id" style="display:none" /><input placeholder="Giá nhập" maxlength="12" class="form-control currency text-right ProgramsPackage-Edit-Amout" id="ProgramsPackage" value="@item.Price.ToString("N0")" />
+                                                </td>
+                                                <td>
+                                                    <select style="width:100%;" multiple class="form-control WeekDay-@Convert.ToDateTime(item.FromDate).ToString("dd-MM-yyyy") ProgramsPackage-Edit-WeekDay-2" @*onchange="_ProgramsPackage.Select2WithFixedOption($('.ProgramsPackage-Edit-WeekDay'));"*@ name="ProgramsPackage-WeekDay">
+                                                        @if (@item.WeekDay.Contains("Thứ 2"))
+                                                        {
+                                                            <option selected value="2">Thứ 2</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="2">Thứ 2</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("Thứ 3"))
+                                                        {
+                                                            <option selected value="3">Thứ 3</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="3">Thứ 3</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("Thứ 4"))
+                                                        {
+                                                            <option selected value="4">Thứ 4</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="4">Thứ 4</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("Thứ 5"))
+                                                        {
+                                                            <option selected value="5">Thứ 5</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="5">Thứ 5</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("Thứ 6"))
+                                                        {
+                                                            <option selected value="6">Thứ 6</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="6">Thứ 6</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("Thứ 7"))
+                                                        {
+                                                            <option selected value="7">Thứ 7</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="7">Thứ 7</option>
+                                                        }
+                                                        @if (@item.WeekDay.Contains("CN"))
+                                                        {
+                                                            <option selected value="0">CN</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="0">CN</option>
+                                                        }
+
+
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select style="width:100%;" class="form-control ProgramsPackage-Add-WeekDay_2 WeekDay_@Convert.ToDateTime(item.FromDate).ToString("dd-MM-yyyy")" placeholder="Chọn nhanh thứ">
+                                                    </select>
+                                                </td>
+                                                <td class="action ">
+                                                    <a href="javascript:;" class="blue ml-2 mb10 buttun_add ProgramsPackage-Edit-WeekDay-2" onclick="_ProgramsPackage.AddProgramsPackage2($(this));"><i class="fa fa-plus-circle green"></i> </a>
+                                                    <a class="fa fa-trash-o" href="javascript:;" onclick="_ProgramsPackage.DeleteProgramsPackage($(this));"></a>
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    }
+
+                                }
+                                <tr class="ProgramsPackage-summary-row ">
+                                    <td>
+                                        <a href="javascript:;" class="blue ml-2 mb10 buttun_add mfp-hide " onclick="_ProgramsPackage.AddProgramsPackage2($(this));"><i class="fa fa-plus-circle green"></i> Thêm dòng</a>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group not-full">
+                    <div class="table-responsive table-default ">
+                        <table style="width:100%;">
+                            <thead>
+                                <tr class="ProgramsPackage-th">
+
+                                    <th style="width: 150px; text-align: center; background: white;">Giá nhập</th>
+                                    <th style="background:white;">Theo Ngày đặc biệt</th>
+                                    <th class="action" style="text-align: center; width: 15%; background: white;"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="ProgramsPackage-Date-tbody">
+
+                                @foreach (var item2 in Model[0].ProgramsPackage.Where(s => s.RoomType == ViewBag.RoomType && s.Type != 1))
+                                {
+                                    if (Convert.ToDateTime(item2.FromDate).ToString("dd/MM/yyyy") == Convert.ToDateTime(applydate[0].FromDate).ToString("dd/MM/yyyy"))
+                                    {
+                                        <tr class="ProgramsPackage-Date-row  Date_@Convert.ToDateTime(item2.FromDate).ToString("dd-MM-yyyy")">
+
+                                            <td>
+                                                <input class="ToDate_date" value="@Convert.ToDateTime(item2.ToDate).ToString("dd/MM/yyyy")" style="display:none" />
+                                                <input class="FromDate_date" value="@Convert.ToDateTime(item2.FromDate).ToString("dd/MM/yyyy")" style="display:none" />
+                                                <input placeholder="Giá nhập" maxlength="12" class="form-control currency text-right ProgramsPackage-Date-Amout" value="@item2.Price.ToString("N0")" />
+                                            </td>
+                                            <td>
+                                                <input class="form-control ProgramsPackage-Date-ApplyDate" value="@Convert.ToDateTime(item2.ApplyDate).ToString("dd/MM/yyyy")"
+                                                       name="ProgramsPackage-Date-ApplyDate_@count" style="min-width: 180px !important" placeholder="Thời gian áp dụng" />
+
+                                            </td>
+                                            <td class="action ">
+                                                <a href="javascript:;" class="blue ml-2 mb10 buttun_add_date" onclick="_ProgramsPackage.AddProgramsPackageDate($(this));"><i class="fa fa-plus-circle green"></i> </a>
+                                                <a class="fa fa-trash-o" href="javascript:;" onclick="_ProgramsPackage.DeleteProgramsPackageDate($(this));"></a>
+                                            </td>
+                                        </tr>
+                                        count++;
+                                    }
+
+                                    else
+                                    {
+                                        <tr class="ProgramsPackage-Date-row mfp-hide Date_@Convert.ToDateTime(item2.FromDate).ToString("dd-MM-yyyy")">
+
+                                            <td>
+                                                <input class="ToDate_date" value="@Convert.ToDateTime(item2.ToDate).ToString("dd/MM/yyyy")" style="display:none" />
+                                                <input class="FromDate_date" value="@Convert.ToDateTime(item2.FromDate).ToString("dd/MM/yyyy")" style="display:none" />
+                                                <input placeholder="Giá nhập" maxlength="12" class="form-control currency text-right ProgramsPackage-Date-Amout" value="@item2.Price.ToString("N0")" />
+                                            </td>
+                                            <td>
+                                                <input class="form-control ProgramsPackage-Date-ApplyDate" value="@Convert.ToDateTime(item2.ApplyDate).ToString("dd/MM/yyyy")"
+                                                       name="ProgramsPackage-Date-ApplyDate_@count" style="min-width: 180px !important" placeholder="Thời gian áp dụng" />
+
+                                            </td>
+                                            <td class="action ">
+                                                <a href="javascript:;" class="blue ml-2 mb10 buttun_add_date" onclick="_ProgramsPackage.AddProgramsPackageDate($(this));"><i class="fa fa-plus-circle green"></i> </a>
+                                                <a class="fa fa-trash-o" href="javascript:;" onclick="_ProgramsPackage.DeleteProgramsPackageDate($(this));"></a>
+                                            </td>
+                                        </tr>
+                                        count++;
+                                    }
+                                }
+
+
+                                <tr class="ProgramsPackage-Date-summary-row ">
+                                    <td>
+                                        <a href="javascript:;" class="blue ml-2 mb10 buttun_add_date" onclick="_ProgramsPackage.AddProgramsPackageDate($(this));"><i class="fa fa-plus-circle green"></i> Thêm dòng</a>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group align-right mt20 block">
+
+                    <button type="submit" class="btn btn-default bg-main" onclick="_ProgramsPackage.SummitupdateProgramsPackage(@(ViewBag.type==3? 3:1),@ViewBag.type2)" id="btnLuu"><i class="fa fa-floppy-o"></i>Lưu</button>
+                    <button type="submit" class="btn btn-default cancel" onclick="_DetailPrograms.showbtnThem();"><i class="fa fa-minus-circle"></i>Bỏ qua</button>
+                </div>
+            </div>
+            <script>_ProgramsPackage.Select2WithFixedOption($('.ProgramsPackage-Edit-WeekDay'));</script>
+            <script>_ProgramsPackage.HotelRoomSuggest2();</script>
+            <script>_ProgramsPackage.loadDatePicker();</script>
+            <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+
+
+            <script type="text/javascript" src="/modules/DetailPrograms.js"></script>
+
+
+            <script>
+                if (@ViewBag.type == 3)
+                {
+                    $('input[name="datetimeApprove"]').daterangepicker({
+                        autoUpdateInput: false,
+                        autoApply: true,
+                        showDropdowns: true,
+                        drops: 'down',
+                        minDate: '@ViewBag.FromDate2',
+                        maxDate: '@ViewBag.ToDate2',
+
+                        locale: {
+                            format: 'DD/MM/YYYY'
+                        }
+                    });
+                    $('input[name="datetimeApprove"]').val('');
+                }
+                else
+                {
+                     $('input[name="datetimeApprove"]').daterangepicker({
+                        autoUpdateInput: true,
+                    autoApply: true,
+                    showDropdowns: true,
+                    drops: 'down',
+                    minDate: '@Convert.ToDateTime(applydate[0].FromDate).ToString("dd/MM/yyyy")',
+                    maxDate: '@Convert.ToDateTime(applydate[0].ToDate).ToString("dd/MM/yyyy")',
+                    locale:
+                        {
+                            format: 'DD/MM/YYYY',
+                            cancelLabel: 'Clear'
+                        }
+                    });
+                $('input[name="datetimeApprove"]').data('daterangepicker').setStartDate('@ViewBag.FromDate');
+                $('input[name="datetimeApprove"]').data('daterangepicker').setEndDate('@ViewBag.ToDate');
+                }
+
+
+                $('input[name="datetimeApprove"]').on('cancel.daterangepicker', function (ev, picker) {
+                    $(this).val('');
+                    isPickerApproveProgramsPackage = false;
+                });
+                $('input[name="datetimeApprove"]').on('apply.daterangepicker', function (ev, picker) {
+                    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+                    isPickerApproveProgramsPackage = true;
+                });
+            </script>
+
+        }
+        else
+        {
+
+            <div class="form-default">
+                <input value="@ViewBag.id" id="ProgramId" style="display:none" />
+                <input value="@ViewBag.SupplierId" id="SupplierID" style="display:none" />
+                <div class="form-group">
+                    <label class="lbl mt0">Mã gói</label>
+                    <div class="wrap_input">
+                        @if (ViewBag.PackageCode != null)
+                        {
+                            <input class="form-control PackageCode" id="PackageCode" name="PackageCode" style="width:83%;" value="@ViewBag.PackageCode" disabled />
+                        }
+                        else
+                        {
+                            <input class="form-control PackageCode" id="PackageCode" maxlength="150" style="width:83%;" name="PackageCode" value="@ViewBag.PackageCode" />
+                        }
+
+                        <label id="PackageCode-error" class="error" for="PackageCode"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="lbl mt0">Tên gói</label>
+                    <div class="wrap_input">
+
+
+                        <input class="form-control PackageName" id="PackageName" style="width:83%;" name="PackageName" />
+
+
+                        <label id="PackageName-error" class="error" for="PackageName"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="lbl">Hạng phòng</label>
+                    <div class="wrap_input" style="width: 76%">
+                        <select class="form-control RoomType" id="RoomType" name="RoomType">
+                        </select>
+                        <label id="RoomType-error" class="error" for="RoomType"></label>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="lbl">Thời gian áp dụng</label>
+                    <div class="datepicker-wrap" style="width:76%">
+
+                        <input class="form-control date text-left filter_date_daterangepicker ApplyDate" id="ApplyDate" type="text"
+                               name="datetimeApprove" style="min-width: 180px !important" placeholder="Thời gian áp dụng" />
+
+                    </div>
+                </div>
+
+                <div class="form-group mb10">
+                    <label class="lbl mt0">Trạng thái</label>
+                    <div class="wrap_input flex">
+                        <label class="radio radio-block">
+                            <input type="radio" class="optradio" name="optradio" value="0" checked="checked">
+                            <span class="checkmark"></span>
+                            Mở bán
+                        </label>
+                        <label class="radio radio-block ml-4">
+                            <input type="radio" class="optradio" name="optradio" value="1">
+                            <span class="checkmark"></span>
+                            Đã đóng
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group not-full">
+                    <div class="table-responsive table-default table-gray">
+                        <table style="width:100%;">
+                            <thead>
+                                <tr class="ProgramsPackage-th">
+                                    <th style="width: 150px; text-align: center; background: white;">Giá nhập</th>
+                                    <th style="background: white;">Theo thứ</th>
+                                    <th style="text-align: center; width: 35%; background: white;"></th>
+                                    <th style="text-align: center; width: 15%; background: white;"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="ProgramsPackage-tbody">
+                                <tr class="ProgramsPackage-Add-row">
+
+                                    <td><input placeholder="Giá nhập" class="form-control currency text-right ProgramsPackage-Add-Amout" id="ProgramsPackage" value="" /></td>
+                                    <td>
+                                        <select style="width:100%;" multiple class="form-control ProgramsPackage-Add-WeekDay" name="ProgramsPackage-Add-WeekDay">
+                                            <option value="2">Thứ 2</option>
+                                            <option value="3">Thứ 3</option>
+                                            <option value="4">Thứ 4</option>
+                                            <option value="5">Thứ 5</option>
+                                            <option value="6">Thứ 6</option>
+                                            <option value="7">Thứ 7</option>
+                                            <option value="0">CN</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select style="width:100%;" class="form-control ProgramsPackage-Add-WeekDay_2" placeholder="Chọn nhanh thứ">
+                                        </select>
+
+                                    </td>
+                                    <td class="action ">
+                                        <a href="javascript:;" class="blue ml-2 mb10 buttun_add" onclick="_ProgramsPackage.AddProgramsPackage($(this));"><i class="fa fa-plus-circle green"></i> </a>
+                                        <a class="fa fa-trash-o" href="javascript:;" onclick="_ProgramsPackage.DeleteProgramsPackage($(this));"></a>
+                                    </td>
+                                </tr>
+                                <tr class="ProgramsPackage-summary-row">
+                                    <td>
+                                        @*<a href="javascript:;" class="blue ml-2 mb10 buttun_add" onclick="_ProgramsPackage.AddProgramsPackage($(this));"><i class="fa fa-plus-circle green"></i> Thêm dòng</a>*@
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group not-full">
+                    <div class="table-responsive table-default ">
+                        <table style="width:100%;">
+                            <thead>
+                                <tr class="ProgramsPackage-th">
+
+                                    <th style="width: 150px; text-align: center; background: white;">Giá nhập</th>
+                                    <th style="background:white;">Theo Ngày đặc biệt</th>
+                                    <th class="action" style="text-align: center; width: 15%; background: white;"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="ProgramsPackage-Date-tbody">
+                                @*<tr class="ProgramsPackage-Date-row ">
+                                        <td>
+                                            <input class="ProgramsPackage-Date-Id" value="0" style="display:none" />
+                                            <input placeholder="Giá nhập" maxlength="12" class="form-control currency text-right ProgramsPackage-Date-Amout"  />
+                                        </td>
+                                        <td>
+                                            <input class="form-control ProgramsPackage-Date-ApplyDate" id="ProgramsPackage-Date-ApplyDate" type="text"
+                                                   name="ProgramsPackage-Date-ApplyDate" style="min-width: 180px !important" placeholder="Thời gian áp dụng" />
+
+                                        </td>
+                                        <td class="action ">
+                                            <a href="javascript:;" class="blue ml-2 mb10 buttun_add_date" onclick="_ProgramsPackage.AddProgramsPackageDate($(this));"><i class="fa fa-plus-circle green"></i> </a>
+                                            <a class="fa fa-trash-o" href="javascript:;" onclick="_ProgramsPackage.DeleteProgramsPackageDate($(this));"></a>
+                                        </td>
+                                    </tr>*@
+                                <tr class="ProgramsPackage-Date-summary-row ">
+                                    <td>
+                                        <a href="javascript:;" class="blue ml-2 mb10 buttun_add_date" onclick="_ProgramsPackage.AddProgramsPackageDate2($(this));"><i class="fa fa-plus-circle green"></i> Thêm dòng</a>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group align-right mt20 block">
+                    <button type="submit" class="btn btn-default bg-main" onclick="_ProgramsPackage.SummitProgramsPackage(0,@ViewBag.type2)"><i class="fa fa-floppy-o"></i>@ViewBag.btnthem</button>
+                    <a type="button" class="btn btn-default cancel" href="/Programs/DetailPrograms/@ViewBag.id"> <i class="fa fa-minus-circle"></i>Quay lại</a>
+                </div>
+            </div>
+            <input value="@ViewBag.FromDate" id="FromDateDB" style="display:none" />
+            <input value="@ViewBag.ToDate" id="ToDateDB" style="display:none" />
+
+            <script>_ProgramsPackage.Select2WithFixedOption($('.ProgramsPackage-Add-WeekDay'));</script>
+            <script>_ProgramsPackage.HotelRoomSuggest2();</script>
+            <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+            <script type="text/javascript" src="/modules/DetailPrograms.js"></script>
+            <script>
+                $('input[name="datetimeApprove"]').daterangepicker({
+                    autoUpdateInput: false,
+                    autoApply: true,
+                    showDropdowns: true,
+                    drops: 'down',
+                    minDate: '@ViewBag.FromDate',
+                    maxDate: '@ViewBag.ToDate',
+
+                    locale: {
+                        format: 'DD/MM/YYYY'
+                    }
+                });
+                $('input[name="datetimeApprove"]').on('cancel.daterangepicker', function (ev, picker) {
+                    $(this).val('');
+                    isPickerApproveProgramsPackage = false;
+                });
+                $('input[name="datetimeApprove"]').on('apply.daterangepicker', function (ev, picker) {
+                    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+                    isPickerApproveProgramsPackage = true;
+                    $('.ProgramsPackage-Date-row').each(function (index, item) {
+                        var element = $(item);
+                        $('input[name="'+ element.find('.ProgramsPackage-Date-ApplyDate').attr('name') + '"]').Zebra_DatePicker({
+                            direction: [picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD')],
+                            onSelect: function () {
+                                var fromDate = $('input[name="' + element.find('.ProgramsPackage-Date-ApplyDate').attr('name')  + '"]').val()
+                                var lstFromDate = fromDate.split('-')
+                                $('input[name="' + element.find('.ProgramsPackage-Date-ApplyDate').attr('name') + '"]').val(lstFromDate[2] + '/' + lstFromDate[1] + '/' + lstFromDate[0])
+
+                            },
+                        });
+
+                    });
+
+                });
+
+            </script>
+        }
+    </form>
+</div>
+@*<script>_ProgramsPackage.Select2WithFixedOption($('.ProgramsPackage-Add-WeekDay'));</script>
+    <script>_ProgramsPackage.Select2WithFixedOption($('.ProgramsPackage-Edit-WeekDay'));</script>
+    <script>_ProgramsPackage.HotelRoomSuggest();</script>
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+    <script type="text/javascript" src="/modules/DetailPrograms.js"></script>
+    <script>
+        $('input[name="datetimeApprove"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="datetimeApprove"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApproveProgramsPackage = false;
+        });
+        $('input[name="datetimeApprove"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApproveProgramsPackage = true;
+        });
+    </script>*@

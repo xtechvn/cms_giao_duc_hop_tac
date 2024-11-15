@@ -1,0 +1,85 @@
+﻿@{
+    Layout = null;
+    List<Entities.Models.OtherBookingPackages> list = (List<Entities.Models.OtherBookingPackages>)ViewBag.ExtraList;
+    double profit = list != null && list.Count > 0 ? list.Sum(x => (double)x.Profit) : 0;
+    double amount = list != null && list.Count > 0 ? list.Sum(x => (double)x.Amount) : 0;
+    int index = 0;
+}
+<table class="table table-nowrap">
+    <thead>
+        <tr>
+            <th style="width: 70px;">STT</th>
+            <th style="min-width: 200px;">Nội dung</th>
+            <th class="text-right" style="min-width: 150px;">Giá nhập<sup class="red">*</sup></th>
+            <th class="text-right" style="min-width: 150px;">Giá bán<sup class="red">*</sup></th>
+            <th class="text-right" style="width:150px !important;">Số lượng</th>
+            <th class="text-right" style="width: 250px !important;">Thành tiền giá bán</th>
+            <th class="text-right" style="width:150px !important;">Lợi nhuận</th>
+            <th class="text-right"></th>
+        </tr>
+    </thead>
+    <tbody class="service-other-packages-tbody">
+
+        @if (list.Count > 0)
+        {
+            foreach (var item in list)
+            {
+        <tr class="service-other-packages-row" data-extra-package-id="@item.Id">
+            <td class="service-other-packages-order">@(++index)</td>
+            <td>
+                <input type="text" class="form-control service-other-packages-packagename" style="width:100% !important" value="@item.Name">
+            </td>
+            @{ 
+                double amount_sale_pre = (double)item.Amount / (double)item.Quantity;
+                if (item.SalePrice != amount_sale_pre) item.SalePrice = amount_sale_pre;
+            } 
+            <td> <input class="form-control text-right currency service-other-packages-baseprice" type="text" name="service-other-packages-baseprice" value="@(((double)item.BasePrice).ToString("N0"))"></td>
+            <td> <input class="form-control text-right currency service-other-packages-saleprice" type="text" name="service-other-packages-saleprice" value="@((item.SalePrice ==null? amount_sale_pre: (double)item.SalePrice).ToString("N0"))"></td>
+            <td> <input class="form-control text-right currency service-other-packages-quantity" type="text" name="service-other-packages-quantity" value="@(((int)item.Quantity).ToString("N0"))"></td>
+            <td class="text-right"> <input class="form-control text-right currency service-other-packages-amount" disabled style="background-color: lightgray;" value="@item.Amount.ToString("N0")"></td>
+            <td class="text-right service-other-packages-profit-row">
+                <input class="form-control text-right currency service-other-packages-profit" disabled type="text" style="background-color: lightgray;" value="@(item.Profit==null ? "0":((double)item.Profit).ToString("N0"))">
+            </td>
+            <td class="text-right">
+                <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_other.DeleteOtherBookingpackages($(this));"></a>
+            </td>
+        </tr>
+            }
+        }
+        else
+        {
+    <tr class="service-other-packages-row" data-extra-package-id="0">
+        <td class="service-other-packages-order">@(++index)</td>
+        <td>
+            <input type="text" class="form-control service-other-packages-packagename" style="width:100% !important" value="">
+        </td>
+        <td> <input class="form-control text-right currency service-other-packages-baseprice" type="text" name="service-other-packages-baseprice" value=""></td>
+        <td> <input class="form-control text-right currency service-other-packages-saleprice" type="text" name="service-other-packages-saleprice" value=""></td>
+        <td> <input class="form-control text-right currency service-other-packages-quantity" type="text" name="service-other-packages-quantity" value=""></td>
+
+
+        <td class="text-right"> <input class="form-control text-right currency service-other-packages-amount" style="background-color: lightgray;" disabled value=""></td>
+        <td class="text-right service-other-packages-profit-row">
+            <input class="form-control text-right currency service-other-packages-profit" style="background-color: lightgray;" type="text" value="">
+        </td>
+        <td class="text-right">
+            <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_other.DeleteOtherBookingpackages($(this));"></a>
+        </td>
+    </tr>
+        }
+
+    <tr class="service-other-packages-summary-row">
+        <td></td>
+        <td>
+            <a href="javascript:;" class="blue ml-2 mb10" onclick="_order_detail_other.AddOtherBookingpackages();"><i class="fa fa-plus-circle green"></i> Thêm dịch vụ khác</a>
+        </td>
+        <td class="text-right" colspan="3">Tổng cộng</td>
+        <td class="text-right font-weight-bold service-other-packages-total-amount">@(amount.ToString("N0"))</td>
+        <td class="text-right font-weight-bold service-other-packages-total-profit">@(profit.ToString("N0"))</td>
+        <td></td>
+    </tr>
+
+    </tbody>
+</table>
+
+

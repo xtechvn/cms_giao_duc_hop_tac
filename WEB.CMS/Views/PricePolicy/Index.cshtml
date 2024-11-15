@@ -1,0 +1,222 @@
+@{ ViewData["Title"] = "Quản lý chính sách giá - Adavigo";
+                Layout = "~/Views/Shared/_Layout.cshtml";
+                var list_service_type = (List<Entities.Models.AllCode>)ViewBag.ServiceType; }
+<style>
+    .selected_date {
+        font-weight: bold;
+    }
+</style>
+<div class="row-main container flex">
+    <div class="row-main_col200">
+        <a class="close-menu" href="javascrip:;">×</a>
+        <h2 class="title_page">Người dùng</h2>
+        <div class="wrap_bg wrap_bg2">
+            <div class="vai-tro">
+                <h3 class="title-margin">
+                    Dịch vụ
+                    <a href="#popup-them-nhom" class="open-popup fa fa-plus-circle"></a>
+                </h3>
+                <div class="form-default">
+                    <div class="form-group no-line">
+                        <select class="form-control select2 filter_service_type" id="filter_service_type">
+                            <option selected="selected" value="0">Tất cả</option>
+
+                            @foreach (var item in list_service_type)
+                            {
+                <option value="@item.CodeValue">@item.Description</option>}
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="wrap_bg wrap_bg2">
+            <div class="trang-thai">
+                <h3 class="title-margin">Tìm kiếm</h3>
+                <div class="form-default">
+                    <div class="form-group no-line">
+                        <input type="text" class="form-control filter_text" id="filter_campaign_code" placeholder="Mã chiến dịch">
+                    </div>
+                    <div class="form-group no-line">
+                        <input type="text" class="form-control filter_text" id="filter_campaign_description" placeholder="Theo mô tả dịch vụ">
+                    </div>
+                    <div class="form-group no-line">
+                        <input type="text" class="form-control filter_text" id="filter_campaign_hotel_name" placeholder="Theo tên khách sạn">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="wrap_bg wrap_bg2">
+            <div class="trang-thai">
+                <h3 class="title-margin">Thời gian</h3>
+                <div class="form-default">
+                    <div class="form-group">
+                        <div class="checked-input">
+                            <label class="radio radio-block">
+                                <input type="radio" name="search_date_by_form" checked="" value="0">
+                                <span class="checkmark"></span>
+                            </label>
+                            <div class="checked-input-wrap">
+                                <input type="text" class="form-control text-left" id="filer_date_selected" disabled value="Hôm nay">
+                                <a class="open-today" href="javascript:;"></a>
+                                <div class="list-today">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb15">Theo ngày và tuần</div>
+                                            <ul>
+                                                <li class="search_change_date_form" data-date="today">Hôm nay</li>
+                                                <li class="search_change_date_form" data-date="yesterday">Hôm qua</li>
+                                                <li class="search_change_date_form" data-date="this_week">Tuần này</li>
+                                                <li class="search_change_date_form" data-date="last_week">Tuần trước</li>
+                                                <li class="search_change_date_form" data-date="last_7_day">7 ngày qua</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb15">Theo tháng và quý</div>
+                                            <ul>
+                                                <li class="search_change_date_form" data-date="this_month">Tháng này</li>
+                                                <li class="search_change_date_form" data-date="last_month">Tháng trước</li>
+                                                <li class="search_change_date_form" data-date="last_30_days">30 ngày qua</li>
+                                                <li class="search_change_date_form" data-date="this_quarter">Quý này</li>
+                                                <li class="search_change_date_form" data-date="last_quarter">Quý trước</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb15">Theo năm</div>
+                                            <ul>
+                                                <li class="search_change_date_form" data-date="this_year">Năm nay</li>
+                                                <li class="search_change_date_form" data-date="last_year">Năm trước</li>
+                                                <li class="search_change_date_form" data-date="all">Toàn thời gian</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checked-input">
+                            <label class="radio radio-block">
+                                <input type="radio" name="search_date_by_form" value="1">
+                                <span class="checkmark"></span>
+                            </label>
+                            <div class="checked-input-wrap">
+                                <input class="form-control date text-left filter_date_daterangepicker" id="filter_date_daterangepicker" type="text" name="datetimes"
+                                       value="Lựa chọn ngày khác" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wrap_bg wrap_bg2">
+            <h3 class="title-margin">Trạng thái</h3>
+            <label class="check-list mb10">
+                <input type="checkbox" class="filter_checkmark filter_status_checkmark" data-value="0">
+                <span class="checkmark"></span>
+                Chờ chạy
+            </label>
+            <label class="check-list mb10">
+                <input type="checkbox" class="filter_checkmark filter_status_checkmark" data-value="1">
+                <span class="checkmark"></span>
+                Kết thúc
+            </label>
+            <label class="check-list mb10">
+                <input type="checkbox" class="filter_checkmark filter_status_checkmark" data-value="2">
+                <span class="checkmark"></span>
+                Đang chạy
+            </label>
+            <label class="check-list mb10">
+                <input type="checkbox" class="filter_checkmark filter_status_checkmark" data-value="3">
+                <span class="checkmark"></span>
+                Khóa tạm dừng
+            </label>
+        </div>
+        <div class="wrap_bg wrap_bg2">
+            <h3 class="title-margin">
+                Loại khách hàng
+            </h3>
+            <ul class="ul-cate mb0">
+                <li class="all">
+                    <label class="check-list">
+                        <input type="checkbox" class="filter_checkmark filter_client_type_checkmark select_all_b2b" value="1">
+                        <span class="checkmark"></span>
+                        Đại lý
+                    </label>
+                    <div class="lever2">
+                        <label class="check-list">
+                            <input type="checkbox" class="filter_checkmark filter_client_type_checkmark" value="2">
+                            <span class="checkmark"></span>
+                            Đối tác chiến lược
+                        </label>
+                        <label class="check-list">
+                            <input type="checkbox" class="filter_checkmark filter_client_type_checkmark" value="3">
+                            <span class="checkmark"></span>
+                            Đại lý cấp 2
+                        </label>
+                        <label class="check-list">
+                            <input type="checkbox" class="filter_checkmark filter_client_type_checkmark" value="4">
+                            <span class="checkmark"></span>
+                            Đại lý cấp 3
+                        </label>
+                    </div>
+                </li>
+                <li class="all">
+                    <label class="check-list">
+                        <input type="checkbox" class="filter_checkmark filter_client_type_checkmark" value="5">
+                        <span class="checkmark"></span>
+                        Khách lẻ
+                    </label>
+                    <label class="check-list">
+                        <input type="checkbox" class="filter_checkmark filter_client_type_checkmark" value="6">
+                        <span class="checkmark"></span>
+                        Saller
+                    </label>
+                    <label class="check-list">
+                        <input type="checkbox" class="filter_checkmark filter_client_type_checkmark" value="7">
+                        <span class="checkmark"></span>
+                        Doanh nghiệp
+                    </label>
+                    <label class="check-list">
+                        <input type="checkbox" class="filter_checkmark filter_client_type_checkmark" value="8">
+                        <span class="checkmark"></span>
+                        Cộng tác viên
+                    </label>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <div class="row-main_col800">
+        <a class="btn_show" href="javascrip:;">Hiển thị danh mục <i class="fa fa-caret-right"></i></a>
+        <div class="flex row-main-head">
+            <h2 class="title_page">Chính sách giá</h2>
+            <div class="btn-right text-right">
+
+                <a class="btn btn-default" href="javascript:;" onclick="_pricepolicymanagement.NewPricePolicy();">
+                    + Tạo mới
+                </a>
+                <button class="btn btn-default" type="button" onclick="_pricepolicymanagement.Export()" id="operator-export-btn">
+                    <i class="fa fa-file-excel-o" id="operator-export" title="Xuất excel">
+                    </i>
+                </button>
+            </div>
+        </div>
+        <div id="grid_data" class="wrap_bg wrap_bg_no-padding mb20">
+            <div style="justify-content:center;">
+                <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px;" id="imgLoading" />
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+    <script type="text/javascript" src="~/modules/pricepolicymanagement.js?v=1"></script>
+    <script type="text/javascript" src="~/modules/productflyticketservice.js?v=1"></script>
+    <script type="text/javascript" src="~/modules/priceroompolicymanagement.js"></script>
+    <script src="~/lib/tagify/tagify.polyfills.min.js"></script>
+    <link href="~/lib/tagify/tagify.css" rel="stylesheet" type="text/css" />
+}

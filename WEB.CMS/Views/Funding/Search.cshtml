@@ -1,0 +1,156 @@
+﻿@{
+    Layout = null;
+}
+@using Utilities
+@using Entities.ViewModels
+@using Entities.ViewModels.Funding
+@using Entities.Models
+@model GenericViewModel<DepositFunding>
+@{
+
+}
+@if (Model == null || Model.ListData == null || Model.ListData.Count == 0)
+{
+    <div class="search-null center mb40">
+        <div class="mb24">
+            <img src="/images/graphics/icon-search.png" alt="">
+        </div>
+        <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+        <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+    </div>
+}
+else
+{
+    <div class="table-responsive table-default table-gray text-nowrap" style="overflow: auto;">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 30px;">STT</th>
+                    <th style="width: 100px;">Mã giao dịch</th>
+                    <th style="width: 140px;">Tiêu đề</th>
+                    <th style="width: 100px;">Loại quỹ</th>
+                    <th class="text-right" style="width: 100px;">Số tiền nạp</th>
+                    <th style="width: 100px;">Loại giao dịch</th>
+                    <th style="width: 200px;">Hình thức thanh toán</th>
+                    <th style="width: 120px;">Ngày giao dịch</th>
+                    <th style="width: 140px;">Người tạo</th>
+                    <th style="width: 120px;">Ngày duyệt</th>
+                    <th style="width: 120px;">Người duyệt</th>
+                    <th style="width: 120px;">Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ListData != null && Model.ListData.Count > 0)
+                {
+                    var counter = (Model.CurrentPage - 1) * Model.PageSize;
+                    foreach (var item in Model.ListData)
+                    {
+                        counter++;
+                        <tr>
+                            <td class="center ">@counter</td>
+                            <td class="text-nowrap">
+                                <a class="blue" href="/Funding/Detail?depositHistotyId=@item.Id">
+                                    @item.TransNo
+                                </a>
+                                @if (item.TotalDeposit > 0 && item.TotalDeposit < item.Price)
+                                {
+                                    <br />
+                                    <span class="status-oranger">Thanh toán thiếu</span>
+                                }
+                            </td>
+                            <td class="text-break">@item.Title</td>
+                            <td class="text-break">@item.ServiceTypeStr</td>
+                            <td class="text-right">
+                                @if (item.TotalDeposit >= item.Price)
+                                {
+                                    <div class="green">@item.TotalDeposit.ToString("N0")/ </div>
+                                }
+                                else
+                                {
+                                    <div class="red">@item.TotalDeposit.ToString("N0")/ </div>
+                                }
+                                <div>@item.Price.Value.ToString("N0")</div>
+                            </td>
+                            <td class=" text-break">@item.TransTypeStr</td>
+                            <td class="text-break">
+                                <div>@item.PaymentTypeStr</div>
+                                <div> <span>[</span> @item.BankName <span> - </span> @item.BankAccount <span>]</span></div>
+                            </td>
+                            <td class=" text-break">@item.CreateDate.Value.ToString("dd-MM-yyyy HH:mm")</td>
+                            <td class=" text-break">
+                                <div>@item.CreatedBy</div>
+                                <div>@item.Email</div>
+                            </td>
+                            <td class=" text-break">
+                                @if (@item.VerifyDate == null)
+                                {
+                                    <span class="status">N/A</span>
+                                }
+                                else
+                                {
+                                    @item?.VerifyDate.Value.ToString("dd-MM-yyyy HH:mm")
+                                }
+                            </td>
+                            <td class=" text-break">
+                                @if (@item.UserVerifyId == null)
+                                {
+                                    <span class="status">N/A</span>
+                                }
+                                else
+                                {
+                                    <div>@item.Approver</div>
+                                    <div>@item.EmailVerify</div>
+                                }
+                            </td>
+                            <td class=" text-break" style="min-width: 130px;">
+                                @if (item.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.TAO_MOI))
+                                {
+                                    <span class="status-oranger">@item.StatusStr</span>
+                                }
+                                @if (item.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.CHO_THANH_TOAN))
+                                {
+                                    <span class="status-yellow">@item.StatusStr</span>
+                                }
+                                @if (item.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.CHO_DUYET))
+                                {
+                                    <span class="status-blue">@item.StatusStr</span>
+                                }
+                                @if (item.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.DA_DUYET))
+                                {
+                                    <span class="status-green">@item.StatusStr</span>
+                                }
+                                @if (item.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.TU_CHOI))
+                                {
+                                    <span class="status-red">@item.StatusStr</span>
+                                }
+                                @if (item.Status == (int)(DepositHistoryConstant.DEPOSIT_STATUS.HET_HAN))
+                                {
+                                    <span class="status-pink">@item.StatusStr</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+}
+<style>
+    .status-pink {
+        color: #e75c88 !important;
+    }
+</style>
+
+@await Component.InvokeAsync("Paging", new
+{
+    pageModel = new Paging()
+    {
+        TotalRecord = Model.TotalRecord,
+        TotalPage = Model.TotalPage,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        RecordName = "kết quả lọc",
+        PageAction = "_deposit_hisoty_service.OnPaging({0})"
+    }
+})

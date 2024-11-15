@@ -1,0 +1,115 @@
+﻿@using Entities.Models
+@using Entities.ViewModels.HotelBookingCode
+@using Entities.ViewModels
+@using Entities.ViewModels.HotelBooking
+@{
+    var order = (OrderDetailViewModel)ViewBag.Order;
+    var User = (User)ViewBag.user;
+}
+@model SendEmailViewModel
+
+<style>
+
+    .white-popup {
+        max-width: 800px !important;
+    }
+    .tox-tinymce {
+        height:540px !important;
+    }
+    th {
+        color: black
+    }
+    td {
+        color: black
+    }
+
+</style>
+<form id="form-send-email" onsubmit="return false">
+    @if ((order == null || order.ContactClientId <= 0) && ViewBag.ServiceType != 0)
+    {<p style="font-size:12px;" class="red">Thông tin liên hệ của khách hàng chưa có liên hệ nhân viên phụ trách để tiến hành bổ xung</p>}
+    @if (order == null || order.SalerId == 0)
+    {<p style="font-size:12px;" class="red">Thông tin phụ trách chính của đơn hàng chưa có vui lòng tiến hành bổ xung</p>}
+    <div>
+        <label class="lbl">Tiêu đề <sup class="red">*</sup></label>
+        <div class="wrap_input">
+            <input type="text" class="form-control" id="Subject" placeholder="Tên tiêu đề">
+            <label id="Subject-error" class="error" for="Subject" style="display: none;"></label>
+            <input type="text" class="form-control" id="ServiceId" value="@ViewBag.ServiceId" style="display:none">
+            <input type="text" class="form-control" id="Orderid" value="@ViewBag.Orderid" style="display:none">
+            <input type="text" class="form-control" id="Type" value="@ViewBag.ServiceType" data-group-booking="@ViewBag.GroupBookingId" style="display:none">
+        </div>
+    </div>
+    <div>
+        <label class="lbl">Nhân viên nhận <sup class="red">*</sup></label>
+        <div class="wrap_input">
+            <select class="select2 js-example-basic-multiple"  id="To_Email" multiple="multiple" style="width:100% !important">
+                @if (User != null)
+                {
+                <option selected="selected" value="@User.Email">@User.FullName - @User.Email </option>
+                }
+            </select>
+            <label id="To_Email-error" class="error" for="To_Email" style="display: none;"></label>
+        </div>
+        <label class="lbl">CC</label>
+        <div class="wrap_input">
+            <select class="select2 "  id="CC_Email" multiple="multiple" style="width:100% !important">
+            </select>
+            <label id="CC_Email-error" class="error" for="CC_Email" style="display: none;"></label>
+        </div>
+        <label class="lbl">BCC</label>
+        <div class="wrap_input">
+            <select class="select2"  id="BCC_Email" multiple="multiple" style="width:100% !important">
+            </select>
+            <label id="BCC_Email-error" class="error" for="BCC_Email" style="display: none;"></label>
+        </div>
+    </div>
+    <div>
+        <label class="lbl">khách hàng </label>
+        @if (ViewBag.ServiceType != 0)
+        {
+            <div class="wrap_input">
+                <input type="text" id="Email" value="@ViewBag.ContactClientEmail" />
+            </div>
+        }
+        else
+        {
+            <div class="wrap_input">
+                <input type="text" id="Email" value="@order.Email" />
+            </div>
+        }
+        <label id="Email-error" class="error" for="Email" style="display: none;"></label>
+
+    </div>
+    <div class="attachment-file-block border pd10">
+        <img src="/images/icons/loading.gif" style="width: 55px;height: 55px;margin-left: 10px;margin-bottom: 10px;" class="img_loading_summit coll">
+    </div>
+    <div>
+        <label class="lbl">Nội dung Email</label>
+        <div class="wrap_input">
+            @Html.Raw(ViewBag.EmailBody)
+        </div>
+    </div>
+
+    <div class="line-bottom"></div>
+    <div class="text-right">
+        <button type="submit" class="btn btn-default cancel" onclick="$.magnificPopup.close();">Đóng</button>
+        @if (ViewBag.ServiceType != 0 && order != null && order.ContactClientId != 0 && order.SalerId != 0)
+        {
+        <button type="submit" id="SendEmailDv" class="btn btn-default" onclick="_SetService_Detail.SendEmailOrder()">Gửi</button>
+
+        }
+
+
+        @if (ViewBag.ServiceType == 0 && order.SalerId != 0)
+        {
+        <button type="submit" id="SendEmailDv" class="btn btn-default" onclick="_orderDetail.SendEmailOrder()">Gửi</button>}
+    </div>
+</form>
+
+<script>
+    _order_detail_common.FileAttachment();
+    _OrderDetail_Sendemail.loadformSenmail();
+   @* _common.tinyMce('#TTChuyenKhoan');
+    _common.tinyMce('#TTNote');*@
+</script>
+

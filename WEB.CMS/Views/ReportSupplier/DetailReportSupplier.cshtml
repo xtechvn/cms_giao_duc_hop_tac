@@ -1,0 +1,178 @@
+﻿@using Entities.ViewModels
+@using  Entities.ViewModels.Report
+@{
+    var Model = (GenericViewModel<SearchDetailRevenueBySupplierViewModel>)ViewBag.model;
+    double amount = ViewBag.AmountOpeningBalanceDebit;
+    double AmountOpening = 0;
+}
+
+<style>
+    .white-popup {
+        max-width: 1600px !important;
+    }
+
+    .wrap_bg {
+        box-shadow: 0px 0px 0px #000 !important;
+    }
+
+    .pagination-flex {
+        border: 1px solid #d9d9d9 !important;
+    }
+</style>
+<section style=" overflow-x: hidden;">
+    <input id="Amount" value="@ViewBag.AmountOpeningBalanceDebit" style="display:none" />
+    <div id="filter" class="row-main container">
+        <div class="wrap_bg wrap_bg_no-padding mb20" style="padding: 20px;border: 1px solid #d9d9d9 !important; ">
+            <input id="idSupplier" value="@ViewBag.id" style="display:none" />
+            <input id="FromDateSupplier" value="@ViewBag.FromDate" style="display:none" />
+            <input id="ToDateSupplier" value="@ViewBag.ToDate" style="display:none" />
+            <input id="amount" value="@ViewBag.amount" style="display:none" />
+            <input id="AmountDebit" value="@ViewBag.AmountDebit" style="display:none" />
+            <input id="AmountCredit" value="@ViewBag.AmountCredit" style="display:none" />
+            <input id="AmountClosingBalanceCredit" value="@ViewBag.AmountClosingBalanceCredit" style="display:none" />
+            <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding mb20">
+                <div class="row-main container">
+                    <strong>Xuất báo cáo</strong>
+
+                    <button class="btn-search btn-default" type="button" onclick="detail_report_supplier.Export2()" id="btnExport">
+                        <i class="fa fa-file-excel-o" id="icon-export" title="Xuất excel">
+                        </i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="grid_data_supplier" class="wrap_bg wrap_bg_no-padding mb20 grid_data_supplier">
+                <div class="">
+
+                    @if (Model == null || Model.ListData == null)
+                    {
+                    <div class="search-null center mb40">
+                        <div class="mb24">
+                            <img src="/images/graphics/icon-search.png" alt="">
+                        </div>
+                        <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+                        <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+                    </div>
+                    }
+                    else
+                    {
+                    <div class="wrap_bg wrap_bg_no-padding mb20">
+                        <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding">
+                            <table class="table table-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" style="width: 50px;">STT</th>
+                                        <th rowspan="2" style="width: 140px;">Ngày hạch toán</th>
+                                        <th rowspan="2" style="width: 140px;">Ngày chứng từ</th>
+                                        <th rowspan="2" style="width: 100px;">Số chứng từ</th>
+                                        <th rowspan="2" style="width: 100px;">Số hóa đơn</th>
+                                        <th rowspan="2" style="width: 100px;">Diễn giải</th>
+                                        <th rowspan="2" style="width: 100px;">TK công nợ</th>
+                                        <th rowspan="2" style="width: 100px;">Ngân hàng</th>
+                                        <th colspan="2" style="width: 100px; text-align: center;">Phát sinh</th>
+                                        <th colspan="2" style="width: 100px; text-align: center;">Số dư</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="width: 100px; text-align: right;">Nợ</th>
+                                        <th style="width: 100px; text-align: right;">Có</th>
+
+                                        <th style="width: 100px; text-align: right;">Nợ</th>
+                                        <th style="width: 100px; text-align: right;">Có</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.ListData != null && Model.ListData.Count > 0)
+                                    {
+
+                                        <tr style="background: blanchedalmond;">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td style="font-weight: bold">Số dư đầu kỳ</td>
+                                            <td></td>
+
+                                            <td> </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td style="text-align: right; font-weight: bold ">@ViewBag.AmountOpeningBalanceDebit.ToString("N0") </td>
+
+                                        </tr>
+                                        var STT = (Model.CurrentPage - 1) * Model.PageSize;
+                                        var count = Model.ListData.Count;
+                                        foreach (var item in Model.ListData)
+                                        {
+                                            AmountOpening = amount + @item.AmountCredit - @item.AmountDebit;
+                                            amount = AmountOpening;
+                                            <tr>
+                                                <td>@(++STT)</td>
+                                                <td style="text-align:center">@(Convert.ToDateTime( item.CreatedDate).ToString("dd/MM/yyyy"))</td>
+                                                <td style="text-align:center">@(Convert.ToDateTime( item.CreatedDate).ToString("dd/MM/yyyy"))</td>
+                                                <td>@item.PaymentCode</td>
+                                                <td></td>
+                                                <td>@item.Description</td>
+                                                <td>@item.DebtAccount</td>
+
+                                                <td> @((item.BankName +" - "+ item.BankAccount).TrimStart('-',' ')) </td>
+                                                <td style="text-align:right">@item.AmountDebit.ToString("N0")</td>
+                                                <td style="text-align:right">@item.AmountCredit.ToString("N0")</td>
+
+                                                <td style="text-align:right">@item.AmountRemain.ToString("N0")</td>
+                                                <td style="text-align:right">@item.AmountOpeningBalance.ToString("N0")</td>
+
+                                            </tr>
+
+                                        }
+                                        <tr style="background: blanchedalmond;">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td style="font-weight: bold">Tổng cộng</td>
+                                            <td></td>
+
+                                            <td></td>
+                                            <td style="text-align:right">@(ViewBag.AmountDebit.ToString("N0"))</td>
+                                            <td style="text-align:right">@(ViewBag.AmountCredit.ToString("N0"))</td>
+                                            <td></td>
+                                            <td></td>
+
+
+                                        </tr>
+                                        <tr style="background: blanchedalmond;">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td style="font-weight: bold">Số dư cuối kỳ</td>
+                                            <td></td>
+
+                                            <td> </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td style="text-align: right; font-weight: bold ">@(ViewBag.AmountClosingBalanceCredit.ToString("N0")) </td>
+                                        </tr>
+                                        @if (Model.ListData != null && Model.TotalRecord > Model.CurrentPage * Model.PageSize)
+                                        {
+                                            <tr id="view-more-tr">
+                                                <td colspan="12" style="text-align: -webkit-center;">
+                                                    <span id="report-detail-view-more" class="report-detail-view-more" onclick="detail_report_supplier.onSelectPageSize()" style="font-size: 18px; color: blue;">Xem thêm ⇊</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

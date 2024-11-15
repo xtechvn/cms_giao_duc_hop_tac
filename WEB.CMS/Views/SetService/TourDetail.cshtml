@@ -1,0 +1,123 @@
+﻿@{
+    ViewData["Title"] = "Chi tiết đặt dịch vụ Tour";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool allow_to_finish_payment = (bool)ViewBag.AllowToFinishPayment;
+
+}
+@using Entities.ViewModels.Tour
+@using Utilities.Contants
+@model TourViewModel
+<style>
+    .set-service-fly-detail-box {
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-left: 10px;
+    }
+
+    .set-service-fly-detail-title {
+        padding-top: 15px;
+    }
+
+    .input-disabled-background {
+        background-color: #f7f7f7 !important;
+    }
+</style>
+<div class="row-main container">
+    <div class="table-responsive table-white">
+        <input id="service-fly-detail-data" style="display:none" data-order-id="@Model.OrderId" data-status="@Model.Status" data-servicecode="@Model.ServiceCode">
+        <input id="Orderid" value="@Model.OrderId" style="display:none" />
+        <input id="HotelBookingID" value="@Model.Id" style="display:none" />
+        <input id="ContactClientId" value="@Model.ContactClientId" style="display:none" />
+        <input id="ServiceCode" value="@Model.ServiceCode" style="display:none" />
+        <input id="TourAmount" value="@(Model.Price == 0? Model.Amount:Model.Price)" style="display:none" />
+        <input id="user" value="@ViewBag.user" style="display:none" />
+        <input id="suplier-detail" data-suplier-name="@Model.SuplierName" data-suplier-id="@Model.SupplierId" style="display:none" />
+        <input id="client_id"style="display:none" value="@ViewBag.ClientId" />
+        <input id="TourTotalAmount"style="display:none" value="@Model.Amount" />
+        @*<div class="col-8 mb10" id="operator-order-amount" data-amount="@(Model.Price == 0? Model.Amount:Model.Price)" style=" display:none"></div>*@
+        <div id="grid_data_TourServiceDetail">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" id="imgLoading_TourServiceDetail" />
+        </div>
+
+    </div>
+    <div class="tab-default" style="border-bottom: 1px solid #CCCCCC;">
+        <div class="row" style=" width: 100%; ">
+            <div class="tab-default col-md-9 mb0 mt10">
+                <a href="javascript:;" onclick="_SetService_Tour_Detail.OnStatuse(1); _SetService_Tour_Detail.SetActive(1)" id="data_order" class="active">Đơn hàng</a>
+                <a href="javascript:;" onclick="_SetService_Tour_Detail.OnStatuse(2); _SetService_Tour_Detail.SetActive(2)" id="data_ListTourPackagesOrder">Dịch vụ cần đặt</a>
+                <a href="javascript:;" onclick="_SetService_Tour_Detail.OnStatuse(3); _SetService_Tour_Detail.SetActive(3)" id="data_ListTourPackagesOrdered">Dịch vụ đã đặt</a>
+                <a href="javascript:;" onclick="_SetService_Tour_Detail.OnStatuse(4); _SetService_Tour_Detail.SetActive(4)" id="data_payment_account">Thanh toán</a>
+                <a href="javascript:;" onclick="_SetService_Tour_Detail.OnStatuse(5); _SetService_Tour_Detail.SetActive(5)" id="data_HotelBookingCode">Code dịch vụ</a>
+                <a href="javascript:;" onclick="_SetService_Tour_Detail.OnStatuse(6); _SetService_Tour_Detail.SetActive(6)" id="data_HotelRefund">Hoàn trả khách hàng</a>
+                <a href="javascript:;" onclick="_SetService_Tour_Detail.OnStatuse(7); _SetService_Tour_Detail.SetActive(7)" id="data_Marketing">Chi Phí Marketing</a>
+            </div>
+        </div>
+    </div>
+    <div>
+
+        <div id="grid_data_TourServicesOrder">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" id="imgLoading_TourServicesOrder" />
+        </div>
+        <div id="grid_data_ListTourPackagesOrder" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" id="imgLoading_ListTourPackagesOrder" />
+        </div>
+        <div id="grid_data_ListTourPackagesOrdered" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" id="imgLoading_ListTourPackagesOrdered" />
+        </div>
+        <div id="grid_data_TourCode" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" id="imgLoading_TourCode" />
+        </div>
+        <div id="grid_data_Tourpayment" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" id="imgLoading_Tourpayment" />
+        </div>
+        <div id="grid_data_TourRefund" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" id="imgLoading_TourRefund" />
+        </div>
+        <div id="grid_data_Marketing" style="display:none">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px; display:none" class="loading" id="imgLoading_Marketing" />
+        </div>
+    </div>
+    <div class="form-group align-right mt20 block pin-btn-bottom ">
+        <b class="btn btn-default cancel ml-1" onclick="history.back()">Quay lại</b>
+        @if (Model.Status != (int)Utilities.Contants.ServiceStatus.Payment && Model.Status != (int)Utilities.Contants.ServiceStatus.Cancel && Model.Status != (int)Utilities.Contants.ServiceStatus.Decline)
+        {
+            <button type="button" class="btn btn-default red ml-1" onclick="_SetService_Detail.OnResetStatusPopup(@Model.Id, @((int)ServicesType.Tourist),@Model.OrderId,'')">Từ chối</button>
+        }
+
+        @if (Model.Status == (int)Utilities.Contants.ServiceStatus.WaitingExcution)
+        {
+            <button type="button" class="btn btn-default ml-1" onclick="_SetService_Tour_Detail.UpdateTourStatus(@Model.Id,@((int)ServiceStatus.OnExcution),@Model.OrderId)">Nhận đặt dịch vụ</button>
+        }
+        @if (Model.Status == (int)Utilities.Contants.ServiceStatus.OnExcution)
+        {
+            <button type="button" class="btn btn-default ml-1" onclick="_SetService_Tour_Detail.UpdateTourStatus(@Model.Id,@((int)ServiceStatus.ServeCode),@Model.OrderId)">Trả code dịch vụ</button>
+        }
+      
+        @if ((Model.Status == (int)Utilities.Contants.ServiceStatus.ServeCode || Model.Status == (int)Utilities.Contants.ServiceStatus.ServeCodeKH) && allow_to_finish_payment)
+        {
+            <button type="button" class="btn btn-default ml-1" onclick="_SetService_Tour_Detail.UpdateTourStatus(@Model.Id,@((int)ServiceStatus.Payment),@Model.OrderId)">Quyết toán</button>
+        }
+        else if (Model.Status == (int)Utilities.Contants.ServiceStatus.ServeCode || Model.Status == (int)Utilities.Contants.ServiceStatus.ServeCodeKH)
+        {
+            <button type="button" class="btn btn-default ml-1 disabled" onclick="return false;" disabled style="">Quyết toán</button>
+        }
+    </div>
+</div>
+
+
+@section scripts {
+
+
+    <script type="text/javascript" src="/modules/SetServiceDetail.js"></script>
+    <script type="text/javascript" src="/modules/SetServiceTourDetail.js"></script>
+    <script type="text/javascript" src="/modules/payment_request.js"></script>
+    <script type="text/javascript" src="/js/zebra_datepicker.min.js"></script>
+
+    <script type="text/javascript" src="~/modules/add_payment_request.js"></script>
+    <script type="text/javascript" src="~/modules/order_manual.js"></script>
+    
+    <script>_SetService_Tour_Detail.loaddata();
+    </script>
+
+   
+}

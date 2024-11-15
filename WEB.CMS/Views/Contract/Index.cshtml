@@ -1,0 +1,378 @@
+﻿@using Entities.Models
+@using  Entities.ViewModels.Contract
+@{
+    var AgencyType = (List<AllCode>)ViewBag.AgencyType;
+    var PermisionType = (List<AllCode>)ViewBag.PermisionType;
+    var ClientType = (List<AllCode>)ViewBag.ClientType;
+    var ContractStatus = (List<AllCode>)ViewBag.ContractStatus;
+    var DEBT_TYPE = (List<AllCode>)ViewBag.DEBT_TYPE;
+    var TotalConTrac = (List<TotalConTract>)ViewBag.TotalConTract;
+
+}
+
+<section class="" style=" overflow-x: hidden;">
+    <div class="row-main container">
+        <h2 class="txt_18 bold">Danh sách hợp đồng</h2>
+        <div class="flex fillter-donhang mb10">
+
+            <div class="form-group mb10 mr-2" style="min-width: 337px;">
+                <select class="select2 client-select main-staff-select" id="ContractNo" style="width:100% !important">
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 337px;">
+                <select class="select2 client-select main-staff-select" id="client" multiple="multiple" style="width:100% !important">
+                </select>
+            </div>
+
+            <div class="form-group mb10 mr-2">
+                <div class="multiple-select form-group mb10 mr-2" style=" width: 200px;    margin-top: 10px;">
+                    <div class="select-btn select-btn-ContractStatus-type" id="select-btn-ContractStatus-type">
+                        <span class="btn-text-ContractStatus-type">Tất cả trạng thái</span>
+                        <span class="arrow-dwn">
+                            <i class="fa fa-angle-down"></i>
+                        </span>
+                    </div>
+
+                    <ul class="list-items" id="list-item-ContractStatus">
+                        @foreach (var item in ContractStatus)
+                        {
+                            <li class="item item-ContractStatus-type" id="ContractStatus_type_@item.CodeValue">
+                                <span class="checkbox" id="checkbox_ContractStatus_type_@item.CodeValue">
+                                    <i class="fa fa-check"></i>
+                                </span>
+                                <span class="item-text" id="ContractStatus_type_text_@item.CodeValue">@item.Description</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2">
+                <select class="form-control" id="AgencyType" style="width: 200px; background: white;">
+                    <option value="">Tất cả Đối tượng khách hàng</option>
+                    @foreach (var item in AgencyType)
+                    {
+                        <option value="@item.CodeValue">@item.Description</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2">
+                <select class="form-control" id="ContractExpire" style="width: 200px; background: white;">
+                    <option value="">Tất cả tình trạng hợp đồng</option>
+                    <option value="1">Hết hạn</option>
+                    <option value="2">Còn hạn</option>
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2">
+
+                <div class="multiple-select form-group mb10 mr-2" style=" width: 200px;    margin-top: 10px;">
+                    <div class="select-btn select-btn-ClientType-type" id="select-btn-ClientType-type">
+                        <span class="btn-text-ClientType-type">Tất cả  loại khách hàng</span>
+                        <span class="arrow-dwn">
+                            <i class="fa fa-angle-down"></i>
+                        </span>
+                    </div>
+
+                    <ul class="list-items" id="list-item-ClientType">
+                        @foreach (var item in ClientType)
+                        {
+                            <li class="item item-ClientType-type" id="ClientType_type_@item.CodeValue">
+                                <span class="checkbox" id="checkbox_ClientType_type_@item.CodeValue">
+                                    <i class="fa fa-check"></i>
+                                </span>
+                                <span class="item-text" id="ClientType_type_text_@item.CodeValue">@item.Description</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2">
+                <div class="multiple-select form-group mb10 mr-2" style=" width: 200px;    margin-top: 10px;">
+                    <div class="select-btn select-btn-PermisionType-type" id="select-btn-PermisionType-type">
+                        <span class="btn-text-PermisionType-type">Tất cả nhóm khách hàng</span>
+                        <span class="arrow-dwn">
+                            <i class="fa fa-angle-down"></i>
+                        </span>
+                    </div>
+
+                    <ul class="list-items" id="list-item-PermisionType">
+                        @foreach (var item in PermisionType)
+                        {
+                            <li class="item item-PermisionType-type" id="PermisionType_type_@item.CodeValue">
+                                <span class="checkbox" id="checkbox_PermisionType_type_@item.CodeValue">
+                                    <i class="fa fa-check"></i>
+                                </span>
+                                <span class="item-text" id="PermisionType_type_text_@item.CodeValue">@item.Description</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2">
+                <div class="" style="width:100%">
+
+                    <input class="form-control date text-left filter_date_daterangepicker " id="ExpireDate" type="text"
+                           name="datetimeApprove" style="min-width: 180px !important" placeholder="Ngày hết hạn" />
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2">
+
+                <div class="multiple-select form-group mb10 mr-2" style=" width: 200px;    margin-top: 10px;">
+                    <div class="select-btn select-btn-DebtType-type" id="select-btn-DebtType-type">
+                        <span class="btn-text-DebtType-type">Tất cả  loại công nợ</span>
+                        <span class="arrow-dwn">
+                            <i class="fa fa-angle-down"></i>
+                        </span>
+                    </div>
+
+                    <ul class="list-items" id="list-item-DebtType">
+                        @foreach (var item in DEBT_TYPE)
+                        {
+                            <li class="item item-DebtType-type" id="DebtType_type_@item.CodeValue">
+                                <span class="checkbox" id="checkbox_DebtType_type_@item.CodeValue">
+                                    <i class="fa fa-check"></i>
+                                </span>
+                                <span class="item-text" id="DebtType_type_text_@item.CodeValue">@item.Description</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width: 337px;">
+
+                <select class="select2 client-select main-staff-select" id="SalerId" multiple="multiple" style="width:100% !important">
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 337px;">
+
+                <select class="select2 client-select main-staff-select" id="UserIdCreate" multiple="multiple" style="width:100% !important">
+                </select>
+            </div>
+
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    @*<input class="form-control  " type="text" name="datetimeApprove" placeholder="Ngày tạo">*@
+                    <input class="form-control date text-left filter_date_daterangepicker " id="CreateDate" type="text"
+                           name="datetimeApprove2" style="min-width: 180px !important" placeholder="Ngày Tạo" />
+                </div>
+            </div>
+
+            <div class="form-group mb10 mr-2">
+                <div class="" style="width:100%">
+                    @*<input class="form-control  " type="text" id="VerifyDate" name="datetimeApprove" placeholder="Ngày duyệt">*@
+                    <input class="form-control date text-left filter_date_daterangepicker " id="VerifyDate" type="text"
+                           name="datetimeApprove3" style="min-width: 180px !important" placeholder="Ngày duyệt" />
+                </div>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width: 337px;">
+
+                <select class="select2 client-select main-staff-select" id="UpdatedBy" multiple="multiple" style="width:100% !important">
+                </select>
+            </div>
+
+            <div class="mb10 mr-2">
+                <button type="button" class="btn btn-default bg-main" onclick="_Contract.SearchData()">
+                    <svg class="icon-svg" style="vertical-align: sub;">
+                        <use xlink:href="/images/icons/icon.svg#search"></use>
+                    </svg>
+                    Tìm kiếm
+                </button>
+            </div>
+        </div>
+        <div>
+            <div class="row container">
+                <div class="tab-default col mb1 mt5" style="border-bottom: 1px solid #CCCCCC;">
+                    <a href="javascript:;" onclick="_Contract.OnSearchStatus(-1)" id="countSttAll" class="active">Tất cả (0)</a>
+                    @if (TotalConTrac != null)
+                    {
+        @foreach (var item in TotalConTrac)
+        {
+        <a href="javascript:;" onclick="_Contract.OnSearchStatus(@item.ContractStatus)" id="TotalConTract_@item.ContractStatus">@item.ContractStatusName (@item.Total)</a>}            }
+
+
+                </div>
+
+                <div class="text-right  row mb0 mt10">
+                    @if (ViewBag.PermissionsStatus == 1)
+                    {
+                        <button type="button" class="btn btn-default bg-main mb10 mr-2" onclick="_Contract.OpenPopup('')"><i class="fa fa-plus-circle"></i>Tạo mới hợp đồng</button>
+                    }
+                    <div class="row-main-head mb10 mr-2">
+                        <div class="down-up right">
+                            <a class="btn btn-default onclick" href="javascript:;">
+                                <i class="fa fa-bars"></i>
+                                <i class="fa fa-caret-down"></i>
+                            </a>
+                            <div class="form-down text-nowrap" style="display: none;">
+                                <div class="grid-slide">
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="STTfilter" onclick="_Contract.ChangeSetting(1)" class="checkbox-tb-column" data-id="1">
+                                        <span class="checkmark"></span>
+                                        STT
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="ContractNofilter" onclick="_Contract.ChangeSetting(2)" class="checkbox-tb-column" data-id="2">
+                                        <span class="checkmark"></span>
+                                        Mã hợp đồng
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="ExpireDatefilter" onclick="_Contract.ChangeSetting(3)" class="checkbox-tb-column" data-id="3">
+                                        <span class="checkmark"></span>
+                                        Ngày hết hạn
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="ClientIdfilter" onclick="_Contract.ChangeSetting(4)" class="checkbox-tb-column" data-id="4">
+                                        <span class="checkmark"></span>
+                                        Tên khách hàng
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="ServiceTypefilter" onclick="_Contract.ChangeSetting(5)" class="checkbox-tb-column" data-id="5">
+                                        <span class="checkmark"></span>
+                                        Dịch vụ đăng ký
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="DebtTypefilter" onclick="_Contract.ChangeSetting(6)" class="checkbox-tb-column" data-id="6">
+                                        <span class="checkmark"></span>
+                                        Loại công nợ
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="AgencyTypefilter" onclick="_Contract.ChangeSetting(7)" class="checkbox-tb-column" data-id="7">
+                                        <span class="checkmark"></span>
+                                        Đối tượng KH
+                                    </label>
+
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="ClientTypefilter" onclick="_Contract.ChangeSetting(8)" class="checkbox-tb-column" data-id="8">
+                                        <span class="checkmark"></span>
+                                        Loại KH
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="PermisionTypefilter" onclick="_Contract.ChangeSetting(9)" class="checkbox-tb-column" data-id="9">
+                                        <span class="checkmark"></span>
+                                        Nhóm KH
+                                    </label>
+
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="SalerIdfilter" onclick="_Contract.ChangeSetting(10)" class="checkbox-tb-column" data-id="10">
+                                        <span class="checkmark"></span>
+                                        Người phụ trách
+                                    </label>
+
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="CreateDatefilter" onclick="_Contract.ChangeSetting(11)" class="checkbox-tb-column" data-id="11">
+                                        <span class="checkmark"></span>
+                                        Ngày tạo
+                                    </label>
+
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="UserIdCreatefilter" onclick="_Contract.ChangeSetting(12)" class="checkbox-tb-column" data-id="12">
+                                        <span class="checkmark"></span>
+                                        Người tạo
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="UserIdUpdatefilter" onclick="_Contract.ChangeSetting(13)" class="checkbox-tb-column" data-id="13">
+                                        <span class="checkmark"></span>
+                                        Ngày duyệt
+                                    </label>
+
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="UpdateLastfilter" onclick="_Contract.ChangeSetting(14)" class="checkbox-tb-column" data-id="14">
+                                        <span class="checkmark"></span>
+                                        Người duyệt
+                                    </label>
+                                    <label class="check-list mb10 mr25">
+                                        <input type="checkbox" id="ContractStatusfilter" onclick="_Contract.ChangeSetting(15)" class="checkbox-tb-column" data-id="15">
+                                        <span class="checkmark"></span>
+                                        Trạng thái
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Danh sách hợp đồng*@
+
+        <div id="grid_data_Search">
+            <img src="/images/icons/loading.gif" style=" width: 100px; height: 100px; margin-left:46%;" id="imgLoading_Search" />
+        </div>
+    </div>
+</section>
+<style>
+    .row-main-head .down-up .form-down {
+        width: 370px !important;
+    }
+
+    .grid-slide {
+        display: grid;
+        grid-template-columns: auto auto;
+    }
+
+    .token-input-input-token input {
+        background: #fff !important;
+        width: 100% !important;
+        font-size: 13px !important;
+        height: 30px !important;
+        line-height: 30px !important;
+        border: 1px solid #ccc !important;
+        padding: 0 5px !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+        color: #000 !important;
+        border-radius: 0.25rem !important;
+    }
+</style>
+<link href="/lib/tagify/tagify.css" rel="stylesheet" type="text/css" />
+
+@section scripts {
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+    <script type="text/javascript" src="/modules/Contract.js?v=3"></script>
+    <script>
+        $('input[name="datetimeApprove"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="datetimeApprove"]').on('cancel.daterangepicker', function (ev, picker) {
+            $('#ExpireDate').val('');
+            isPickerApprove = false;
+        });
+        $('input[name="datetimeApprove"]').on('apply.daterangepicker', function (ev, picker) {
+            $('#ExpireDate').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove = true;
+        });
+        $('input[name="datetimeApprove2"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="datetimeApprove2"]').on('cancel.daterangepicker', function (ev, picker) {
+            $('#CreateDate').val('');
+            isPickerApprove2 = false;
+        });
+        $('input[name="datetimeApprove2"]').on('apply.daterangepicker', function (ev, picker) {
+            $('#CreateDate').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove2 = true;
+        });
+        $('input[name="datetimeApprove3"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="datetimeApprove3"]').on('cancel.daterangepicker', function (ev, picker) {
+            $('#VerifyDate').val('');
+            isPickerApprove3 = false;
+        });
+        $('input[name="datetimeApprove3"]').on('apply.daterangepicker', function (ev, picker) {
+            $('#VerifyDate').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove3 = true;
+        });
+    </script>
+
+}

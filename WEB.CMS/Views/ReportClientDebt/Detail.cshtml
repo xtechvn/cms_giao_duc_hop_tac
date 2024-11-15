@@ -1,0 +1,113 @@
+﻿@using Entities.Models
+@using Entities.ViewModels
+@using Entities.ViewModels.Report
+@{
+    Layout = null;
+    int index = 0;
+    GenericViewModel<ReportDetailClientDebtViewModel> model = (GenericViewModel<ReportDetailClientDebtViewModel>)ViewBag.Model;
+    ReportClientDebtViewModel sum_model = (ReportClientDebtViewModel)ViewBag.SumModel;
+    ReportDetailClientDebtSearchModel search_model = (ReportDetailClientDebtSearchModel)ViewBag.SearchModel;
+
+    index = (model.CurrentPage - 1) * model.PageSize;
+    double opening_credit = (double)ViewBag.OpeningCredit;
+    double current_amount_credit = opening_credit + (sum_model.AmountDebit != null ? (double)sum_model.AmountDebit : 0) - (sum_model.AmountCredit != null ? (double)sum_model.AmountCredit : 0);
+
+}
+
+
+<div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding  table-scroll table-report">
+
+
+    <table class="table table-nowrap" style="width:100% !important">
+        <thead>
+            <tr>
+                <th rowspan="2" style="min-width: 50px;">STT</th>
+                <th rowspan="2" style=" min-width: 100px; ">
+                    Ngày hạch toán
+
+                </th>
+                <th rowspan="2" style=" min-width: 100px; ">
+                    Ngày chứng từ
+
+                </th>
+                <th rowspan="2" style=" min-width: 100px; text-align: center">
+                    Số chứng từ
+
+                </th>
+                <th rowspan="2" style=" min-width: 100px; text-align: center">
+                    Số hóa đơn
+
+                </th>
+                <th rowspan="2" style=" min-width: 100px; text-align: center">
+                    Diễn giải
+
+                </th>
+                <th rowspan="2" style=" min-width: 100px; text-align: center">
+                    TK công nợ
+                </th>
+                <th rowspan="2" style=" min-width: 100px; text-align: center">
+                    TK đối ứng
+                </th>
+                <th colspan="2" style=" min-width: 200px; text-align: center">Phát sinh</th>
+                <th colspan="2" style=" min-width: 200px; text-align: center">Số dư</th>
+
+            </tr>
+            <tr>
+                <th style="min-width: 100px; text-align: right;"> Nợ </th>
+                <th style="min-width: 100px; text-align: right;"> Có </th>
+                <th style="min-width: 100px; text-align: right;"> Nợ </th>
+                <th style="min-width: 100px; text-align: right;"> Có </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style=" background-color: var(--yellow); ">
+                <td style="text-align: center; font-weight: bold;" colspan="8">
+                    Số dư đầu kỳ
+                </td>
+                <td></td>
+                <td></td>
+                <td style="text-align: right; font-weight: bold;">@(opening_credit.ToString("N0"))</td>
+                <td style="text-align: right;"> </td>
+
+            </tr>
+
+            <tr style=" background-color: var(--yellow); ">
+                <td style="text-align: center; font-weight: bold;" colspan="8">
+                    Tổng cộng
+                </td>
+                <td style="text-align: right; font-weight: bold; ">@((sum_model.AmountDebit != null ? (double)sum_model.AmountDebit : 0).ToString("N0"))</td>
+                <td style="text-align: right; font-weight: bold; ">@((sum_model.AmountCredit != null ? (double)sum_model.AmountCredit : 0).ToString("N0"))</td>
+              
+                <td style="text-align: right; "> </td>
+                <td style="text-align: right; "></td>
+            </tr>
+            <tr style=" background-color: var(--yellow); ">
+
+                <td style="text-align: center; font-weight: bold;" colspan="8">
+                    Số dư cuối kỳ
+                </td>
+                <td style="text-align: right; "></td>
+                <td style="text-align: right; "></td>
+                <td style="text-align: right;  font-weight: bold; ">@(current_amount_credit.ToString("N0"))</td>
+                <td style="text-align: right; "></td>
+            </tr>
+        </tbody>
+        <tbody>
+
+            
+            <tr id="view-more-tr">
+                <td colspan="12" style="text-align: -webkit-center;">
+                    <span id="report-detail-view-more" class="report-detail-view-more" style="font-size: 18px; color: blue;">Xem thêm ⇊</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $('#report-detail-fromdate').html('@(((DateTime)search_model.FromDate).ToString("dd/MM/yyyy"))')
+    $('#report-detail-todate').html('@(((DateTime)search_model.ToDate).ToString("dd/MM/yyyy"))')
+    $('#report-detail-client-name').html('@(sum_model.ClientName)')
+</script>
+
+

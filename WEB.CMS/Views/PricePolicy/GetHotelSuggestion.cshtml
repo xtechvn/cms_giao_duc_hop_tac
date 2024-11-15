@@ -1,0 +1,27 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.ViewModels.PricePolicy;
+@{
+    var vinHotel = (List<HotelInfomation>)ViewBag.VinHotel;
+    var othersHotel = (List<HotelInfomation>)ViewBag.OthersHotel;
+}
+
+@{
+    if (vinHotel != null && vinHotel.Count > 0)
+    {
+        <li class="disabled"> <strong class="">VinPearl</strong></li>
+        foreach (var hotel in vinHotel)
+        {
+            <li class="highlight_on_mouseover select_provider_by_option" data_provider_type_id="@hotel.group_provider_type" data-hotelid="@hotel.id">&nbsp; &nbsp; &nbsp; &nbsp; @hotel.name</li>
+        }
+    }
+    if (othersHotel != null && othersHotel.Count > 0)
+    {
+        <li> <strong class="disabled">Others</strong></li>
+        foreach (var hotel in othersHotel)
+        {
+            <li class="highlight_on_mouseover select_provider_by_option" data_provider_type_id="@hotel.group_provider_type" data-hotelid="@hotel.id">&nbsp; &nbsp; &nbsp; &nbsp; @hotel.name</li>
+        }
+    }
+}

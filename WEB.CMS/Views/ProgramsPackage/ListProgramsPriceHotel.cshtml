@@ -1,0 +1,400 @@
+﻿@using Utilities.Contants
+@using Entities.ViewModels
+@using  Entities.ViewModels.Programs
+@using Utilities
+@model GenericViewModel<ProgramsPackagePriceViewModel>
+@{
+    Layout = null;
+
+    var data_list = (List<ProgramsPackageViewModel>)ViewBag.data_list;
+    var date1 = Model != null ? Model.ListData.Min(s => DateTime.ParseExact(s.FromDate, "dd/MM/yyyy", null)) : DateTime.Now;
+    var date2 = Model != null ? Model.ListData.Max(s => DateTime.ParseExact(s.ToDate, "dd/MM/yyyy", null)) : DateTime.Now;
+}
+@if (Model != null)
+{
+    <div class="wrap_bg wrap_bg_no-padding mb20">
+        <div class="table-responsive table-default table-gray table-scroll">
+            <table class="table table-nowrap">
+                <thead>
+                    <tr>
+                        <th style="width:10%;">Chương trình</th>
+
+                        @if (Model.ListData != null && Model.ListData.Count > 0)
+                        {
+                            foreach (var item in Model.ListData.GroupBy(s => s.ProgramName).Select(i => i.First()).ToList())
+                            {
+                                <th colspan="@Model.ListData.Where(s=>s.ProgramName==item.ProgramName).GroupBy(s => s.ProgramsPackageName).Select(i => i.First()).ToList().Count()">@item.ProgramName</th>
+                            }
+
+                        }
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ListData != null && Model.ListData.Count > 0)
+                    {
+                        <tr>
+                            <th>Hạng phòng | Gói</th>
+                            @foreach (var item in Model.ListData.GroupBy(s => s.ProgramsPackageName).Select(i => i.First()).ToList())
+                            {
+                                <th>@item.ProgramsPackageName</th>
+
+                            }
+                        </tr>
+
+                        foreach (var item in Model.ListData.GroupBy(s => s.RoomType).Select(i => i.First()).ToList())
+                        {
+                            <tr>
+                                <td>@item.RoomType</td>
+                                @foreach (var itemrt in Model.ListData.GroupBy(s => s.ProgramsPackageName).Select(i => i.First()).ToList())
+                                {
+                                    if (Model.ListData.Where(s => s.ProgramsPackageName == itemrt.ProgramsPackageName && s.RoomType == item.RoomType).ToList().Count > 0)
+                                    {
+                                        var list = Model.ListData.Where(s => s.ProgramsPackageName == itemrt.ProgramsPackageName && s.RoomType == item.RoomType).ToList();
+                                        @foreach (var item4 in Model.ListData.Where(s => s.ProgramsPackageName == itemrt.ProgramsPackageName && s.RoomType == item.RoomType).ToList())
+                                        {
+                                            double SumPrice = -1;
+                                            double SumPrice2 = -1;
+                                            foreach (var item2 in item4.ProgramsPackagePrice)
+                                            {
+
+                                                string id = "0";
+                                                SumPrice2 = 0;
+                                                @foreach (var item3 in Model.ListData.GroupBy(s => s.ProgramsPackageName).Select(i => i.First()).ToList())
+                                                {
+                                                    SumPrice = 0;
+                                                    @for (int i = 0; i <= (date2 - date1).Days; i++)
+                                                    {
+                                                        var dateWeek = (date1.AddDays(i));
+                                                        var Week = (int)((date1.AddDays(i)).DayOfWeek);
+                                                        switch (Week)
+                                                        {
+                                                            case 0:
+                                                                {
+                                                                    if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                                    {
+                                                                        var data = item2.ProgramsPackage.Where(s => s.PackageCode == item3.ProgramsPackageName && Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "0");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var data2 = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "0");
+                                                                            if (data2 != null)
+                                                                            {
+                                                                                id = data2.ProgramId;
+                                                                                SumPrice += data2.Price;
+
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+
+                                                                        var data = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "0");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+
+                                                                    }
+                                                                    break;
+                                                                }
+                                                            case 1:
+                                                                {
+                                                                    if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                                    {
+                                                                        var data = item2.ProgramsPackage.Where(s => s.PackageCode == item3.ProgramsPackageName && Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "2");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var data2 = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "2");
+                                                                            if (data2 != null)
+                                                                            {
+                                                                                id = data2.ProgramId;
+                                                                                SumPrice += data2.Price;
+
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        var data = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "2");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+
+                                                                    }
+
+                                                                    break;
+                                                                }
+                                                            case 2:
+                                                                {
+                                                                    if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                                    {
+                                                                        var data = item2.ProgramsPackage.Where(s => s.PackageCode == item3.ProgramsPackageName && Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "3");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var data2 = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "3");
+                                                                            if (data2 != null)
+                                                                            {
+                                                                                id = data2.ProgramId;
+                                                                                SumPrice += data2.Price;
+
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        var data = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "3");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+
+                                                                    }
+                                                                    break;
+                                                                }
+                                                            case 3:
+                                                                {
+                                                                    if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                                    {
+                                                                        var data = item2.ProgramsPackage.Where(s => s.PackageCode == item3.ProgramsPackageName && Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "4");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var data2 = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "4");
+                                                                            if (data2 != null)
+                                                                            {
+                                                                                id = data2.ProgramId;
+                                                                                SumPrice += data2.Price;
+
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        var data = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "4");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+
+                                                                    }
+                                                                    break;
+                                                                }
+                                                            case 4:
+                                                                {
+
+                                                                    if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                                    {
+                                                                        var data = item2.ProgramsPackage.Where(s => s.PackageCode == item3.ProgramsPackageName && Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "5");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var data2 = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "5");
+                                                                            if (data2 != null)
+                                                                            {
+                                                                                id = data2.ProgramId;
+                                                                                SumPrice += data2.Price;
+
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        var data = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "5");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+
+                                                                    }
+                                                                    break;
+                                                                }
+                                                            case 5:
+                                                                {
+                                                                    if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                                    {
+                                                                        var data = item2.ProgramsPackage.Where(s => s.PackageCode == item3.ProgramsPackageName && Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "6");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var data2 = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "6");
+                                                                            if (data2 != null)
+                                                                            {
+                                                                                id = data2.ProgramId;
+                                                                                SumPrice += data2.Price;
+
+                                                                            }
+
+                                                                        }
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        var data = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "6");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+
+                                                                    }
+                                                                    break;
+                                                                }
+                                                            case 6:
+                                                                {
+                                                                    if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                                    {
+                                                                        var data = item2.ProgramsPackage.Where(s => s.PackageCode == item3.ProgramsPackageName && Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "7");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var data2 = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "7");
+                                                                            if (data2 != null)
+                                                                            {
+                                                                                id = data2.ProgramId;
+                                                                                SumPrice += data2.Price;
+
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        var data = item2.ProgramsPackageDaily.Where(s => s.PackageCode == item3.ProgramsPackageName && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "7");
+                                                                        if (data != null)
+                                                                        {
+                                                                            id = data.ProgramId;
+                                                                            SumPrice += data.Price;
+
+                                                                        }
+
+                                                                    }
+
+                                                                    break;
+                                                                }
+                                                        }
+
+                                                    }
+                                                    @if (SumPrice > 0)
+                                                    {
+                                                        SumPrice2 = SumPrice;
+                                                        <td> @(ViewBag.Type==1 ? SumPrice.ToString("N0"):(Math.Round(SumPrice/ ViewBag.daymunber)).ToString("N0")) <br /><a class="href-btn blue" style="color:blue;" onclick="_ProgramsPriceHotel.Search2(@id, '@item2.RoomType', '@item3.ProgramsPackageName')">Xem chi tiết</a></td>
+                                                    }
+                                                }
+
+                                            }
+                                            if (SumPrice2 == 0)
+                                            {
+                                                <td>0</td>
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <td>0</td>
+                                    }
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+}
+else
+{
+    <div class="search-null center mb40">
+        <div class="mb24">
+            <img src="/images/graphics/icon-search.png" alt="">
+        </div>
+        <h2 class="title txt_24">Bạn muốn đến đâu ?</h2>
+        <div class="gray">Nhập thông tin tìm kiếm để chúng tôi đề xuất phòng với giá tốt nhất cho bạn</div>
+    </div>
+
+}
+
+
+<script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+<script>
+    $('input[name="filter_date_ProgramsPackagePrice"]').daterangepicker({
+            autoUpdateInput: false,
+            autoApply: true,
+            showDropdowns: true,
+            drops: 'down',
+            minDate: '@date1.ToString("dd/MM/yyyy")',
+            maxDate: '@date2.ToString("dd/MM/yyyy")',
+                    locale: {
+                        format: 'DD/MM/YYYY'
+                    }
+
+        });
+    $('input[name="filter_date_ProgramsPackagePrice"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove = false;
+        });
+    $('input[name="filter_date_ProgramsPackagePrice"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove = true;
+        });
+</script>
+
+

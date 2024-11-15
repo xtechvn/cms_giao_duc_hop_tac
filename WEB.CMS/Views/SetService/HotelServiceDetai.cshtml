@@ -1,0 +1,84 @@
+﻿@using Entities.ViewModels.HotelBooking
+
+@model HotelBookingDetailViewModel
+<table class="table table-nowrap" id="hotelBookingDetail">
+    <tbody>
+
+        <tr>
+            <td colspan="3">
+                <strong>Dịch vụ khách sạn: @Model.ServiceCode</strong>
+                @if (Model.Status == 0)
+                {<span class="status-oranger">@Model.StatusName</span>}
+                @if (Model.Status == 1)
+                {<span class="status-oranger">@Model.StatusName</span>}
+                @if (Model.Status == 2)
+                {<span class="status-blue">@Model.StatusName</span>}
+                @if (Model.Status == 3)
+                {<span class="status-green">@Model.StatusName</span>}
+                @if (Model.Status == 8)
+                {<span class="status-green">@Model.StatusName</span>}
+                @if (Model.Status == 4)
+                {<span class="status-green">@Model.StatusName</span>}
+                @if (Model.Status == 5)
+                {<span class="status-red">@Model.StatusName</span>}
+</tr>
+        <tr>
+            <td style="min-width: 400px;">
+                <div class="row">
+                    <div class="col-4 mb10 gray">Tên khách sạn</div>
+                    <div class="col-8 mb10">: @Model.HotelName</div>
+                    <div class="col-4 mb10 gray">Nhà cung cấp</div>
+                    <div class="col-8 mb10" id="suplier-detail" data-suplier-name="@Model.SuplierName" data-suplier-id="@Model.SupplierId">: @Model.SuplierName <a class="blue" onclick="_SetService_Detail.OpenPopupSupplier(@Model.SupplierId)"><i class="fa fa-edit blue"></i></a></div>
+                    <div class="col-4 mb10 gray">Ngày check in</div>
+                    <div class="col-8 mb10">: @(Convert.ToDateTime(Model.ArrivalDate).ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                    <div class="col-4 mb10 gray">Ngày check out</div>
+                    <div class="col-8 mb10">: @(Convert.ToDateTime(Model.DepartureDate).ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                    <div class="col-4 mb10 gray">Số lượng phòng</div>
+                    <div class="col-8 mb10">: @Model.NumberOfRoom</div>
+                    <div class="col-4 mb10 gray">Nhân viên bán</div>
+                    <div class="col-8 mb10">: @Model.UserCreate</div>
+                    <div class="col-4 mb10 gray">Điều hành viên</div>
+                    <div class="col-8 mb10" id="Saler-Name" data-sale="@Model.SalerName">: @Model.SalerName    <a class="blue" onclick="_SetService_Detail.OpenPopupUserAgent(@Model.Id,@Model.OrderId, 1)"><i class="fa fa-edit blue"></i></a></div>
+                </div>
+            </td>
+            <td style="min-width: 400px;">
+                <div class="row">
+                    <div class="col-4 mb10 gray">Tổng giá trị đơn hàng</div>
+                    <div class="col-8 mb10">: @Model.OrderPrice.ToString("N0")</div>
+                    <div class="col-4 mb10 gray">Tổng giá trị dịch vụ</div>
+                    <div class="col-8 mb10" id="sale-order-amount" data-amount="@Model.TotalAmount">: @Model.TotalAmount.ToString("N0")</div>
+                    <div class="col-4 mb10 gray">Tổng chi dịch vụ thực tế</div>
+                    @{
+                        if (Model.Price == null) Model.Price = Model.TotalAmount - Model.TotalProfit - Model.TotalOthersAmount - Model.TotalDiscount;
+                    }
+                    <div class="col-8 mb10" id="operator-order-amount" data-amount="@(((double)Model.Price).ToString("N0"))">: @(((double)Model.Price).ToString("N0"))</div>
+                    <div class="col-4 mb10 gray">Lợi nhuận dịch vụ thực tế</div>
+                    @{
+                        if (Model.TotalOthersAmount == null) Model.TotalOthersAmount = 0;
+                        if (Model.TotalDiscount == null) Model.TotalDiscount = 0;
+                        var operator_profit = Model.TotalAmount - Convert.ToDouble(Model.Price); //- (double)Model.TotalOthersAmount - (double)Model.TotalDiscount;
+                    }
+                    <div class="col-8 mb10" id="operator-order-profit" data-profit="@(operator_profit.ToString("N0"))">: @(operator_profit.ToString("N0"))</div>
+                    <div class="col-4 mb10 gray">Lợi nhuận sale nhập</div>
+                    <div class="col-8 mb10">: @Model.TotalProfit.ToString("N0") </div>
+                    <div class="col-4 mb10 gray">Hoàn trả khách hàng</div>
+                    <div class="col-8 mb10">: @Model.TotalAmountPaymentRequest.ToString("N0")  </div>
+                    <div class="col-4 mb10 gray">Nhà cung cấp hoàn tiền</div>
+                    <div class="col-8 mb10">: @ViewBag.amount.ToString("N0")</div>
+                </div>
+            </td>
+            <td style="min-width: 400px;">
+                <div class="row">
+                    <div class="col-5 mb10 gray">Người tạo</div>
+                    <div class="col-7 mb10">: @Model.UserCreate</div>
+                    <div class="col-5 mb10 gray">Ngày tạo</div>
+                    <div class="col-7 mb10 ">: @(Convert.ToDateTime(Model.CreatedDate).ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                    <div class="col-5 mb10 gray">Người cập nhật</div>
+                    <div class="col-7 mb10">: @(Model.UserUpdate ==null?"N/A": Model.UserUpdate)</div>
+                    <div class="col-5 mb10 gray">Ngày cập nhật</div>
+                    <div class="col-7 mb10">: @(Model.UserUpdate == null ? "N/A" : Model.UpdatedDate.ToString("dd/MM/yyyy HH:mm:ss"))</div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

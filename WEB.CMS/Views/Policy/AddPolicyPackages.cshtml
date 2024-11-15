@@ -1,0 +1,106 @@
+﻿
+@{
+    Layout = null;
+    List<Entities.Models.Policy> packages = (List<Entities.Models.Policy>)ViewBag.ExtraPackages;
+    int index = 0;
+    var DebtType = (List<Entities.Models.AllCode>)ViewBag.DebtType;
+    var ClientType = (List<Entities.Models.AllCode>)ViewBag.ClientType;
+}
+<style>
+    .hotel_service {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+</style>
+<table class="table table-nowrap">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th style="width: 120px;">Loại khách hàng</th>
+            <th id="Loai_CN" width: 120px;">Loại công nợ</th>
+            <th style="width: 170px;">Hạn mức công nợ VMB</th>
+            <th style="width: 150px;">Hạn mức công nợ KS</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (packages.Count > 0)
+        {
+            foreach (var p in packages)
+            {
+                <tr class="servicemanual-hotel-roompackage-row" data-extra-package-id="@p.PolicyId">
+                    <td class="servicemanual-hotel-roompackage-order">@(++index)</td>
+                    <td> <input class="form-control servicemanual-hotel-roompackage-packagename" type="text" name="servicemanual-hotel-roompackage-packagename" value="@p.PolicyName"></td>
+                    <td class="text-right">
+                        <select class="select2 form-control" id="PermisionType" name="" onchange="_Policy.OnChange()" style="width: 100%;">
+                            <option value="-1">Tất cả loại công nợ</option>
+                            @if (DebtType != null)
+                            {
+                                foreach (var item in DebtType)
+                                {
+                                    <option value="@item.CodeValue">@item.Description</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td class="text-right">
+                        <input />
+                    </td>
+                    <td class="text-right">
+                        <input />
+                    </td>
+                    <td class="text-right">
+                        <a class="fa fa-trash-o" href="javascript:;" onclick="_order_detail_hotel.DeleteHotelRoomExtrapackage($(this));"></a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            foreach (var item in ClientType)
+            {
+                if (item.CodeValue != 5)
+                {
+                  <tr class="servicemanual-policy-row">
+                    <td class="servicemanual-policy-package">@(++index)</td>
+                    <td class="form-control servicemanual-Policy-Clienttype" style="width: 120px;">Loại khách hàng</td>
+                    <td class="form-control servicemanual-Policy-DebtType">Loại công nợ</td>
+                    <td ><input class="form-control text-right currency servicemanual-Policy-ProductFlyTicketDebtAmount" type="text" name="servicemanual-Policy-ProductFlyTicketDebtAmount"></td>
+                    <td ><input type="text" class="form-control text-right currency servicemanual-Policy-HotelDebtAmout" onkeyup="javascript:;" name=" servicemanual-Policy-HotelDebtAmout" value=""></td>
+                    <td></td>
+                  </tr>
+            }
+        }
+
+    }
+
+        <tr class="servicemanual-hotelpackage-total-summary">
+            <td></td>
+            <td>
+                <div class="row">
+                    <div class="col-md-9">
+                        <a href="javascript:;" onclick="_order_detail_hotel.AddHotelRoomExtraPackage()" class="blue ml-2 mb10"><i class="fa fa-plus-circle green"></i> Thêm phụ thu / Dịch vụ</a>
+                    </div>
+                    <div class="col-md-3 text-right"><strong>Tổng cộng</strong></div>
+                </div>
+            </td>
+
+            <td></td>
+        </tr>
+
+        </tbody>
+    </table>
+<div id="list_Policy" style="display:none" class="table-responsive table-default table-gray">
+    <table class="table table-nowrap">
+        <thead>
+            <tr>
+                <th style="width: 120px;">Loại khách hàng</th>
+                <th id="Loai_CN" width: 120px;">Loại công nợ</th>
+                <th style="width: 170px;">Hạn mức công nợ VMB</th>
+                <th style="width: 150px;">Hạn mức công nợ KS</th>
+            </tr>
+        </thead>
+        <form id="data_body" class="table-responsive table-default table-gray">
+        </form>
+    </table>
+</div>

@@ -1,0 +1,120 @@
+﻿@using Entities.Models
+@{
+    var PermisionType = (List<AllCode>)ViewBag.PermisionType;
+    var DebtType = (List<AllCode>)ViewBag.DebtType;
+    var ClientType = (List<AllCode>)ViewBag.ClientType;
+    Layout = null;
+    int index = 0;
+}
+@if (ViewBag.Type == 1)
+{
+    @*<tbody>
+            @foreach (var c in ClientType)
+            {
+                <tr>
+                    <td>B2B - @c.Description</td>
+                    <td>
+                        <select class="select2 form-control" id="PermisionType_@c.CodeValue" name="" style="width: 100%;">
+                            <option value="-1">Loại công nợ</option>
+                            @if (DebtType != null)
+                            {
+                                foreach (var item in DebtType)
+                                {
+                                    <option value="@item.CodeValue"> @item.Description </option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control " id="minamount"></td>
+                    <td><input type="text" class="form-control " id="minamount"></td>
+                </tr>
+            }
+        </tbody>*@
+    <table class="table table-nowrap">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Loại khách hàng</th>
+                <th>Loại công nợ<sup class="red">*</sup></th>
+                <th>Hạn mức công nợ VMB<sup class="red">*</sup></th>
+                <th>Hạn mức công nợ KS<sup class="red">*</sup></th>
+                <th>Hạn mức công nợ Tour<sup class="red">*</sup></th>
+                <th>Hạn mức công nợ dịch vụ khác<sup class="red">*</sup></th>
+                <th>Hạn mức công nợ VinWonder<sup class="red">*</sup></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in ClientType)
+            {
+                if (item.CodeValue != 5)
+                {
+                    <tr class="servicemanual-policy-row">
+                        <td class="servicemanual-policy-package">@(++index)</td>
+                        <td><input class="form-control servicemanual-Policy-Clienttype" type="text" name="servicemanual-Policy-Clienttype" value="@item.CodeValue" style="display:none"> @item.Description</td>
+                        <td>
+                            <select class="form-control servicemanual-Policy-DebtType" style="min-width:150px;" type="text" name="servicemanual-Policy-DebtType">
+                                <option value="">Tất cả loại công nợ</option>
+                                @foreach (var i in DebtType)
+                                {
+                                    <option value="@i.CodeValue">@i.Description</option>
+                                }
+                            </select>
+                        </td>
+                        <td><input class="form-control text-right currency servicemanual-Policy-ProductFlyTicketDebtAmount" type="text" name="servicemanual-Policy-ProductFlyTicketDebtAmount"></td>
+                        <td><input type="text" class="form-control text-right currency servicemanual-Policy-HotelDebtAmout" name=" servicemanual-Policy-HotelDebtAmout" value=""></td>
+                       
+                        <td><input type="text" class="form-control text-right currency servicemanual-Policy-TourDebtAmount" name=" servicemanual-Policy-TourDebtAmount" value=""></td>
+                        <td><input type="text" class="form-control text-right currency servicemanual-Policy-TouringCarDebtAmount" name=" servicemanual-Policy-TouringCarDebtAmount" value=""></td>
+                        <td><input type="text" class="form-control text-right currency servicemanual-Policy-VinWonderDebtAmount" name=" servicemanual-Policy-VinWonderDebtAmount" value=""></td>
+
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+@if (ViewBag.Type == 2)
+{
+    <table class="table table-nowrap">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Loại khách hàng</th>
+                <th>Số dư ký quỹ VMB tối thiểu<sup class="red">*</sup></th>
+                <th>Số dư ký quỹ KS tối thiểu<sup class="red">*</sup></th>
+                <th>Số dư ký quỹ Tour<sup class="red">*</sup></th>
+                <th>Số dư ký quỹ dịch vụ khác<sup class="red">*</sup></th>
+                <th>Số dư ký quỹ VinWonder<sup class="red">*</sup></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in ClientType)
+            {
+                if (c.CodeValue != 5)
+                {
+                    <tr class="servicemanual-policy-row">
+                        <td class="servicemanual-policy-package">@(++index)</td>
+                        <td><input class="form-control servicemanual-Policy-Clienttype" type="text" name="servicemanual-Policy-Clienttype" value="@c.CodeValue" style="display:none"> @c.Description</td>
+
+                        <td><input class="form-control text-right currency servicemanual-Policy-ProductFlyTicketDepositAmount" type="text" name="servicemanual-Policy-ProductFlyTicketDepositAmount"></td>
+                        <td><input type="text" class="form-control text-right currency servicemanual-Policy-HotelDepositAmout" name=" servicemanual-Policy-HotelDepositAmout" value=""></td>
+                        <td><input type="text" class="form-control text-right currency servicemanual-Policy-TourDepositAmount" name=" servicemanual-Policy-TourDepositAmount" value=""></td>
+                        <td><input type="text" class="form-control text-right currency servicemanual-Policy-TouringCarDepositAmount" name=" servicemanual-Policy-TouringCarDepositAmount" value=""></td>
+                        <td><input type="text" class="form-control text-right currency servicemanual-Policy-VinWonderDepositAmount" name=" servicemanual-Policy-VinWonderDepositAmount" value=""></td>
+                    </tr>
+                }
+
+            }
+        </tbody>
+    </table>
+}
+
+<style>
+    .hotel_service {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+</style>
+

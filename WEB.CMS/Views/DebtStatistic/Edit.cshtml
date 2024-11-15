@@ -1,0 +1,181 @@
+﻿@using Entities.Models
+@{
+    var clientId = 0;
+    if (Model.ClientId != null && Model.ClientId != 0)
+    {
+        clientId = Model.ClientId.Value;
+    }
+}
+@using Utilities
+@using Entities.ViewModels.Funding
+@model DebtStatisticViewModel
+<style>
+    .white-popup {
+        max-width: 850px !important;
+    }
+
+    .content_lightbox .head {
+        font-weight: 500 !important;
+        font-size: 16px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .content_lightbox {
+        padding: 20px !important;
+    }
+
+    .background-disabled {
+        background: #eee !important;
+    }
+</style>
+<input type="text" name="client_name_hide" id="client_name_hide" value="@Model.ClientName" style="display: none" />
+<input type="text" name="name" id="payId" value="@Model.Id" style="display: none" />
+<input type="text" name="paymentCode" id="paymentCode" value="@Model.Code" style="display: none" />
+
+<div class="row m-0 p-0">
+    <div class="col-md-12 mb10" id=""><label class="lbl mt5 mb0">Tên khách hàng <sup class="red">*</sup></label></div>
+    <div class="col-md-12 mb10" id="">
+        <select class="select2 client-select" id="client-select" style="width:100% !important" multiple="multiple"
+                onchange="_add_debt_statistic.GetOrderListByClientId()">
+        </select>
+        <div class="validate-client-select"></div>
+    </div>
+</div>
+<div class="grid grid__2 grid-don-hang gap10 mb20">
+    <div class="grid-item border">
+
+        <div class="col-md-6 mb10"><label class="lbl mt5 mb0">Thời gian<sup class="red">*</sup></label></div>
+        <div class="col-md-12 mb10" style="width: 100% !important">
+            <input class="form-control date text-left filter_date_daterangepicker" id="filter_date_payment" type="text"
+                   name="datetimePayment" style=" min-width: 200px !important" placeholder="Thời gian"  onchange="_add_debt_statistic.GetOrderListByClientId()"/>
+            <div class="validate-paymentDate"></div>
+        </div>
+
+    </div>
+    <div class="grid-item border">
+
+        <div class="col-md-6 mb10"> <label class="lbl mt5 mb0"> Loại tiền <sup class="red">*</sup></label></div>
+        <div class="col-md-12 mb10">
+            <select class="form-control background-disabled" style="width: 100%; height: 34px ;" id="currency" disabled>
+                <option value="0" disabled selected>VND</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="row m-0 p-0">
+    <div class="col-md-12 mb10"> <label class="lbl mt5 mb0"> Nội dung <sup class="red">*</sup></label></div>
+    <div class="col-md-12 mb10">
+        <input type="text" id="content" maxlength="500" name="name" placeholder="Nhập text(tối đa 500 kí tự)" autocomplete="off" asp-for="@Model.Note" />
+        <div class="validate-content"></div>
+    </div>
+
+    <div class="col-md-12 mb10"> Ghi chú</div>
+    <div class="col-md-12 mb10">
+        <textarea class="form-control" id="description" maxlength="3000" style="height: 100px;"
+                  asp-for="@Model.Description" autocomplete="off"> </textarea>
+        <div class="validate-description"></div>
+    </div>
+</div>
+<div class="row m-0 p-0">
+    <div class="col-12 bg-white border pd10 " id="order-relate">
+        <div class="bold gray mb10">Danh sách đơn hàng</div>
+        <div class="table-responsive table-default table-gray table-modal scroll-inner">
+            <table class="table " id="order-relate-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th style="min-width: 80px;">Mã đơn hàng</th>
+                        <th style="min-width: 100px;">Ngày tạo</th>
+                        <th class="text-right" style="min-width: 50px;">Số tiền</th>
+                        <th style="min-width: 100px;">Điều hành</th>
+                    </tr>
+                </thead>
+                <tbody id="body_order_list">
+                </tbody>
+            </table>
+        </div>
+        <div class="flex flex-end">
+        </div>
+    </div>
+</div>
+<div class="text-center" style="margin-top: 20px; margin-bottom: 20px;">
+    <button type="submit" class="btn btn-default btn btn-default cancel" onclick="$.magnificPopup.close();">Bỏ qua</button>
+    <button type="submit" class="btn btn-default" onclick="_add_debt_statistic.EditRequest()" style="background: #5cb566 !important;">Chỉnh sửa</button>
+    <button type="submit" class="btn btn-default" onclick="_add_debt_statistic.EditRequest(1)" style="background: #5cb566 !important;">Gửi đi</button>
+</div>
+
+<script type="text/javascript" src="~/modules/add_debt_statistic.js"></script>
+<script>
+    $('input[name="datetimePayment"]').daterangepicker({
+        autoUpdateInput: false,
+        locale: {
+            cancelLabel: 'Clear'
+        }
+    });
+    $('input[name="datetimePayment"]').on('cancel.daterangepicker', function (ev, picker) {
+        $(this).val('');
+        isPickerPayment = false;
+    });
+    $('input[name="datetimePayment"]').on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        isPickerPayment = true;
+    });
+    _add_debt_statistic.Initialization(true);
+    $(document).ready(function () {
+        _add_debt_statistic.OnChooseRequestTypeEdit(@clientId, '@Model.FromDateStr','@Model.ToDateStr')
+    })
+</script>
+@section scripts {
+    <script>
+        $().ready(function () {
+            $('input').attr('autocomplete', 'off');
+        })
+    </script>
+}
+<style scoped>
+    .multiple-select {
+        position: relative;
+        max-width: 200px !important;
+        width: 100%;
+    }
+
+    .select2-selection .select2-selection--single {
+        height: 34px !important;
+    }
+
+    .token-input-client-add {
+        min-width: 200px !important;
+    }
+
+        .token-input-client-add input {
+            background: #fff !important;
+            width: 100% !important;
+            font-size: 13px !important;
+            height: 30px !important;
+            line-height: 30px !important;
+            border: 1px solid #ccc !important;
+            padding: 0 5px !important;
+            outline: 0 !important;
+            box-shadow: none !important;
+            color: #000 !important;
+            border-radius: 0.25rem !important;
+        }
+
+    .row-main-head .down-up .form-down {
+        width: 345px !important;
+    }
+
+    .form-control {
+        background: #fff;
+        width: 100%;
+        font-size: 13px;
+        height: 30px;
+        line-height: 30px;
+        border: 1px solid #ccc;
+        padding: 0 5px;
+        outline: 0;
+        box-shadow: none;
+        color: #000;
+        border-radius: 0.25rem !important;
+    }
+</style>

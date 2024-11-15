@@ -1,0 +1,346 @@
+﻿@{
+    Layout = null;
+}
+@using Entities.Models;
+@using Entities.ViewModels.Hotel;
+@using Microsoft.Extensions.Options
+@using Entities.ConfigModels
+@model HotelUpsertViewModel
+@inject IOptions<DomainConfig> domainConfig;
+@{
+    var URL_STATIC_IMAGE = domainConfig.Value.ImageStatic;
+    var provinces = (List<Province>)ViewBag.Provinces;
+    var District = (List<District>?)ViewBag.District;
+    var brands = (List<Brand>)ViewBag.Brands;
+    var verify_time_types = (List<AllCode>)ViewBag.VerifyTimeList;
+}
+
+<form id="form_hotel">
+    <div class="row row_min">
+        <div class="grid-item col-md-7">
+            <div class="border">
+                <div class="form-default3 pd10">
+                    <div class="row row_min">
+                        <div class="form-group col-6">
+                            <label class="lbl">Tên khách sạn <sup class="red">*</sup></label>
+                            <div class="wrap_input">
+                                <input type="hidden" class="form-control" asp-for="@Model.Id" />
+                                <input type="text" class="form-control" asp-for="@Model.Name" />
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Tên tắt</label>
+                            <div class="wrap_input">
+                                <input type="text" class="form-control" asp-for="@Model.ShortName" />
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Email</label>
+                            <div class="wrap_input">
+                                <input type="text" class="form-control" asp-for="@Model.Email" />
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Điện thoại</label>
+                            <div class="wrap_input">
+                                <input type="text" class="form-control" asp-for="@Model.Telephone" />
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Tỉnh/Huyện <sup class="red">*</sup></label>
+                            <div class="wrap_input">
+                                <select class="form-control select2-modal" style="width:100%" onchange="hotel_management.loadingDistrict()" asp-for="@Model.ProvinceId">
+                                    <option value="">Chọn địa điểm</option>
+                                    @if (provinces != null && provinces.Any())
+                                    {
+                                        foreach (var item in provinces)
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Thành phố <sup class="red">*</sup></label>
+                            <div class="wrap_input">
+                                <select class="form-control select2-modal" style="width:100%" asp-for="@Model.City">
+                                    @if (Model.City != null)
+                                    {
+                                        <option value="@Model.City">@Model.City</option>
+
+                                    }
+                                    <option value="">Chọn địa điểm</option>
+                                    @if (District != null && District.Any())
+                                    {
+                                        foreach (var item in District)
+                                        {
+                                            <option value="@item.Name">@item.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Mã số thuế</label>
+                            <div class="wrap_input">
+                                <input type="text" class="form-control" asp-for="@Model.TaxCode" />
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Năm thành lập</label>
+                            <div class="wrap_input">
+                                <input type="text" class="form-control" asp-for="@Model.EstablishedYear" />
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Hạng sao</label>
+                            <div class="wrap_input">
+                                <select class="form-control select2-modal" asp-for="@Model.Star" style="width:100%">
+                                    <option value="">Chọn hạng sao</option>
+                                    @if (Model.Star!=null && Model.Star == 1)
+                                    {
+                                        <option value="1" selected>1 Star</option>
+
+                                    }
+                                    else
+                                    {
+                                        <option value="1">1 Star</option>
+
+                                    }
+                                    @if (Model.Star != null && Model.Star == 2)
+                                    {
+                                        <option value="2"selected>2 Star</option>
+
+                                    }
+                                    else
+                                    {
+                                        <option value="2">2 Star</option>
+
+                                    }
+                                    @if (Model.Star != null && Model.Star == 3)
+                                    {
+                                        <option value="3" selected>3 Star</option>
+
+                                    }
+                                    else
+                                    {
+                                        <option value="3">3 Star</option>
+
+                                    }
+                                    @if (Model.Star != null && Model.Star == 4)
+                                    {
+                                        <option value="4" selected>4 Star</option>
+
+                                    }
+                                    else
+                                    {
+                                        <option value="4">4 Star</option>
+
+                                    }
+                                    @if (Model.Star != null && Model.Star == 5)
+                                    {
+                                        <option value="5" selected>5 Star</option>
+
+                                    }
+                                    else
+                                    {
+                                        <option value="5">5 Star</option>
+
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Địa chỉ <sup class="red">*</sup></label>
+                            <div class="wrap_input">
+                                <input type="text" class="form-control" asp-for="@Model.Street" />
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Chuỗi thương hiệu</label>
+                            <div class="wrap_input">
+                                <select class="form-control select2-modal" asp-for="@Model.ChainBrands" style="width:100%">
+                                    <option value="">Chọn thương hiệu</option>
+                                    @if (brands != null && brands.Any())
+                                    {
+                                        foreach (var item in brands)
+                                        {
+                                            <option value="@item.BrandId">@item.BrandName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="lbl">Thời gian xác nhận</label>
+                            <div class="wrap_input">
+                                <select class="form-control select2-modal" asp-for="@Model.VerifyDate" style="width:100%">
+                                    <option value="">Chọn thời gian xác nhận</option>
+                                    @if (verify_time_types != null && verify_time_types.Any())
+                                    {
+                                        foreach (var item in verify_time_types)
+                                        {
+                                            <option value="@item.CodeValue">@item.Description</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-12">
+                            <label class="lbl">Mô tả</label>
+                            <div class="wrap_input">
+                                <textarea class="form-control" style="height: 90px;" asp-for="@Model.Description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="grid-item col-md-5">
+            <div class="border mb20">
+                <div class="lb-form">Hiển thị website</div>
+                <div class="pd10">
+                    <div class="row pd10">
+                        <div class="col-md-6">
+                            <label class="radio">
+                                <input type="radio" asp-for="@Model.IsDisplayWebsite" value="true" />
+                                <span class="checkmark"></span>
+                                Hiển thị website
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="radio">
+                                <input type="radio" asp-for="@Model.IsDisplayWebsite" value="false" />
+                                <span class="checkmark"></span>
+                                Không hiển thị website
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="border mb20">
+                    <div class="lb-form">Quỹ Commit</div>
+                    <div class="pd10">
+                        <div class="row pd10">
+                            <div class="col-md-12">
+                                <label class="check-list">
+                                    <input type="checkbox" class="ckb_extend_type" id="IsCommitFund" @(Model.IsCommitFund != null && Model.IsCommitFund == true ? "checked" : "") />
+                                    <span class="checkmark"></span>
+                                    Khách sạn có quỹ Commit
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="border mb20">
+                    <div class="lb-form">Vị trí hiển thị</div>
+                    <div class="pd10">
+                        <label class="lbl">B2B</label>
+                        <div class="row pd10">
+                            <div class="col-md-12">                              
+                                <select class="form-control" asp-for="@Model.PositionB2B">
+                                    <option value="0">Không đặt vị trí</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <label class="lbl">B2C</label>
+                        <div class="row pd10">
+                            <div class="col-md-12">
+                                <select class="form-control" asp-for="@Model.PositionB2C">
+                                    <option value="0">Không đặt vị trí</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="6">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.Id > 0)
+                {
+                    <div class="border mb20">
+                        <div class="lb-form">Giá theo Nhà cung cấp</div>
+                        <div class="pd10">
+                            <select class="form-control" asp-for="@Model.SupplierId" style="width:100%">
+                                @if (Model.SupplierId > 0)
+                                {
+                                    <option value="@Model.SupplierId">@Model.SupplierName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <script type="text/javascript" defer>
+                        $(document).ready(function () {
+                            $("#SupplierId").select2({
+                                //theme: 'bootstrap4',
+                                placeholder: "Nhà cung cấp",
+                                ajax: {
+                                    url: "/Supplier/SuggestForHotel",
+                                    type: "get",
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            hotel_id: '@Model.Id',
+                                            text: params.term,
+                                            size: 10
+                                        }
+                                        return query;
+                                    },
+                                    processResults: function (data) {
+                                        var data = {
+                                            results: $.map(data, function (item) {
+                                                return {
+                                                    text: item.name,
+                                                    id: item.id,
+                                                }
+                                            })
+                                        }
+                                        return data;
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+                }
+
+
+            </div>
+
+                <div class="form-group col-12">
+                    <div class="col-6">
+                        <label class="choose">
+                            <div class="ava default mb10 blue">
+                                <img id="avatar_image" class="img-preview @(string.IsNullOrEmpty(Model.ImageThumb) ? "mfp-hide" : string.Empty)" title="Click để chọn ảnh đại diện" src="@(!string.IsNullOrEmpty(Model.ImageThumb) ? (Model.ImageThumb) : string.Empty)" />
+                                <a id="ava_upload" class="@(!string.IsNullOrEmpty(Model.ImageThumb) ? "mfp-hide" : string.Empty)" style="display:flex; align-items:center;margin-top: 30px;">
+                                    <i class="fa fa-cloud-upload" style="font-size:40px;"></i> <span class="ml10" style="font-size:15px;">Ảnh đại diện</span>
+                                </a>
+                            </div>
+                            <input class="mfp-hide" type="file" name="ImgAvatar" onchange="hotel_management.OnChangeAvartar()" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+    </div>
+</form>
+<div class="text-right">
+    <button type="button" class="btn btn-default btn btn-default cancel" data-dismiss="modal">Bỏ qua</button>
+    <button type="button" class="btn btn-default" onclick="hotel_management.Upsert()"><i class="fa fa-save"></i> Lưu</button>
+</div>

@@ -1,0 +1,63 @@
+﻿@using Entities.Models
+@using Entities.ViewModels
+@using Entities.ViewModels.Report
+@model GenericViewModel<ReportHotelRevenueViewModel>
+
+@if (Model.ListData == null || Model.ListData.Count <= 0)
+{
+    <div class="search-null center mb40">
+        <div class="mb24">
+            <img src="/images/graphics/icon-search.png" alt="">
+        </div>
+        <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+        <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+    </div> }
+else
+{
+
+    <div id="report-search-data" class="wrap_bg wrap_bg_no-padding mb20">
+        <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding table-report" style="width:100% !important">
+            <table class="table table-nowrap">
+                <thead>
+                    <tr>
+                        <th style="min-width: 30px;">STT</th>
+                        <th style=" min-width: 150px; text-align: center">Khách sạn</th>
+                        <th style=" min-width: 100px; text-align: center">Doanh thu</th>
+                        <th style=" min-width: 100px; text-align: center">Lợi nhuận</th>
+                        <th style=" min-width: 100px; text-align: center">Roomnights</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ListData != null && Model.ListData.Count > 0)
+                    {
+                        var counter = (Model.CurrentPage - 1) * Model.PageSize;
+                        foreach (var item in Model.ListData)
+                        {
+                            counter++;
+                            <tr>
+                                <td class="text-center ">@counter</td>
+                                <td class="text-break">@item.HotelName</td>
+                                <td class="text-break text-right">@item.Amount.ToString("N0")</td>
+                                <td class="text-break text-right">@item.Price.ToString("N0")</td>
+                                <td class="text-break text-right">@item.RoomNights</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+@await Component.InvokeAsync("Paging", new
+    {
+    pageModel = new Paging()
+    {
+    TotalRecord = Model.TotalRecord,
+    TotalPage = Model.TotalPage,
+    CurrentPage = Model.CurrentPage,
+    PageSize = Model.PageSize,
+    RecordName = "kết quả lọc",
+    PageAction = "_report_hotel_revenue.OnPaging({0})"
+    }
+    })
+

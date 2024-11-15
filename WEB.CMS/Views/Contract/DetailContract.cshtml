@@ -1,0 +1,465 @@
+﻿@using Entities.ViewModels.Contract
+@using Utilities.Contants
+@using Entities.ViewModels.ContractHistory
+@using Entities.Models
+@{ var data = ((List<ContractHistoryViewModel>)ViewBag.ContractHistory);
+    var data2 = ((List<ContractHistoryViewModel>)ViewBag.ContractHistory2);
+    var i = 0;
+    var c = 0;
+    var DebtType = (List<AllCode>)ViewBag.DebtType;}
+@model ContractViewModel
+@if (Model != null)
+{
+<input value="@Model.PermisionType" id="PermisionType_Name" style="display:none" />
+<input value="@Model.Id" id="id" style="display:none" />
+<input value="@Model.PolicyId" id="PolicyId" style="display:none" />
+<input value="@Model.ClientType" id="ClientType" style="display:none" />
+<input value="@Model.ServiceType" id="ServiceType" style="display:none" />
+<input value="@Model.PermisionType" id="ClienType_Name" style="display:none" />
+<input value="@Model.ContractNo" id="ContractNo" style="display:none" />
+<input value="@Model.ContractId" id="ContractId" style="display:none" />
+<input value="@Model.ClientId" id="ClientId" style="display:none" />
+<input value="@Model.ContractStatus" id="ContractStatus" style="display:none" />
+<input value="@Model.ExpireDate.ToString("dd/MM/yyyy")" id="ExpireDate" style="display:none" />
+<section class="" style=" overflow-x: hidden;">
+    <form id="updatepolicydetail" onsubmit="return false">
+        <div class="row-main container">
+            <h2 class="txt_18 bold mb20">thông tin chi tiết hợp đồng</h2>
+            <div class="table-responsive table-white">
+                <table class="table table-nowrap">
+                    <tbody>
+                        <tr>
+                            <td colspan="3">
+                                <strong>Hợp đồng : @Model.ContractNo</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><strong>Thông tin cơ bản</strong></td>
+                            <td style="width: 440px;"><strong>Thông tin chính sách</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="min-width: 400px;">
+                                <div class="row">
+                                    <div class="col-5 gray mb10">Trạng thái</div>
+                                    <div class="col-7 mb10">
+                                        <span>
+
+                                            @if (Model.ContractStatus == Utilities.Contants.ContractStatus.DA_DUYET)
+                                        {<span>:<span class="status-green"> @Model.ContractStatus_Name</span> </span>}
+                                            @if (Model.ContractStatus == Utilities.Contants.ContractStatus.DOI_DUYET)
+                                        {<span>: <span class="status-oranger"> @Model.ContractStatus_Name</span></span>}
+                                            @if (Model.ContractStatus == Utilities.Contants.ContractStatus.LUU_NHAP)
+                                        {<span>: <span style="font-size:12px;" class="status-grey">@Model.ContractStatus_Name</span></span>}
+                                            @if (Model.ContractStatus == Utilities.Contants.ContractStatus.TU_CHOI)
+                                        {<span>: <span class="status-red"> @Model.ContractStatus_Name</span></span>}
+                                            @if (Model.ContractStatus == Utilities.Contants.ContractStatus.HUY_BO)
+                                        {<span>: <span class="status-red"> @Model.ContractStatus_Name</span></span>}
+                                        </span>
+                                    </div>
+                                    <div class="col-5 gray mb10">Khách hàng</div>
+                                    <div class="col-7 mb10 blue">: @Model.ClientId_Name</div>
+                                    <div class="col-5 gray mb10">Dịch vụ đăng ký</div>
+                                    <div class="col-7 mb10">
+                                        : @Model.ServiceTypeName
+                                    </div>
+                                    <div class="col-5 gray mb10">Loại KH</div>
+                                    <div class="col-7 mb10">: @Model.ClienType_Name</div>
+                                    <div class="col-5 gray mb10">Nhóm KH</div>
+                                    <div class="col-7 mb10">: @Model.PermisionType_Name</div>
+                                    <div class="col-5 gray mb10">Ngày hết hạn</div>
+                                    <div class="col-7 mb10">: @Model.ExpireDate.ToString("dd/MM/yyyy HH:mm:ss")</div>
+                                </div>
+                            </td>
+                            <td style="min-width: 400px;">
+                                <div class="row">
+
+                                    <div class="col-5 gray mb10">Người phụ trách</div>
+                                    <div class="col-7 mb10 text-and-btn">
+                                        : @Model.SalerId_Name
+                                    </div>
+                                    <div class="col-5 gray mb10">Ngày tạo</div>
+                                    <div class="col-7 mb10">: @Model.CreateDate.ToString("dd/MM/yyyy HH:mm:ss")</div>
+                                    <div class="col-5 gray mb10">Người tạo</div>
+                                    <div class="col-7 mb10">: @Model.UserIdCreate_Name</div>
+                                    <div class="col-5 gray mb10">Ngày duyệt</div>
+                                    <div class="col-7 mb10">: @Model.UpdateLast.ToString("dd/MM/yyyy HH:mm:ss")</div>
+                                    <div class="col-5 gray mb10">Người duyệt</div>
+                                    <div class="col-7 mb10">: @Model.UserIdUpdate_Name</div>
+                                </div>
+                            </td>
+                            <td style="min-width: 400px;">
+                                @if (Model.PermisionType == PermisionType.DUOC_CN || Model.PermisionType == PermisionType.PHAI_KQ)
+                                {
+                                <div class="row">
+                                    <div class="col-12 mb10">
+                                        <div class="flex align-center bold txt_14">
+                                            <div class="flex align-center bold txt_14">
+                                                <div class="underline">Điều kiện</div>
+                                                @if (Model.IsPrivate == 1)
+                                                {
+                                                <div id="actionbt" class="actionbt">
+                                                    <a id="Ischeck2" href="javascript:;" onclick="_ContractDetail.Ischeck2()" class="fa fa-pencil-square-o ml-2"></a>
+                                                    <a id="UpdataPolicy" href="javascript:;" style="display:none" onclick="_ContractDetail.UpdataPolicy()" class="fa fa-floppy-o ml-2"></a>
+                                                    <a id="Isdisabled" href="javascript:;" style="display:none" onclick="_ContractDetail.Isdisabled()" class="fa fa-ban icon"></a>
+
+                                                </div> }
+                                                else
+                                                {
+                                                <div id="actionbt" class="actionbt" style="display:none">
+                                                    <a id="Ischeck2" href="javascript:;" onclick="_ContractDetail.Ischeck2()" class="fa fa-pencil-square-o ml-2"></a>
+                                                    <a id="UpdataPolicy" href="javascript:;" style="display:none" onclick="_ContractDetail.UpdataPolicy()" class="fa fa-floppy-o ml-2"></a>
+                                                    <a id="Isdisabled" href="javascript:;" style="display:none" onclick="_ContractDetail.Isdisabled()" class="fa fa-ban icon"></a>
+
+                                                </div>}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if(ViewBag.DUYETHD == 1) 
+                                    { 
+                                        @if (Model.IsPrivate == 1)
+                                        {
+
+                                        <div class="col-12 mb10">
+                                            <label class="check-list mb10">
+                                                <input id="IsPrivate" class="IsPrivate" value="1" onclick="_ContractDetail.IsPrivatecheck()" type="checkbox" checked>
+                                                <span class="checkmark"></span>
+                                                Chính sách riêng
+                                            </label>
+                                        </div>
+                                        }
+                                        else
+                                        {
+                                        <div class="col-12 mb10">
+                                            <label class="check-list mb10">
+                                                <input id="IsPrivate" class="IsPrivate" value="2" onclick="_ContractDetail.IsPrivatecheck()" type="checkbox">
+                                                <span class="checkmark"></span>
+                                                Chính sách riêng
+                                            </label>
+                                        </div>              }
+                                    }
+                                    @if (Model.PermisionType == PermisionType.PHAI_KQ)
+                                    {
+                                    <input  id="DebtType_Type" value="0" style="display:none" />
+                                    @if (Model.ServiceType.Contains(((int)ServicesType.FlyingTicket).ToString()))
+                                    {
+                                    <div class="col-5 gray mb10">Số dư ký quỹ VMB tối thiểu</div>
+                                    <div class="col-7 mb10"><input style="background: #f0f0f0;" class="form-control currency2 form" name="ProductFlyTicketDepositAmount" id="ProductFlyTicketDepositAmount" value="@Model.ProductFlyTicketDepositAmount.ToString("###,###")" readonly /></div>
+
+                                    }else
+                                    {
+                                    <div class="col-5 gray mb10" style="display:none">Số dư ký quỹ VMB tối thiểu</div>
+                                    <div class="col-7 mb10" style="display:none"><input style="background: #f0f0f0;" class="form-control currency2 form" name="ProductFlyTicketDepositAmount" id="ProductFlyTicketDepositAmount" value="@Model.ProductFlyTicketDepositAmount.ToString("###,###")" readonly /></div>
+
+                                    }
+                                    @if (Model.ServiceType.Contains(((int)ServicesType.VINHotelRent).ToString()))
+                                    {
+                                    <div class="col-5 gray mb10">Số dư ký quỹ KS tối thiểu </div>
+                                    <div class="col-7 mb10"><input style="background: #f0f0f0;" class="form-control currency2 form" name="HotelDepositAmout" id="HotelDepositAmout" value="@Model.HotelDepositAmout.ToString("###,###")" readonly /> </div>
+
+                                    }else
+                                    {
+                                    <div class="col-5 gray mb10"style="display:none">Số dư ký quỹ KS tối thiểu </div>
+                                    <div class="col-7 mb10"style="display:none"><input style="background: #f0f0f0;" class="form-control currency2 form" name="HotelDepositAmout" id="HotelDepositAmout" value="@Model.HotelDepositAmout.ToString("###,###")" readonly /> </div>
+
+                                    }
+                                    @if (Model.ServiceType.Contains(((int)ServicesType.Tourist).ToString()))
+                                    {
+                                    <div class="col-5 gray mb10">Số dư ký quỹ  Tour</div>
+                                    <div class="col-7 mb10"><input style="background: #f0f0f0;" class="form-control currency2 form" name="TourDepositAmount" id="TourDepositAmount" value="@Model.TourDepositAmount.ToString("###,###")" readonly /></div>
+
+                                    }else
+                                    {
+                                    <div class="col-5 gray mb10"style="display:none">Số dư ký quỹ  Tour</div>
+                                    <div class="col-7 mb10"style="display:none"><input style="background: #f0f0f0;" class="form-control currency2 form" name="TourDepositAmount" id="TourDepositAmount" value="@Model.TourDepositAmount.ToString("###,###")" readonly /></div>
+
+                                    }
+                                    @if (Model.ServiceType.Contains(((int)ServicesType.VehicleRent).ToString()) || Model.ServiceType.Contains(((int)ServicesType.Other).ToString()))
+                                    {
+                                    <div class="col-5 gray mb10">Số dư ký quỹ  dịch vụ khác </div>
+                                    <div class="col-7 mb10"><input style="background: #f0f0f0;" class="form-control currency2 form" name="TouringCarDepositAmount" id="TouringCarDepositAmount" value="@Model.TouringCarDepositAmount.ToString("###,###")" readonly /> </div>
+
+                                    }else
+                                    {
+                                    <div class="col-5 gray mb10"style="display:none">Số dư ký quỹ  thuê xe du lịch </div>
+                                    <div class="col-7 mb10"style="display:none"><input style="background: #f0f0f0;" class="form-control currency2 form" name="TouringCarDepositAmount" id="TouringCarDepositAmount" value="@Model.TouringCarDepositAmount.ToString("###,###")" readonly /> </div>
+
+                                    }
+                                    @if (Model.ServiceType.Contains(((int)ServicesType.VinWonder).ToString()))
+                                    {
+                                    <div class="col-5 gray mb10">Số dư ký quỹ  VinWonder </div>
+                                    <div class="col-7 mb10">
+                                        <input style="background: #f0f0f0;" class="form-control currency2 form" name="VinWonderDepositAmount" id="VinWonderDepositAmount" value="@Model.VinWonderDepositAmount.ToString("###,###")" readonly />
+                                    </div>
+                                    }else
+                                    {
+                                    <div class="col-5 gray mb10" style="display:none">Số dư ký quỹ  VinWonder </div>
+                                    <div class="col-7 mb10" style="display:none">
+                                        <input style="background: #f0f0f0;" class="form-control currency2 form" name="VinWonderDepositAmount" id="VinWonderDepositAmount" value="@Model.VinWonderDepositAmount.ToString("###,###")" readonly />
+                                    </div>
+                                    }
+
+
+
+
+                                    }
+                                    @if (Model.PermisionType == PermisionType.DUOC_CN)
+                                    {
+                                    <div class="col-5 gray mb10">Loại công nợ</div>
+                                    <div class="col-7 mb10">
+                                        <select class=" form-control" id="DebtType_Type" name="DebtType_Type" disabled>
+                                            <option value="">Tất cả loại công nợ</option>
+                                            @if (DebtType != null)
+                                            {
+                                                foreach (var item in DebtType)
+                                                {
+                                                    if (Model.DebtType == item.CodeValue)
+                                                    {
+                                            <option selected="selected" value="@item.CodeValue">@item.Description</option>
+ }
+                                                    else
+                                                    {
+                                            <option value="@item.CodeValue">@item.Description</option>
+}
+
+                                                }
+                                            }
+                                        </select>
+                                        <label id="DebtType_Type-error" class="error" for="DebtType_Type"></label>
+                                    </div>
+                                    @if (Model.ServiceType.Contains(((int)ServicesType.FlyingTicket).ToString()))
+                                    {
+                                    <div class="col-5 gray mb10">Hạn mức công nợ VMB</div>
+                                    <div class="col-7 mb10"><input style="background: #f0f0f0;" class="form-control currency2 form" name="ProductFlyTicketDebtAmount" id="ProductFlyTicketDebtAmount" value="@Model.ProductFlyTicketDebtAmount.ToString("###,###")" readonly /> </div>
+                                    } else {
+                                    <div class="col-5 gray mb10" style="display:none">Hạn mức công nợ VMB</div>
+                                    <div class="col-7 mb10" style="display:none"><input style="background: #f0f0f0;" class="form-control currency2 form" name="ProductFlyTicketDebtAmount" id="ProductFlyTicketDebtAmount" value="0" readonly /> </div>
+                                    }
+                                    @if (Model.ServiceType.Contains(((int)ServicesType.VINHotelRent).ToString()))
+                                    {
+                                    <div class="col-5 gray mb10">Hạn mức công nợ KS</div>
+                                    <div class="col-7 mb10"><input style="background: #f0f0f0;" class="form-control currency2 form" name="HotelDebtAmout" id="HotelDebtAmout" value="@(Model.HotelDebtAmout.ToString("###,###"))" readonly /> </div>
+                                    } else 
+                                    {
+                                    <div class="col-5 gray mb10" style="display:none">Hạn mức công nợ KS</div>
+                                    <div class="col-7 mb10" style="display:none"><input style="background: #f0f0f0;" class="form-control currency2 form" name="HotelDebtAmout" id="HotelDebtAmout" value="0" readonly /> </div>
+                                    }
+
+                                    @if (Model.ServiceType.Contains(((int)ServicesType.Tourist).ToString()))
+                                    {
+                                    <div class="col-5 gray mb10">Hạn mức công nợ Tour</div>
+                                    <div class="col-7 mb10"><input style="background: #f0f0f0;" class="form-control currency2 form" name="TourDebtAmount" id="TourDebtAmount" value="@Model.TourDebtAmount.ToString("###,###")" readonly /> </div>
+                                    } else 
+                                    {
+                                    <div class="col-5 gray mb10" style="display:none">Hạn mức công nợ Tour</div>
+                                    <div class="col-7 mb10" style="display:none"><input style="background: #f0f0f0;" class="form-control currency2 form" name="TourDebtAmount" id="TourDebtAmount" value="0" readonly /> </div>
+                                    }
+                                    @if (Model.ServiceType.Contains(((int)ServicesType.VehicleRent).ToString())|| Model.ServiceType.Contains(((int)ServicesType.Other).ToString()))
+                                    {
+                                    <div class="col-5 gray mb10">Hạn mức công nợ dịch vụ khác</div>
+                                    <div class="col-7 mb10"><input style="background: #f0f0f0;" class="form-control currency2 form" name="TouringCarDebtAmount" id="TouringCarDebtAmount" value="@(Model.TouringCarDebtAmount.ToString("###,###"))" readonly /> </div>
+                                    } else
+                                    {
+                                    <div class="col-5 gray mb10" style="display:none">Hạn mức công nợ dịch vụ khác</div>
+                                    <div class="col-7 mb10" style="display:none"><input style="background: #f0f0f0;" class="form-control currency2 form" name="TouringCarDebtAmount" id="TouringCarDebtAmount" value="0" readonly /> </div>
+                                    }
+
+                                    @if (Model.ServiceType.Contains(((int)ServicesType.VinWonder).ToString()))
+                                    {
+                                    <div class="col-5 gray mb10">Hạn mức công nợ VinWonder</div>
+                                    <div class="col-7 mb10"><input style="background: #f0f0f0;" class="form-control currency2 form" name="VinWonderDebtAmount" id="VinWonderDebtAmount" value="@(Model.VinWonderDebtAmount.ToString("###,###"))" readonly /> </div>
+
+                                    } else 
+                                    {
+                                    <div class="col-5 gray mb10" style="display:none">Hạn mức công nợ VinWonder</div>
+                                    <div class="col-7 mb10" style="display:none"><input style="background: #f0f0f0;" class="form-control currency2 form" name="VinWonderDebtAmount" id="VinWonderDebtAmount" value="0" readonly /> </div>
+
+                                    }
+                                        }
+                                </div>
+                                    }
+                                
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <div class="flex">
+                                    <div class="red mr-4 underline">Ghi chú</div>
+                                    <span>: @Model.Note</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-right mb40">
+                <a class="blue mr-2" href="javascript:;" data-toggle="modal" data-target="#myModal1">[Lịch sử hợp đồng]</a>
+                <a class="blue mr-2" href="javascript:;" data-toggle="modal" data-target="#myModal2">[Lịch sử từ chối]</a>
+                <button type="submit" onclick="history.back()" class="btn btn-default cancel mr-1">Quay lại</button>
+
+                @if (ViewBag.DUYETHD == 1)
+                {
+                    @if (Model.ContractStatus == ContractStatus.DOI_DUYET)
+                    {
+                        <button type="submit" class="btn btn-default red mr-1" data-toggle="modal" onclick="_ContractDetail.OpenPopupStatus('@Model.ContractId', '@ContractStatus.TU_CHOI')" data-target="#myModal4">Từ chối</button> @*<button type="submit" class="btn btn-default cancel mr-1" onclick="_Contract.OpenPopup('@Model.ContractId')">Sửa</button>*@
+                        <button type="submit" class="btn btn-default" onclick="_ContractDetail.OnResetStatus('@Model.ContractId','@ContractStatus.DA_DUYET')">Duyệt</button>
+                    }
+                    @if (Model.ContractStatus == ContractStatus.DA_DUYET)
+                    {
+                        <button type="submit" class="btn btn-default red mr-1" data-toggle="modal" onclick="_ContractDetail.OpenPopupStatus('@Model.ContractId', '@ContractStatus.HUY_BO')" @*onclick="_Contract.OnResetStatus('@Model.ContractId','@ContractStatus.DA_DUYET')"*@ data-target="#myModal3">Hủy</button>}
+                }
+                @if(Model.UserIdCreate == ViewBag.UserLogin){ 
+                @if (Model.ContractStatus == ContractStatus.LUU_NHAP)
+                {
+                    <button type="submit" class="btn btn-default red mr-1" onclick="_ContractDetail.OnDelete('@Model.ContractId')">Xóa</button>
+                    <button type="submit" class="btn btn-default cancel mr-1" onclick="_ContractDetail.OpenPopup('@Model.ContractId')">Sửa</button>
+                }
+
+                @if (Model.ContractStatus == ContractStatus.TU_CHOI)
+                {
+                    <button type="submit" class="btn btn-default red mr-1" onclick="_ContractDetail.OnDelete('@Model.ContractId')">Xóa</button>
+                    <button type="submit" class="btn btn-default cancel mr-1" onclick="_ContractDetail.OpenPopup('@Model.ContractId')">Sửa</button>
+                }
+                }
+
+            </div>
+        </div>
+    </form>
+</section>
+ //POPUP LỊCH SỬ HỢP ĐỒNG
+<div class="modal fade" id="myModal1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" style="max-width: 700px">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Lịch sử hợp đồng</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="table-responsive table-gray">
+                    <table class="table table-nowrap">
+                        <thead>
+
+                            <tr>
+                                <th>STT</th>
+                                <th>Thời gian</th>
+                                <th>Người thực hiện</th>
+                                <th>Nội dung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (data != null)
+                            {
+                            @foreach (var item in data)
+                        {
+                            i++;
+                            <tr>
+                                <td>@i</td>
+                                <td>@(((DateTime)item.CreatedDate).ToString("dd/MM/yyyy HH:mm:ss"))</td>
+                                <td>@item.Fullname</td>
+                                <td>@item.ActionName</td>
+                            </tr>
+}}
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div> //POPUP LỊCH SỬ TỪ CHỐI
+<div class="modal fade" id="myModal2" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 700px">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Lịch sử từ chối</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            @if (data2 != null)
+            {
+                <div class="modal-body">
+                    <div class="table-responsive table-gray">
+                        <table class="table table-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Thời gian</th>
+                                    <th>Người thực hiện</th>
+                                    <th>Nội dung từ chối</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in data2)
+                                {
+                                    c++;
+                                    <tr>
+                                        <td>@c</td>
+                                        <td>@(((DateTime)item.CreatedDate).ToString("dd/MM/yyyy HH:mm:ss"))</td>
+                                        <td>@item.Fullname</td>
+                                        <td>@item.Action</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                }else
+            {
+                <div class="modal-body" style="text-align: center;"><strong>Hiện tại chưa có lịch sử từ chối cho hợp đồng này</strong></div>
+            }
+            </div>
+    </div>
+</div>}
+   
+
+@section scripts {
+
+    <script type="text/javascript" src="/modules/ContractDetail.js"></script>
+    <script language="javascript">
+        function formatCurrency(input, blur) {
+            var input_val = input.val();
+            if (input_val === "") { return; }
+            var original_len = input_val.length;
+            var caret_pos = input.prop("selectionStart");
+            if (input_val.indexOf(".") >= 0) {
+                var decimal_pos = input_val.indexOf(".");
+                var left_side = input_val.substring(0, decimal_pos);
+                var right_side = input_val.substring(decimal_pos);
+                left_side = formatNumber(left_side);
+                right_side = formatNumber(right_side);
+                right_side = right_side.substring(0, 0);
+                input_val = left_side;
+            } else {
+                input_val = formatNumber(input_val);
+                input_val = input_val;
+            }
+
+            // send updated string to input
+            input.val(input_val);
+
+            // put caret back in the right position
+            var updated_len = input_val.length;
+            caret_pos = updated_len - original_len + caret_pos;
+            input[0].setSelectionRange(caret_pos, caret_pos);
+        }
+        $("body").on("keyup", ".currency2", function () {
+            formatCurrency($(this));
+        });
+
+        $("body").on("blur", ".currency2", function () {
+            formatCurrency($(this));
+        });
+        function formatNumber(n) {
+            return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        }
+
+    </script>
+
+}

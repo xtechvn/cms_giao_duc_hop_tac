@@ -1,0 +1,497 @@
+﻿@using Entities.Models
+@{
+    var departments = (List<Department>)ViewBag.departments;
+    var orderStatus = (List<AllCode>)ViewBag.orderStatus;
+    var branchs = (List<AllCode>)ViewBag.Branch;
+    var Type = (List<AllCode>)ViewBag.serviceType;
+    var PAYMENT_STATUS = (List<AllCode>)ViewBag.PAYMENT_STATUS;
+    var PERMISION_TYPE = (List<AllCode>)ViewBag.PERMISION_TYPE;
+
+    ViewData["Title"] = "Báo cáo Doanh thu theo phòng ban";
+
+}
+<style>
+    .btn_reset {
+        position: absolute;
+        right: 32px;
+        top: 7px;
+        width: 20px;
+        height: 20px;
+        border: 0;
+        outline: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        background: #C4C4C4
+    }
+    .Zebra_DatePicker_Icon_Wrapper{
+        width:100% !important;
+    }
+</style>
+<section style=" overflow-x: hidden; min-height:720px;">
+    <div id="filter" class="row-main container">
+        <div class="flex ">
+            <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                <select class="select2 client-select main-staff-select" id="Type" style="width:100% !important">
+                    <option value="1">Doanh thu tổng</option>
+                    <option value="2">Doanh thu chi tiết dịch vụ</option>
+                    <option value="3">Báo cáo quản trị</option>
+                    <option value="4">Báo cáo phòng ban sale</option>
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                <select class="select2 client-select main-staff-select" id="DepartmentType" style="width:100% !important">
+                    <option value="1">Theo phòng ban bán hàng</option>
+                    <option value="2">Theo nhân viên bán hàng</option>
+                    @*<option value="3">Theo nhà cung cấp</option>*@
+                    <option value="4">Theo khách hàng</option>
+                </select>
+            </div>
+            <nw id="filter-sale" class="flex " style="display:flex;">
+
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl">Ngày cập nhật</span>
+                        <input style="padding-left:100px!important" class="form-control date text-left " id="filter_date_daterangepicker" type="text" name="datetimeApprove"
+                               placeholder="Ngày tạo" />
+                    </div>
+                </div>
+
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+
+                    <select class="select2 client-select main-staff-select" id="DepartmentId" style="width:100% !important">
+                        <option value="0">Tất cả phòng ban</option>
+                        @if (departments != null)
+                        {
+                            foreach (var item in departments)
+                            {
+                                <option value="@item.Id">@item.DepartmentName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl">Thuế suất VAT</span>
+                        <select class="form-control" id="Vat" style="padding-right:25px!important;padding-left:110px!important">
+                            <option value="0" selected>0%</option>
+                            @for (int i = 1; i <= 100; i++)
+                            {
+                                <option value="@((i/(double)100))">@i%</option>
+                            }
+                        </select>
+                    </div>
+
+                </div>
+                <div class="form-group mb10 mr-2" id="ServiceType_BC" style="display:none">
+                    <div class="multiple-select form-group mb10 mr-2" style="width: 180px;">
+                        <div class="select-btn select-service-type-BC" id="ServiceTypeBC">
+                            <span class="btn-text-service-BC">Tất cả dịch vụ</span>
+                            <span class="arrow-dwn">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+
+                        <ul class="list-items" id="list-item-service-type-BC">
+                            @foreach (var item in Type)
+                            {
+                                <li class="item item-services-BC" id="service_data_BC_@item.CodeValue">
+                                    <span class="checkbox" id="checkbox_service_type_BC_@item.CodeValue">
+                                        <i class="fa fa-check"></i>
+                                    </span>
+                                    <span class="item-text" id="service_text_BC_@item.CodeValue">@item.Description</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2">
+                    <div class="multiple-select form-group mb10 mr-2" style=" width: 200px; ">
+                        <div class="select-btn select-btn-OrderStatus-type" id="select-btn-OrderStatus-type">
+                            <span class="btn-text-OrderStatus-type">Tất cả trạng thái</span>
+                            <span class="arrow-dwn">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+
+                        <ul class="list-items" id="list-item-OrderStatus">
+                            @foreach (var item in orderStatus)
+                            {
+                                <li class="item item-OrderStatus-type" id="OrderStatus_type_@item.CodeValue">
+                                    <span class="checkbox" id="checkbox_OrderStatus_type_@item.CodeValue">
+                                        <i class="fa fa-check"></i>
+                                    </span>
+                                    <span class="item-text" id="OrderStatus_type_text_@item.CodeValue">@item.Description</span>
+                                </li>
+                            }
+
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2" id="HINHTHUCTT_BC">
+                    <select class="select2" Id="HINHTHUCTT" style="width: 250px;">
+                        <option value="">Tất cả hình thức thanh toán</option>
+                        @foreach (var item in PERMISION_TYPE)
+                        {
+                            @foreach (var item2 in PAYMENT_STATUS)
+                            {
+                                <option value="@item.CodeValue,@item2.CodeValue">@item.Description - @item2.Description</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl">Ngày Tạo</span>
+                        <input style="padding-left:100px!important" class="form-control date text-left " id="CreateDate" type="text"
+                               placeholder="Ngày tạo" value="" />
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl">Ngày in</span>
+                        <input style="padding-left:100px!important" class="form-control date text-left StartDate" id="StartDate" type="text" name="StartDate"
+                               placeholder="Ngày in" value="" />
+                    </div>
+                </div>
+
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl">Ngày out</span>
+                        <input style="padding-left:100px!important" class="form-control date text-left EndDate" id="EndDate" type="text" name="EndDate"
+                               placeholder="Ngày out" value="" />
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2 ClientId mfp-hide" style="min-width: 220px;">
+
+                    <select class="select2 client-select main-staff-select" id="ClientId" multiple style="width:100% !important">
+                    </select>
+                </div>
+                @if (ViewBag.Role == 0)
+                {
+                    <div class="form-group mb10 mr-2 SalerId mfp-hide" style="min-width: 220px;">
+
+                        <select class="select2 client-select main-staff-select" id="SalerId" multiple style="width:100% !important">
+                        </select>
+                    </div>
+                }
+
+                <div class="form-group mb10 mr-2 SupplierId mfp-hide" style="min-width: 350px;">
+
+                    <select class="select2 client-select main-staff-select" id="SupplierId" multiple style="width:100% !important">
+                    </select>
+                </div>
+                <div class="mb10 mr-2" style="min-width: 220px;">
+                    <button class="btn btn-default" type="button" onclick="_ReportDepartment.Export()" id="btnExport">
+                        <i class="fa fa-file-excel-o" id="icon-export" title="Xuất excel">
+                        </i>
+                    </button>
+                    <button type="button" class="btn btn-default bg-main" onclick="_ReportDepartment.SearchData()">
+                        <svg class="icon-svg" style="vertical-align: sub;">
+                            <use xlink:href="/images/icons/icon.svg#search"></use>
+                        </svg>
+                        Tìm kiếm
+                    </button>
+                </div>
+            </nw>
+            <nw id="filter-operator" style="display: none; ">
+                <div class="multiple-select form-group mb10 mr-2 operator-department-filter" id="operator-department-filter" style="min-width: 220px;">
+                    <div class="select-btn operator-department-select">
+                        <span class="btn-text-service">Tất cả phòng ban</span>
+                        <span class="arrow-dwn">
+                            <i class="fa fa-angle-down"></i>
+                        </span>
+                    </div>
+
+
+                    <ul class="list-items" style=" height: 500px; overflow: scroll; overflow-x: hidden; ">
+                        @if (departments != null)
+                        {
+                            foreach (var item in departments)
+                            {
+                        <li class="item item-services operator-department-item" data-id="@item.Id">
+                            <span class="checkbox ">
+                                <i class="fa fa-check"></i>
+                            </span>
+                            <span class="item-text">@item.DepartmentName</span>
+                        </li>
+                            }
+                        }
+
+                    </ul>
+
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl" style="width:100%">
+                        <span class="lbl lbl-select2">Chi nhánh</span>
+                        <select class="" id="operator-branch-code" style="width: 100% !important; padding-left: 200px !important; ">
+                            <option value="0" selected="selected">Tất cả chi nhánh</option>
+                            @if (branchs != null && branchs.Count > 0)
+                            {
+                                foreach (var item in branchs)
+                                {
+                            <option value="@item.CodeValue">@item.Description</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%; ">
+                        <span class="lbl">Ngày tạo</span>
+                        <input style="padding-left:100px!important" class="form-control date text-left date-operator" id="operator-create-date" type="text" name="operator-create-date"
+                               placeholder="Ngày tạo" value="" />
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl">Ngày in</span>
+                        <input style="padding-left:100px!important" class="form-control date text-left date-operator" id="operator-from-date" type="text" name="operator-from-date"
+                               placeholder="Ngày in" value="" />
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl">Ngày out</span>
+                        <input style="padding-left:100px!important" class="form-control date text-left date-operator" id="operator-to-date" type="text" name="operator-to-date"
+                               placeholder="Ngày out" value="" />
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl" style="width:100%">
+                        <span class="lbl lbl-select2">Trạng thái đơn</span>
+                        <select class="" id="operator-order-finish-status" style="width:100% !important;padding-left:200px!important;">
+                            <option value="0" selected="selected">Tất cả trạng thái</option>
+                            <option value="1">Hoàn thành</option>
+                            <option value="2">Chưa hoàn thành</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl" style="width:100%">
+                        <span class="lbl lbl-select2">Tình trạng hóa đơn</span>
+                        <select class="" id="operator-invoice-finish-status" style="width: 100% !important; padding-left: 200px !important; ">
+                            <option value="0" selected="selected">Tất cả tình trạng hóa đơn</option>
+                            <option value="1">Có</option>
+                            <option value="2">Không</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl">Ngày xuất hóa đơn</span>
+                        <input style="padding-left:200px!important" class="form-control date text-left date-operator" id="operator-export-date" type="text" name="operator-export-date"
+                               placeholder="Ngày xuất hóa đơn" value="" />
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2 operator-saler" style="min-width: 350px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl lbl-select2"></span>
+                        <select style="width: 100% !important; padding-left: 100px !important" class="" id="operator-saler" placeholder="Phụ trách chính">
+                        </select>
+                        <button type="reset" style="display:none;" class="btn_reset reset_operator_saler">×</button>
+                    </div>
+
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl">Thanh toán từ ngày</span>
+                        <input style="padding-left:170px!important" class="form-control date text-left operator-payment-date" id="operator-payment-fromdate" type="text" name="operator-payment-fromdate"
+                               placeholder="Thanh toán từ ngày" value="" />
+                    </div>
+                </div>
+
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%">
+                        <span class="lbl">Thanh toán đến ngày</span>
+                        <input style="padding-left:170px!important" class="form-control date text-left operator-payment-date" id="operator-payment-todate" type="text" name="operator-payment-todate"
+                               placeholder="Thanh toán đến ngày" value="" />
+                    </div>
+                </div>
+                <div class="mb10 mr-2" style="min-width: 220px;">
+                    <button class="btn btn-default" type="button" onclick="_report_operator.Export()" id="operator-export-btn">
+                        <i class="fa fa-file-excel-o" id="operator-export" title="Xuất excel">
+                        </i>
+                        Xuất excel
+                    </button>
+                    <button type="button" class="btn btn-default bg-main" onclick="_report_operator.SearchData()">
+                        <svg class="icon-svg" style="vertical-align: sub;">
+                            <use xlink:href="/images/icons/icon.svg#search"></use>
+                        </svg>
+                        Tìm kiếm
+                    </button>
+                </div>
+            </nw>
+            <nw id="filter-departmentSale" class="flex " style="display: none; ">
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%;">
+                        <span class="lbl" style="width:30%;">Ngày tạo</span>
+                        <div style="width: 100%; margin-left: 28% !important;">
+                            <input class="form-control date text-left " id="filter_date_daterangepicker_DateFrom" type="text" name="datetimeApprove" placeholder="Từ ngày" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px; margin-left: 5%;">
+                    <div class="datepicker-wrap add-lbl " style="width:100%;">
+                        <span class="lbl"style="width:30%;">Ngày tạo</span>
+                        <div style="width: 100%; margin-left: 28% !important;">
+                            <input  class="form-control date text-left " id="filter_date_daterangepicker_DateTo" type="text" name="datetimeApprove" placeholder="Đến ngày" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mb10 mr-2 " style="min-width: 220px; margin-left: 5%;">
+
+                    <select class="select2 client-select main-staff-select" id="SalerId_sale" multiple style="width:100% !important">
+                    </select>
+                </div>
+                <div class="form-group mb10 mr-2" style="min-width: 220px;">
+
+                    <select class="select2 client-select main-staff-select" id="sale-DepartmentId" style="width:100% !important">
+                        <option value="0">Tất cả phòng ban</option>
+                        @if (departments != null)
+                        {
+                            foreach (var item in departments)
+                            {
+                                <option value="@item.Id">@item.DepartmentName</option>
+                            }
+                        }
+                    </select>
+                   
+                </div>
+                <div class="form-group mb10 mr-2">
+                    <div class="multiple-select form-group mb10 mr-2" style=" width: 200px; ">
+                        <div class="select-btn select-btn-OrderStatus-sale-type" id="select-btn-OrderStatus-sale-type">
+                            <span class="btn-text-OrderStatus-sale-type">Tất cả trạng thái</span>
+                            <span class="arrow-dwn">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+
+                        <ul class="list-items" id="list-item-OrderStatus-sale">
+                            @foreach (var item in orderStatus)
+                            {
+                                <li class="item item-OrderStatus-sale-type" id="OrderStatus_sale_type_@item.CodeValue">
+                                    <span class="checkbox" id="checkbox_OrderStatus_sale_type_@item.CodeValue">
+                                        <i class="fa fa-check"></i>
+                                    </span>
+                                    <span class="item-text" id="OrderStatus_sale_type_text_@item.CodeValue">@item.Description</span>
+                                </li>
+                            }
+
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="mb10 mr-2" style="min-width: 220px;">
+                    <button class="btn btn-default" type="button" onclick="_ReportDepartment.ExportDepartmentBysaler()" id="btnExport">
+                        <i class="fa fa-file-excel-o" id="icon-export" title="Xuất excel">
+                        </i>
+                    </button>
+                    <button type="button" class="btn btn-default bg-main" onclick="_ReportDepartment.SearchData()">
+                        <svg class="icon-svg" style="vertical-align: sub;">
+                            <use xlink:href="/images/icons/icon.svg#search"></use>
+                        </svg>
+                        Tìm kiếm
+                    </button>
+                </div>
+            </nw>
+        </div>
+        <div class="">
+            <div id="grid-data">
+            </div>
+            <img src="~/images/icons/loading.gif" style="margin-left:45%; width: 100px; height: 100px; display:none" class="loading" id="imgLoading" />
+        </div>
+
+    </div>
+</section>
+
+@section scripts{
+    <script type="text/javascript" src="~/modules/ReportDepartment.js"></script>
+    <script type="text/javascript" src="~/modules/report_operator.js"></script>
+    <script type="text/javascript" src="/js/zebra_datepicker.min.js"></script>
+    <script>
+
+
+        $('#filter_date_daterangepicker').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('#filter_date_daterangepicker').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove = false;
+        });
+        $('#filter_date_daterangepicker').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove = true;
+        });
+
+        $('#CreateDate').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('#CreateDate').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove4 = false;
+        });
+        $('#CreateDate').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove4 = true;
+        });
+        $('input[name="StartDate"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="StartDate"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove2 = false;
+        });
+        $('input[name="StartDate"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove2 = true;
+        });
+
+        $('input[name="EndDate"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="EndDate"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove3 = false;
+        });
+        $('input[name="EndDate"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove3 = true;
+        });
+    
+
+        $("#filter_date_daterangepicker_DateFrom").Zebra_DatePicker({
+            onSelect: function () {
+                var fromDate = $("#filter_date_daterangepicker_DateFrom").val()
+                var lstFromDate = fromDate.split('-')
+                $("#filter_date_daterangepicker_DateFrom").val(lstFromDate[2] + '/' + lstFromDate[1] + '/' + lstFromDate[0])
+            },
+            onClear: function () {
+
+            }
+        });
+        $("#filter_date_daterangepicker_DateTo").Zebra_DatePicker({
+            onSelect: function () {
+                var fromDate = $("#filter_date_daterangepicker_DateTo").val()
+                var lstFromDate = fromDate.split('-')
+                $("#filter_date_daterangepicker_DateTo").val(lstFromDate[2] + '/' + lstFromDate[1] + '/' + lstFromDate[0])
+            },
+            onClear: function () {
+
+            }
+        });
+    </script>
+
+}

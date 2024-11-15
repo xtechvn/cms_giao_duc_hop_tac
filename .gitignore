@@ -1,0 +1,11 @@
+/DAL/bin
+/DAL/obj
+/Entities/bin
+/Entities/obj
+/Repositories/bin
+/Utilities/bin
+/Repositories/obj
+/Utilities/obj
+/WEB.CMS/bin
+/WEB.CMS/obj
+/.vs

@@ -1,0 +1,70 @@
+﻿@using Entities.ViewModels
+@using Utilities.Contants
+@using Entities.ViewModels.Programs
+@model GenericViewModel<ProgramsViewModel>
+@if (Model == null)
+{
+<div class="search-null center mb40">
+    <div class="mb24">
+        <img src="/images/graphics/icon-search.png" alt="">
+    </div>
+    <h2 class="title txt_24">Không tìm thấy kết quả</h2>
+    <div class="gray">Chúng tôi không tìm thấy thông tin mà bạn cần, vui lòng thử lại</div>
+</div> }
+            else
+            {
+
+                <div class="wrap_bg wrap_bg_no-padding mb20">
+                    <div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding">
+                        <table class="table table-nowrap">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">STT</th>
+                                    <th style="width: 140px;">Mã</th>
+                                    <th style="width: 140px;">Tên</th>
+                                    <th>Id gốc</th>
+                                    <th>Id điều chỉnh</th>
+                                    <th>Dịch vụ</th>
+                                    <th>Tên dịch vụ</th>
+                                    <th>Thời gian áp dụng</th>
+                                    <th>Mô tả</th>
+                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ListData != null && Model.ListData.Count > 0)
+                                {
+                                    var STT = (Model.CurrentPage - 1) * Model.PageSize;
+                                    foreach (var item in Model.ListData)
+                                    {
+                                        <tr>
+                                            <td>@(++STT)</td>
+                                            <td>@item.ProgramCode</td>
+                                            <td><a class="blue" href="/Programs/DetailPrograms/@item.ProgramId"> @item.ProgramName</a></td>
+                                            <td>@item.ProgramId</td>
+                                            <td></td>
+                                            @*<td>@item.ServiceTypeName</td>*@
+                                            <td>@item.ServiceName</td>
+                                            <td>@(Convert.ToDateTime( item.StartDate).ToString("dd/MM/yyyy")) - @(Convert.ToDateTime( item.EndDate).ToString("dd/MM/yyyy"))</td>
+                                           <td>@item.Description</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @await Component.InvokeAsync("PagingNew", new
+                    {
+                        pageModel = new Paging()
+                        {
+                            TotalRecord = Model.TotalRecord,
+                            TotalPage = Model.TotalPage,
+                            CurrentPage = Model.CurrentPage,
+                            PageSize = Model.PageSize,
+                            RecordName = "Kết quả",
+                            PageAction = ".OnPaging({0})",
+                            PageSelectPageSize = ".onSelectPageSize()",
+                        }
+                    })
+                </div>}

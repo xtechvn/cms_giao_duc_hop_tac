@@ -1,0 +1,51 @@
+﻿@using Entities.Models
+@using Entities.ViewModels
+@using Entities.ViewModels.Funding
+@model ProgramPackage
+
+<input type="text" style="display:none"id="type" class="form-control"value="@ViewBag.type">
+<input type="text" style="display:none"id="date" class="form-control"value="@ViewBag.date">
+<input type="text" style="display:none"id="ProgramId" class="form-control"value="@ViewBag.ProgramId">
+<input type="text" style="display:none"id="roomtype" class="form-control"value="@ViewBag.roomtype">
+<input type="text" style="display:none"id="PackageName" class="form-control"value="@ViewBag.PackageName">
+<form id="form-amount-ProgramPackage" onsubmit="return false">
+    @if (Model == null)
+    {
+        <div class="row">
+            <input type="text" style="display:none" class="form-control"value="0" id="Id">
+
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Giá<sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                <input type="text" class="form-control currency" value="@ViewBag.amount.ToString("N0")" id="Price" name="Amount">
+            </div>
+
+        </div>
+
+        <div class="line-bottom"></div>
+
+        <div class="text-center">
+            <button onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+            <button onclick="_DetailPrograms.EditProgramsPackage()" class="btn btn-default">Thêm</button>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <input type="text" style="display:none" class="form-control" asp-for="@Model.Id">
+
+            <div class="col-4 mb10"><label class="lbl mt5 mb0">Giá <sup class="red">*</sup></label></div>
+            <div class="col-8 mb10">
+                <input type="text" class="form-control currency" asp-for="@Model.Price" name="AccountNumber" value="@(Convert.ToDouble(Model.Price).ToString("N0"))">
+            </div>
+
+        </div>
+        <div class="line-bottom"></div>
+
+        <div class="text-center">
+            <button onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+            <button onclick="_DetailPrograms.EditProgramsPackage()" class="btn btn-default">Lưu</button>
+
+        </div>
+    }
+</form>
+

@@ -1,0 +1,63 @@
+﻿@{
+    Layout = null;
+}
+<div class="row-main container">
+    <div class="flex fillter-donhang mb10">
+        <div class="form-group mb10 mr-2" style="min-width: 337px;">
+
+            <select class="select2 client-select main-staff-select" id="client" multiple="multiple" style="width:100% !important">
+            </select>
+        </div>
+
+        <div class="mb10 mr-2">
+
+            <button type="button" class="btn btn-default bg-main" onclick="_fund_customer_care.SearchDataClient()">
+                <svg class="icon-svg" style="vertical-align: sub;">
+                    <use xlink:href="/images/icons/icon.svg#search"></use>
+                </svg>
+                Tìm kiếm
+            </button>
+        </div>
+    </div>
+
+    @*Danh sách khách hàng*@
+    <div id="grid_data_client">
+        <img src="/images/icons/loading.gif" style=" width: 100px; height: 100px; margin-left:46%;" id="imgLoading_client" />
+    </div>
+</div>
+<script>
+    $("#client").select2({
+        theme: 'bootstrap4',
+        placeholder: "Tên KH, Điện Thoại, Email",
+        maximumSelectionLength: 1,
+        ajax: {
+            url: "/Contract/ClientSuggestion",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                var query = {
+                    txt_search: params.term,
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            processResults: function (response) {
+                return {
+                    results: $.map(response.data, function (item) {
+                        return {
+                            text: item.clientname + ' - ' + item.email + ' - ' + item.phone,
+                            id: item.id,
+                        }
+                    })
+                };
+            },
+            cache: true
+        }
+    });
+</script>
+    
+<script>
+    _fund_customer_care.SearchDataClient();
+</script>

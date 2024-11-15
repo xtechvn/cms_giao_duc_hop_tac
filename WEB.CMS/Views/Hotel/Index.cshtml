@@ -1,0 +1,94 @@
+﻿@{
+    ViewData["Title"] = "Danh sách khách sạn";
+}
+@using Entities.Models
+@{
+    var provinces = (List<Province>)ViewBag.Provinces;
+    var brands = (List<Brand>)ViewBag.Brands;
+}
+
+<section style="overflow-x: hidden;">
+    <div class="row-main container">
+        <h2 class="txt_18 bold mb20">Danh sách khách sạn</h2>
+        <div class="flex fillter-donhang">
+            <button type="button" class="btn btn-default mb10 mr-2" onclick="hotel_management.OnAddOrUpdate(0)">
+                <i class="fa fa-plus"></i>Tạo khách sạn
+            </button>
+            <div class="form-group mb10 mr-2">
+                <input type="text" class="form-control" id="ip_search_fullname" placeholder="Tên khách sạn" style="width: 150px;">
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                <select class="" id="sl_search_province" multiple style="width: 100%!important;">
+                    @if (provinces != null && provinces.Any())
+                    {
+                        foreach (var item in provinces)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                <select class="" id="sl_search_star" multiple style="width: 100%!important;">
+                    @if (provinces != null && provinces.Any())
+                    {
+                        for (var i = 0; i <= 5; i++)
+                        {
+                            <option value="@i">@i Star</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                <select class="" id="sl_search_branch" multiple style="width: 100%!important;">
+                    @if (brands != null && brands.Any())
+                    {
+                        foreach (var item in brands)
+                        {
+                            <option value="@item.BrandId">@item.BrandName</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 200px;">
+                <select class="main-staff-select" id="sl_search_suggest_user" style="width:100%!important">
+                </select>
+            </div>
+
+
+            <div class="mb10 mr-2">
+                <button class="btn-search btn-default mfp-hide" type="button" onclick="hotel_management.Export()" id="btnExport">
+                    <i class="fa fa-file-excel-o" id="icon-export"></i>
+                </button>
+                <button type="button" class="btn btn-default bg-main" onclick="hotel_management.OnSearch(0)">
+                    <svg class="icon-svg" style="vertical-align: sub;">
+                        <use xlink:href="/images/icons/icon.svg#search"></use>
+                    </svg>
+                    Tìm kiếm
+                </button>
+            </div>
+        </div>
+        <div class="flex fillter-donhang form-group mb10 mr-2">
+            <label class="check-list mb10 mr25">
+                <input type="checkbox" id="sl_search_type_filter_2" onclick="hotel_management.OnSearch(2)" class="checkbox-tb-column" data-id="2">
+                <span class="checkmark"></span>
+                Hết hiệu lực chính sách giá
+            </label>
+            <label class="check-list mb10 mr25" style="margin-left:15px;">
+                <input type="checkbox" id="sl_search_type_filter_1" onclick="hotel_management.OnSearch(1)" class="checkbox-tb-column" data-id="1">
+                <span class="checkmark"></span>
+                Chưa có chính sách giá
+            </label>
+            
+        </div>
+        <div id="grid_data" class="wrap_bg wrap_bg_no-padding mb20">
+            <div class="col-xl-12 text-center" style="margin-top:200px">
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+<script type="text/javascript" src="~/modules/hotel_management.js"></script>
+}

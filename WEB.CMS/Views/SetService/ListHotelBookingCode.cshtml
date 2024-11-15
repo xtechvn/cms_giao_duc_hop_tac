@@ -1,0 +1,134 @@
+﻿@using Entities.ViewModels.HotelBookingCode
+@using Utilities.Contants
+@{ 
+
+    int i = 0;
+    bool is_vin_hotel = (bool)ViewBag.IsVinHotel;
+}
+
+@model List<HotelBookingCodeModel>
+@if (Model != null) {
+<div id="service-code" class="mb15 bold txt_18">
+    Danh sách code
+    @if (ViewBag.HotelBookingstatus != 1 && ViewBag.HotelBookingstatus != 4 && ViewBag.HotelBookingstatus != 3 && ViewBag.HotelBookingstatus != 5 && ViewBag.HotelBookingstatus != 8)
+    {
+
+        <a href="javascript:;" id="add-service-code" onclick="_SetService_Detail.PopupAddCode('',@ViewBag.HotelBookingID,@ViewBag.Type)" class="btn btn-default min ml-2">Thêm code</a>
+    }
+    @if (ViewBag.HotelBookingstatus != 1 && ViewBag.HotelBookingstatus != 4 && ViewBag.HotelBookingstatus != 2 && ViewBag.HotelBookingstatus != 5 && ViewBag.HotelBookingstatus != 8)
+    {
+        <a href="javascript:;" class="btn btn-default min blue ml-1 service-code-send-email" data-booking-id="@ViewBag.HotelBookingID">Gửi email Sale</a>
+    }
+    <a href="javascript:;" class="btn btn-default min blue ml-1 service-code-send-email2" data-booking-id="@ViewBag.HotelBookingID">Gửi email nhà cung cấp</a>
+    @if (ViewBag.HotelBookingstatus == (int)ServiceStatus.ServeCode && is_vin_hotel)
+    {
+        <a href="javascript:;" class="btn btn-default min blue ml-1 service-code-get-vin-code" data-booking-id="@ViewBag.HotelBookingID">Xuất Code tự động (Khách sạn Vinpearl) </a>
+    }
+</div>
+<div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 30px;">STT</th>
+                    <th>Mã</th>
+                    <th>Ngày tạo</th>
+                    <th>Nội dung</th>
+                    <th>
+                        Ghi chú
+                    </th>
+                    <th>Tệp đính kèm</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                        i++;
+                        <tr>
+                            <td>@i</td>
+                            <td>@item.BookingCode</td>
+                            <td>@(Convert.ToDateTime(item.CreatedDate).ToString("dd/MM/yyyy"))</td>
+                            <td><div>@Html.Raw(item.Description)</div></td>
+                            <td>@item.Note</td>
+                            <td>
+                                <div class="row list-choose lightgallery image-choice-list" >
+                                    @if (item.attachFiles != null && item.attachFiles.Count > 0)
+                                    {
+                                    <div class="col-sm-3 col-4 mb10" data-src="@item.attachFiles[0].Path" >
+                                        <div style="margin-top: 10px;">
+                                            <img src="@item.attachFiles[0].Path" style="display:none"/>
+                                            <a> <p class="blue">Xem</p></a>
+
+                                        </div>
+                                    </div>
+
+                                        foreach (var A in item.attachFiles)
+                                        {
+                                            if(A.Id!= item.attachFiles[0].Id)
+                                            {
+                                                <div style="display:none" class="col-sm-3 col-4 mb10" data-src="@A.Path" >
+                                                    <img src="@A.Path" />
+                                                    <div>
+                                                        <a> <p class="blue">Xem</p></a>
+                                                    </div>
+                                                </div>
+                                            }
+                                        
+                                        }
+                                     }
+                                </div>
+                          
+                            </td>
+                            @if (ViewBag.HotelBookingstatus != 1 && ViewBag.HotelBookingstatus != 4 && ViewBag.HotelBookingstatus != 3 && ViewBag.HotelBookingstatus != 5)
+                            {
+                                 <td>
+                                    <a class="blue" onclick="_SetService_Detail.PopupAddCode( '@item.Id','@ViewBag.HotelBookingID', '@item.Type')"><i class="fa fa-edit blue"></i></a> &nbsp;&nbsp;
+                                    <a class="red" onclick="_SetService_Detail.DeleteHotelBookingCode('@item.Id', '@item.Type')"><i class="fa fa-times red"></i></a>
+                                </td>
+                            }
+                            else {<td></td>}
+                            
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+} else {
+
+<div id="service-code" class="mb15 bold txt_18">
+    Danh sách code
+    @if (ViewBag.HotelBookingstatus != 1 && ViewBag.HotelBookingstatus != 4 && ViewBag.HotelBookingstatus != 3 && ViewBag.HotelBookingstatus != 5)
+    {
+<a href="javascript:;" id="add-service-code" onclick="_SetService_Detail.PopupAddCode('',@ViewBag.HotelBookingID,@ViewBag.Type)" class="btn btn-default min ml-2">Thêm code</a>
+<a href="javascript:;" class="btn btn-default min blue ml-1 service-code-send-email" data-booking-id="@ViewBag.HotelBookingID">Gửi email Sale</a>}
+    <a href="javascript:;" class="btn btn-default min blue ml-1 service-code-send-email2" data-booking-id="@ViewBag.HotelBookingID">Gửi email nhà cung cấp</a>
+</div>
+    <div class="wrap_bg wrap_bg_no-padding mb20">
+    <div class="table-responsive table-default table-gray">
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 30px;">STT</th>
+                    <th>Mã</th>
+                    <th>Ngày tạo</th>
+                    <th>Nội dung</th>
+                    <th>
+                        Ghi chú
+                    </th>
+                    <th>Tệp đính kèm</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+}
+

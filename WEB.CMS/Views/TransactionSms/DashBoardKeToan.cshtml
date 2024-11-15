@@ -1,0 +1,214 @@
+﻿@using Entities.ViewModels.DashBoard
+@{
+    var histories = (IEnumerable<HistoryViewModel>)ViewBag.Histories;
+}
+<style>
+    .hoverBackgroundColor {
+        background: rgb(255 255 255) !important;
+    }
+</style>
+<section class="main-container">
+    <div class="row-main container">
+        <div class="head-title-new">
+            <h2 class="title-cate bold mb20">Tổng quan</h2>
+            <div class="flex gap10 mb20">
+               
+                <div class="relative down-up right">
+                    <a href="javascript:;" class="btn btn-default onclick btn-default2" id="btn_check_radio">
+                        <svg class="icon-svg mr-1">
+                            <use xlink:href="#Calendar"></use>
+                        </svg>
+                        <span style="color:white;" id="check_radio_name">Hôm nay</span>
+                        <svg class="icon-svg ml-1">
+                            <use xlink:href="#CaretDown"></use>
+                        </svg>
+                    </a>
+                    <div class="form-down text-nowrap select-option" id="form_down_check_radio" style="display: none;">
+                        <ul class="scroll-inner mb10">
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="1" checked="">
+                                    <span class="checkmark"></span>
+                                    Hôm nay
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="2">
+                                    <span class="checkmark"></span>
+                                    Hôm qua
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="3">
+                                    <span class="checkmark"></span>
+                                    Tuần trước
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="4">
+                                    <span class="checkmark"></span>
+                                    Tháng này
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="5">
+                                    <span class="checkmark"></span>
+                                    Tháng trước
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="6">
+                                    <span class="checkmark"></span>
+                                    Quý này
+                                </label>
+                            </li>
+                            <li>
+                                <label class="radio">
+                                    <input type="radio" name="optradio" value="7">
+                                    <span class="checkmark"></span>
+                                    Quý trước
+                                </label>
+                            </li>
+                        </ul>
+                        <div class="">
+                            <a href="javascript:;" onclick="_dashBoard.getList()" class="ml-2 btn-default">Áp dụng</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="thong-ke mb24 grid grid__4">
+            <div class="item bg-white pd15 radius-10">
+                <div class="bold color-gray">
+                    Số dư hiện tại
+                    <span class="tooltip-new">
+                        <svg class="icon-svg">
+                            <use xlink:href="#Question"></use>
+                        </svg>
+                        <div class="tooltip-content">Là số dư còn lại</div>
+                    </span>
+                </div>
+                
+                <div class="money"> <span id="totalAmount_BankingAccount_TransferSms">0</span> đ </div>
+            </div>
+            <div class="item bg-white pd15 radius-10">
+                <div class="bold color-gray">
+                    Tiền vào
+                    <span class="tooltip-new">
+                        <svg class="icon-svg">
+                            <use xlink:href="#Question"></use>
+                        </svg>
+                        <div class="tooltip-content">Tiền vào</div>
+                    </span>
+                </div>
+                <div class="money"> <span id="total_Amount_TransactionSMs">0</span> đ </div>
+                
+            </div>
+            <div class="item bg-white pd15 radius-10">
+                <div class="bold color-gray">
+                    Tiền ra
+                    <span class="tooltip-new">
+                        <svg class="icon-svg">
+                            <use xlink:href="#Question"></use>
+                        </svg>
+                        <div class="tooltip-content">Tiền ra</div>
+                    </span>
+                </div>
+                <div class="money"><span id="total_Amount_Payment">0</span> đ</div>
+                
+            </div>
+            <div class="item bg-white pd15 radius-10">
+                <div class="bold color-gray">
+                    Balance
+                    <span class="tooltip-new">
+                        <svg class="icon-svg">
+                            <use xlink:href="#Question"></use>
+                        </svg>
+                        <div class="tooltip-content">Số tiền chênh lệch</div>
+                    </span>
+                </div>
+                <div class="money"> <span id="total_Amount">0</span> đ </div>
+          
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-8 mb20">
+                <div class="bg-white pd15 radius-10">
+                    <h2 class="txt_16 mb15">Dòng tiền hàng tháng</h2>
+                    <div class="col-xl-12">
+                        <canvas id="revenuChart" class="chartjs-render-monitor" ></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb20">
+                <div class="bg-white pd15 radius-10" style="height: 100%;">
+                    <div class="flex space-between">
+                        <h2 class="txt_16 mb15">Giao dịch gần đây</h2>
+                        <a href="/TransactionSms" class="blue mb15">Xem thêm</a>
+                    </div>
+                    <ul class="list-status scroll-inner" id="list_TransactionSms" style="max-height: 510px !important">                       
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white pd15 radius-10">
+            <h2 class="txt_16 mb20">
+                Số dư tháng
+                <span class="tooltip-new">
+                    <svg class="icon-svg">
+                        <use xlink:href="#Question"></use>
+                    </svg>
+                    <div class="tooltip-content">Là số dư còn lại</div>
+                </span>
+            </h2>
+            <div class="row">
+                <div class="col-md-3 mb20">
+                    <div class="color-gray">Tổng thu tháng này</div>
+                    <div class="money txt_20 bold"><span id="total_Amount_Payment_thang">0</span> đ</div>
+                    <span class="status-green">Trung bình: <span id="TB_total_Amount_Payment_thang">0</span> đ/giao dịch</span>
+                </div>
+                <div class="col-md-9">
+                    <div class="grid grid__4 center">
+                        <div class="item">
+                            Số lượng giao dịch
+                            <div class="money txt_20 bold" id="Sum_total">0</div>
+                        </div>
+                        <div class="item">
+                            Giao dịch tiền vào
+                            <div class="money txt_20 bold" id="count_TransactionSMs_thang">0</div>
+                        </div>
+                        <div class="item">
+                            Giao dịch tiền ra
+                            <div class="money txt_20 bold" id="count_Payment_thang">191</div>
+                        </div>
+                        @*<div class="item">
+                            <div class="bold color-gray">
+                                Số dư hiện tại
+                                <span class="tooltip-new">
+                                    <svg class="icon-svg">
+                                        <use xlink:href="#Question"></use>
+                                    </svg>
+                                    <div class="tooltip-content">Là số dư còn lại</div>
+                                </span>
+                            </div>
+                            <div class="money txt_20 bold">191</div>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+@section scripts {
+
+    <script type="text/javascript" src="/lib/Chart/Chart.js"></script>
+    <script type="text/javascript" src="/lib/Chart/Chart.PieceLabel.js"></script>
+    <script src="/modules/dashBoardKeToan.js"></script>
+}

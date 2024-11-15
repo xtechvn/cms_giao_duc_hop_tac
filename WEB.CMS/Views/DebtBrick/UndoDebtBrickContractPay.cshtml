@@ -1,0 +1,175 @@
+﻿@using Entities.Models
+@{
+    var payId = (long)ViewBag.contractPayId;
+    var clientId = (long)ViewBag.clientId;
+    var clientName = (string)ViewBag.clientName;
+    var billNo = (string)ViewBag.billNo;
+    var amount = (double)ViewBag.amount;
+    var payment = (double)ViewBag.payment;
+    var amountRemain = amount - payment;
+}
+<style>
+    .white-popup {
+        max-width: 1000px !important;
+    }
+
+    .content_lightbox .head {
+        font-weight: 500 !important;
+        font-size: 16px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .content_lightbox {
+        padding: 20px !important;
+    }
+</style>
+
+
+<div class="grid grid__1 grid-don-hang gap10 mb20">
+    <input type="text" style="display:none !important" name="name" id="clientName" value="@clientName" />
+    <input type="text" style="display:none !important" name="name" id="clientId" value="@clientId" />
+    <input type="text" style="display:none !important" name="name" id="billNo" value="@billNo" />
+    <input type="text" style="display:none !important" name="name" id="payId" value="@payId" />
+    <input type="text" style="display:none !important" name="name" id="amountOrder" value="@amount" />
+    <input type="text" style="display:none !important" name="name" id="payment" value="@payment" />
+    <input type="text" style="display:none !important" name="name" id="amountRemain" value="@amountRemain" />
+    <div class="grid-item border">
+        <div class="row">
+            <div class="col-4">
+                <label class="lbl mt5 mb0">Tên khách hàng </label>
+            </div>
+            <div class="col-2">
+                <label class="lbl mt5 mb0">Mã phiếu thu </label>
+            </div>
+            <div class="col-2">
+                <label class="lbl mt5 mb0">Số tiền</label>
+            </div>
+            <div class="col-2">
+                <label class="lbl mt5 mb0">Đã giải trừ </label>
+            </div>
+            <div class="col-2">
+                <label class="lbl mt5 mb0">Chưa giải trừ </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <a href="/CustomerManager/Detail?id=@clientId">
+                    <span class="blue">
+                        @clientName
+                    </span>
+                </a>
+            </div>
+            <div class="col-2">
+                <a class="blue" href="/Receipt/Detail?contractPayId=@payId">
+                    @billNo
+                </a>
+            </div>
+            <div class="col-2">
+                <label>@amount.ToString("N0")</label>
+            </div>
+            <div class="col-2">
+                <label>@payment.ToString("N0")</label>
+            </div>
+            <div class="col-2">
+                <label>@(amountRemain.ToString("N0"))</label>
+                <input type="text" id="amount" value="@amountRemain" style="display:none !important" />
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="bg-white border pd10 " id="order-relate">
+        <div class="bold gray mb10">Đơn hàng liên quan</div>
+        <div class="table-responsive table-default table-gray table-modal scroll-inner">
+            <table class="table " id="order-relate-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã đơn</th>
+                        <th>Người tạo</th>
+                        <th class="text-right">Số tiền</th>
+                        <th class="text-right">Đã giải trừ</th>
+                        <th class="text-right">Chưa giải trừ</th>
+                        <th class="text-right">Đã giải trừ với phiếu @billNo</th>
+                    </tr>
+                </thead>
+                <tbody id="body_contract_pay_list">
+                </tbody>
+            </table>
+        </div>
+        <div class="flex flex-end">
+        </div>
+    </div>
+</div>
+
+<div class="text-center" style="margin-top: 20px; margin-bottom: 20px;">
+    <button type="submit" class="btn btn-default btn btn-default cancel" onclick="$.magnificPopup.close();">Bỏ qua</button>
+    <button type="submit" class="btn btn-default background-green" onclick="_add_debt_brick_contract_pay.UndoDebtBrick()">Hoàn thành</button>
+</div>
+
+<script type="text/javascript" src="~/modules/add_debt_brick_contractpay.js"></script>
+<script>
+    _add_debt_brick_contract_pay.InitializationUnDebt(@clientId, @payId, @amountRemain);
+</script>
+@section scripts {
+    <script>
+        $().ready(function () {
+            $('input').attr('autocomplete', 'off');
+        })
+    </script>
+}
+<style scoped>
+    .background-green {
+        background: #009900 !important;
+    }
+
+    .multiple-select {
+        position: relative;
+        max-width: 200px !important;
+        width: 100%;
+    }
+
+    .select2-selection .select2-selection--single {
+        height: 34px !important;
+    }
+
+    .token-input-client-add {
+        min-width: 200px !important;
+    }
+
+        .token-input-client-add input {
+            background: #fff !important;
+            width: 100% !important;
+            font-size: 13px !important;
+            height: 30px !important;
+            line-height: 30px !important;
+            border: 1px solid #ccc !important;
+            padding: 0 5px !important;
+            outline: 0 !important;
+            box-shadow: none !important;
+            color: #000 !important;
+            border-radius: 0.25rem !important;
+        }
+
+    .row-main-head .down-up .form-down {
+        width: 345px !important;
+    }
+
+    .form-control {
+        background: #fff;
+        width: 100%;
+        font-size: 13px;
+        height: 30px;
+        line-height: 30px;
+        border: 1px solid #ccc;
+        padding: 0 5px;
+        outline: 0;
+        box-shadow: none;
+        color: #000;
+        border-radius: 0.25rem !important;
+    }
+
+    .background-disabled {
+        background: #eee !important;
+    }
+</style>

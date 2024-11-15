@@ -1,0 +1,89 @@
+﻿@{ var listRequest = (List<Entities.ViewModels.Invoice.InvoiceRequestViewModel>)ViewBag.listRequest;
+    var i = 1;
+    var orderStatus = ViewBag.orderStatus;
+    var totalRequest = (int)ViewBag.totalRequest;
+}
+@using Utilities
+@using Utilities.Contants
+<div class="border bg-white mb20">
+    <div class="flex space-between row-main-head pd10">
+        <div class="bold">Yêu cầu xuất hóa đơn</div>
+        <div>
+            @if (totalRequest == 0 && orderStatus == (int)OrderStatus.WAITING_FOR_OPERATOR)
+            {
+                <button onclick="_orderDetail.AddInvoiceRequest();" type="button" class="btn btn-default bg-main ">
+                    <i class="fa fa-plus"></i>Thêm
+                </button>
+            }
+        </div>
+    </div>
+    <div class="line-bottom pb0"></div>
+    <div class="pd10">
+        <div class="table-responsive table-gray">
+            <table class="table table-nowrap">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã hóa đơn</th>
+                        <th style="width: 350px;">Nội dung</th>
+                        <th class="text-right">Số tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày gửi</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (listRequest != null)
+                    {
+                        @foreach (var item in listRequest)
+                        {
+                            <tr>
+                                <td>@(i++)</td>
+                                <td>
+                                    <a class="blue" href="/InvoiceRequest/Detail?invoiceRequestId=@item.Id">
+                                        @item.InvoiceRequestNo
+                                    </a>
+                                </td>
+                                <td>@item.Note</td>
+                                <td class="text-right">@item.TotalPriceVAT.ToString("N0")</td>
+                                <td>
+                                    @if (item.Status == (int)(INVOICE_REQUEST_STATUS.CHO_TBP_DUYET) || item.Status == (int)(INVOICE_REQUEST_STATUS.CHO_KTT_DUYET))
+                                    {
+                                        <span class="status-wait">@item.InvoiceRequestStatus</span>
+                                    }
+                                    @if (item.Status == (int)(INVOICE_REQUEST_STATUS.DA_DUYET) || item.Status == (int)(INVOICE_REQUEST_STATUS.HOAN_THANH))
+                                    {
+                                        <span class="status-approve">@item.InvoiceRequestStatus</span>
+                                    }
+                                    @if (item.Status == (int)(INVOICE_REQUEST_STATUS.TU_CHOI))
+                                    {
+                                        <span class="status-reject">@item.InvoiceRequestStatus</span>
+                                    }
+                                    @if (item.Status == (int)(INVOICE_REQUEST_STATUS.LUU_NHAP))
+                                    {
+                                        <span class="status-draft">@item.InvoiceRequestStatus</span>
+                                    }
+                                </td>
+                                <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center">
+                                    @if (item.Status == (int)(INVOICE_REQUEST_STATUS.LUU_NHAP) || item.Status == (int)(INVOICE_REQUEST_STATUS.TU_CHOI))
+                                    {
+                                        @*<button type="button" class=" ml-1 border-0" style=" background: none;"
+                                                    onclick="_invoice_request_service.Edit(@item.Id)">
+                                                <i class="fa fa-pencil txt_14 ml-1"></i>
+                                            </button>*@
+                                        <button type="button" class=" ml-1 green border-0" style=" background: none;"
+                                                onclick="_invoice_request_service.Delete(@item.Id, '@item.InvoiceRequestNo', true)">
+                                            <i class="fa fa-trash-o txt_14 ml-1"></i>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }}
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

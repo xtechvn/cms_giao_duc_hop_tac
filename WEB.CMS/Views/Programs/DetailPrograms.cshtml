@@ -1,0 +1,142 @@
+﻿@using Entities.ViewModels.Programs
+@using Utilities.Contants
+@{
+    ViewData["Title"] = "Chi tiết chương trình";
+    var Model = (ProgramsViewModel)ViewBag.data;
+}
+
+<section style="overflow-x: hidden;">
+    <div class="col-md-12" id="grid_detail_Customer_Manager">
+        <input type="hidden" id="ProgramId" value="@ViewBag.id" />
+        <div class="table-responsive table-white">
+            <table class="table table-nowrap">
+                <tbody>
+                    <tr>
+                        <td colspan="3">
+                            <strong>@Model.ProgramName</strong>
+                            @if (Model.Status == (int)ProgramsStatus.luu_nhap)
+                            {
+                                <span class="status-grey">@Model.ProgramStatus</span>
+                            }
+                            @if (Model.Status == (int)ProgramsStatus.Tu_choi)
+                            {
+                                <span class="status-red">@Model.ProgramStatus</span>
+                            }
+                            @if (Model.Status == (int)ProgramsStatus.Cho_TBP_duyet|| Model.Status == (int)ProgramsStatus.Tao_Moi)
+                            {
+                                <span class="status-oranger">@Model.ProgramStatus</span>
+                            }
+                            @if (Model.Status == (int)ProgramsStatus.Da_duyet)
+                            {
+                                <span class="status-green">@Model.ProgramStatus</span>
+                            }
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="min-width: 400px;">
+                            <div class="row">
+                                <div class="col-4 mb10 gray">Nhà cung cấp</div>
+                                <div class="col-8 mb10">: <a href="/supplier/detail/@Model.SupplierId" class="blue txt_14">@Model.FullName</a></div>
+                                @*<div class="col-4 mb10 gray">Loại dịch vụ</div>
+        <div class="col-8 mb10">: @Model.ServiceTypeName </div>*@
+                                <div class="col-4 mb10 gray">Tên dịch vụ</div>
+                                <div class="col-8 mb10">: @Model.ServiceName</div>
+                                <div class="col-4 mb10 gray">Thời gian áp dụng</div>
+                                <div class="col-8 mb10">: @(Convert.ToDateTime(Model.StartDate).ToString("dd/MM/yyyy")) - @(Convert.ToDateTime(Model.EndDate).ToString("dd/MM/yyyy"))</div>
+                                <div class="col-4 mb10 gray">Thời gian lưu trú</div>
+                                <div class="col-8 mb10">: @(Convert.ToDateTime(Model.StayStartDate).ToString("dd/MM/yyyy")) - @(Convert.ToDateTime(Model.StayEndDate).ToString("dd/MM/yyyy"))</div>
+                                <div class="col-4 mb10 gray">Mô tả</div>
+                                <div class="col-8 mb10">: @Model.Description</div>
+                                <div class="col-4 mb10 gray">Yêu cầu điều chỉnh liên quan</div>
+                                <div class="col-8 mb10">: </div>
+                            </div>
+                        </td>
+                        <td style="min-width: 400px;">
+                            <div class="row">
+                                <div class="col-4 mb10 gray">Người tạo</div>
+                                <div class="col-8 mb10">: @Model.UserCreateName</div>
+                                <div class="col-4 mb10 gray">Ngày tạo</div>
+                                <div class="col-8 mb10">: @(Model.CreatedDate != null ? Convert.ToDateTime(Model.CreatedDate).ToString("dd/MM/yyyy"):"")</div>
+                                <div class="col-4 mb10 gray">Người duyệt</div>
+                                <div class="col-8 mb10">: @Model.UserVerifyName</div>
+
+                                <div class="col-4 mb10 gray">Ngày duyệt</div>
+                                <div class="col-8 mb10">: @(Model.VerifyDate != null ? Convert.ToDateTime(Model.VerifyDate).ToString("dd/MM/yyyy"):"")</div>
+                                <div class="col-4 mb10 gray">Người cập nhật</div>
+                                <div class="col-8 mb10">: @Model.UserUpdateName</div>
+                                <div class="col-4 mb10 gray">Ngày cập nhật</div>
+                                <div class="col-8 mb10">: @(Model.UpdatedDate!=null?Convert.ToDateTime(Model.UpdatedDate).ToString("dd/MM/yyyy"):"")</div>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="filter" class="row-main container">
+        <div class="flex ">
+        </div>
+        <div class="">
+            <div class="tab-default" style="border-bottom: 1px solid #CCCCCC;">
+                <div class="row" style=" width: 100%;">
+                    <div class="tab-default col-md-9 mb0 mt10">
+                        <a href="javascript:;" onclick="_ProgramsPackage.loadgrid(1)" id="DSgoi" class="active">Danh sách gói</a>
+                        <a href="javascript:;" onclick="_ProgramsPackage.loadgrid(2)" id="Bgia" class="">Bảng giá</a>
+                        @if (Convert.ToInt32(Model.Status) != (int)ProgramsStatus.Da_duyet && Convert.ToInt32(Model.Status) != (int)ProgramsStatus.Cho_TBP_duyet && ViewBag.btnThem == 1)
+                        {
+                            <div class="href mr-2" style="min-width: 220px;text-align: right;">
+                                <a href="/ProgramsPackage/DetailListProgramsPackage/@ViewBag.id/0/0/0" style="background: var(--color-green); color: white; font-size: 13px; padding: 10px; " class="btn">Thêm mới gói</a>
+                                
+                            </div>
+
+                        }
+                    </div>
+                </div>
+            </div>
+            <div id="grid-data">
+            </div>
+            <img src="~/images/icons/loading.gif" style="margin-left:45%; width: 100px; height: 100px; display:none" class="loading" id="imgLoading" />
+            <div id="grid-data2" style="display:none">
+            </div>
+        </div>
+        <div class="text-right mb40">
+            @*<a class="blue mr-2" href="javascript:;" data-toggle="modal" data-target="#myModal1">[Lịch sử hợp đồng]</a>
+        <a class="blue mr-2" href="javascript:;" data-toggle="modal" data-target="#myModal2">[Lịch sử từ chối]</a>*@
+
+            <a type="button" class="btn btn-default cancel" href="/Programs/Index"> <i class="fa fa-minus-circle"></i>Quay lại</a>
+
+            @if ((Convert.ToInt32(Model.Status) == (int)ProgramsStatus.luu_nhap || Convert.ToInt32(Model.Status) == (int)ProgramsStatus.Tu_choi || Convert.ToInt32(Model.Status) == (int)ProgramsStatus.Tao_Moi) && ViewBag.btnThem == 1)
+            {
+                <button type="submit" class="btn btn-default red mr-1" onclick="_DetailPrograms.UpdateProgramsStatus(@((int)ProgramsStatus.Da_Xoa),@ViewBag.id)">Xóa</button>
+                <button type="submit" class="btn btn-default cancel mr-1" onclick="_DetailPrograms.OpenPopup('@ViewBag.id');">Sửa</button>
+                @if (ViewBag.type == 1)
+                {
+                    <button type="submit" class="btn btn-default  mr-1" onclick="_DetailPrograms.UpdateProgramsStatus(@((int)ProgramsStatus.Cho_TBP_duyet),@ViewBag.id)">Gửi duyệt</button>
+                }
+
+            }
+
+            @if (Convert.ToInt32(Model.Status) == (int)ProgramsStatus.Cho_TBP_duyet && ViewBag.btnDuet == 1)
+            {
+                <button type="submit" class="btn btn-default red  mr-1" onclick="_DetailPrograms.UpdateProgramsStatus(@((int)ProgramsStatus.Tu_choi),@ViewBag.id)">Từ chối</button>
+                <button type="submit" class="btn btn-default  mr-1" onclick="_DetailPrograms.UpdateProgramsStatus(@((int)ProgramsStatus.Da_duyet),@ViewBag.id)">Duyệt</button>
+            }
+            @if (Convert.ToInt32(Model.Status) == (int)ProgramsStatus.Da_duyet && ViewBag.btnDuet == 1)
+            {
+                <button type="submit" class="btn btn-default red  mr-1" onclick="_DetailPrograms.UpdateProgramsStatus(@((int)ProgramsStatus.Tu_choi),@ViewBag.id)">Bỏ duyệt</button>
+            }
+
+        </div>
+    </div>
+</section>
+<script type="text/javascript" src="/modules/DetailPrograms.js"></script>
+@section scripts {
+
+<script type="text/javascript" src="/modules/DetailPrograms.js"></script>
+<script type="text/javascript">
+    _ProgramsPackage.Init();
+</script>
+}

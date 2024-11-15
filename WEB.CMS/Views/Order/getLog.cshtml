@@ -1,0 +1,24 @@
+﻿@using Entities.ViewModels.Mongo;
+@model List<LogActionModel> 
+<div class="content_lightbox">
+    <ul class="list-notifi">
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <li>
+                    <i class="fa fa-check"></i>
+                    <div>@item.Log : @item.Note</div>
+                    <div class="date">Ngày: @item.CreatedTime.ToString("dd/MM/yyyy")</div>
+                </li>
+            }
+
+            }
+            else
+            {
+                <div>
+                    Đơn hàng chưa có lịch sử
+                </div>
+            }
+    </ul>
+</div>

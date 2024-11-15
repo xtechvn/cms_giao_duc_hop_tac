@@ -1,0 +1,185 @@
+﻿@{
+    Layout = null;
+    Entities.ViewModels.HotelESViewModel hotel = (Entities.ViewModels.HotelESViewModel?)ViewBag.Hotel;
+    Entities.Models.Campaign campaign = (Entities.Models.Campaign?)ViewBag.Campaign;
+    List<Entities.Models.AllCode> client_types = (List<Entities.Models.AllCode>?)ViewBag.ClientType;
+
+}
+
+<style>
+    .stop-scrolling {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .collapse {
+        display: none;
+    }
+
+    .level_1 .level_2 .level_3 .level_4 {
+        padding-top: 0 !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .level_2 {
+        padding-left: 15px !important;
+    }
+
+    .level_3 {
+        padding-left: 15px !important;
+        font-size: 13px !important;
+    }
+
+    .level_4 {
+        padding-left: 15px !important;
+        font-size: 13px !important;
+    }
+
+    .price_detail_input_button a {
+        height: 20px;
+        line-height: 20px;
+        font-size: 12px;
+        padding: 0 8px;
+    }
+
+    .content-panel {
+        width: 100% !important;
+    }
+
+
+    .no_display {
+        display: none;
+    }
+
+    .white-popup {
+        max-width: 1200px !important;
+    }
+
+    .tag-input-date .form-control {
+        width: 130px !important;
+    }
+
+    .highlight_on_mouseover:hover {
+        background-color: #e1e9f5;
+        cursor: pointer;
+    }
+
+    .price_detail_input {
+        width: 160px !important;
+    }
+
+
+</style>
+<div class="scroll-popup">
+
+    <div class="form-group">
+        <label class="lbl">Mã chiến dịch</label>
+        <div class="wrap_input">
+            <input type="text" class="form-control" id="campaign_code" data-campaign-id="@(campaign.Id > 0 != null ? campaign.Id.ToString() : "-1")" data-data-contract-typetype="@campaign.ContractType"
+                   value="@(campaign.Id <= 0 ? "" : campaign.CampaignCode)">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="lbl">Loại khách hàng</label>
+        <div class="wrap_input">
+            <select class="form-control" id="client_type_id" style="width:100% !important">
+                @foreach (var client in client_types)
+                {
+                    if (campaign.ClientTypeId == client.CodeValue)
+                    {
+                        <option value="@client.CodeValue" selected="selected">@client.Description</option>
+                    }
+                    else
+                    {
+                        <option value="@client.CodeValue">@client.Description</option>
+
+                    }
+
+                }
+
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="lbl">Khách sạn</label>
+        <div id="wrap_input_search" class="wrap_input">
+            <select id="policy-hotel-name" class="policy-hotel-name" style="width:100% !important">
+                @if (hotel != null && hotel.id > 0)
+                {
+                    <option value="@( hotel.id)" selected="selected">@(hotel.name)</option>
+
+                }
+            </select>
+
+        </div>
+    </div>
+
+    <div class="form-group hidden_when_contract">
+        <label class="lbl">Hiệu lực từ ngày</label>
+        <div class="wrap_input">
+            <div class="row">
+                <div class="col-md-5">
+                    <input id="campaign_from_date" class="form-control date datefilter campaign_from_date" type="text" name="campaign_date_range" value="@((campaign.Id <= 0|| campaign.FromDate==null ||campaign.FromDate==DateTime.MinValue)?(new DateTime(DateTime.Now.Year,01,01,00,00,00)).ToString("dd/MM/yyyy HH:mm"):((DateTime)campaign.FromDate).ToString("dd/MM/yyyy HH:mm"))">
+                </div>
+                <div class="col-md-7 flex">
+                    <div class="col-3" style="margin-top: 6px;">Đến</div>
+                    <div class="col-9" style="padding: 0;">
+                        <input id="campaign_to_date" class="form-control date datefilter campaign_to_date" type="text" name="campaign_date_range" value="@((campaign.Id <= 0||campaign.ToDate==null ||campaign.ToDate==DateTime.MinValue)?(new DateTime(DateTime.Now.Year+1,01,01,00,00,00)).ToString("dd/MM/yyyy HH:mm"):((DateTime)campaign.ToDate).ToString("dd/MM/yyyy HH:mm"))">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="lbl">Mô tả</label>
+        <div class="wrap_input">
+            <input type="text" class="form-control" id="campaign_description" value="@(campaign!=null?campaign.Description:"")">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="lbl mt0">Trạng thái</label>
+        <div class="wrap_input flex">
+            <label class="radio radio-block">
+                <input type="radio" name="campaign_status" value="0" @(campaign != null && campaign.Status == 0 ? "checked=\"checked\"" : "")>
+                <span class="checkmark"></span>
+                Kích hoạt
+            </label>
+            <label class="radio radio-block ml-4">
+                <input type="radio" name="campaign_status" value="1" @(campaign != null && campaign.Status == 1 ? "checked=\"checked\"" : "")>
+                <span class="checkmark"></span>
+                Khóa tạm dừng
+            </label>
+        </div>
+    </div>
+  
+    <div class="expand-collapsible mb20 form-group policy_block">
+        <div class="title-collapsible">
+            <div class="title">Chính sách giá</div>
+
+            <div class="control">
+                <a href="javascript:;" class="expand_all">Mở rộng</a>
+                <a href="javascript:;" class="collapse_all active">Thu gọn</a>
+            </div>
+        </div>
+        <div id="box_list_price_policy" class="content-panel">
+            <img src="~/images/icons/loading.gif" style=" width: 100px; height: 100px;" id="imgLoading" />
+        </div>
+    </div>
+
+</div>
+<div class="form-group align-right mt20 block">
+    <img src="/images/icons/loading.gif" style="width: 35px;height: 35px;margin-left: 10px;margin-bottom: 10px; display:none;" class="img_loading_summit coll">
+    <button type="submit" class="btn btn-default bg-main" onclick="_price_policy_detail.Summit();"><i class="fa fa-floppy-o"></i>Lưu</button>
+    <button type="submit" class="btn btn-default cancel" onclick="_price_policy_detail.Cancel();"><i class="fa fa-minus-circle"></i>Bỏ qua</button>
+</div>
+<script type="text/javascript" src="/modules/order_detail_common.js"></script>
+<script type="text/javascript" src="/modules/order_detail_html.js"></script>
+<script>
+   _price_policy_detail.Initialization();
+
+</script>
+
+

@@ -1,0 +1,579 @@
+﻿@using Utilities.Contants
+@using Entities.ViewModels
+@using  Entities.ViewModels.Programs
+@using Utilities
+@{
+    var Model = (List<ProgramsPackagePriceViewModel>)ViewBag.ProgramPackageDaily;
+
+    int index = 0;
+
+    var date1 = (Model != null && Model.Count > 0) ? Model.Min(s => DateTime.ParseExact(s.FromDate, "dd/MM/yyyy", null)) : DateTime.Now;
+    var date2 = (Model != null && Model.Count > 0) ? Model.Max(s => DateTime.ParseExact(s.ToDate, "dd/MM/yyyy", null)) : DateTime.Now;
+}
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table table-nowrap">
+        <thead>
+            <tr>
+                <th style="width: 50px;">STT</th>
+                <th style="width: 100px;">Hạng phòng</th>
+                @if (Model != null && Model.Count > 0)
+                {
+                    if (Model[0].FromDate != null && Model[0].ToDate != null)
+                    {
+                        for (int i = 0; i <= (date2 - date1).Days; i++)
+                        {
+
+                            var Week = (int)((date1.AddDays(i)).DayOfWeek);
+
+                            switch (Week)
+                            {
+                                case 0:
+                                    {
+                                        <th style="width: 80px; color: red;"><div>CN</div><div>@((date1.AddDays(i)).ToString("dd/MM/yyyy"))</div> </th>
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        <th style="width: 80px;"><div>Thứ 2</div><div>@((date1.AddDays(i)).ToString("dd/MM/yyyy"))</div> </th>
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        <th style="width: 80px;"><div>Thứ 3</div><div>@((date1.AddDays(i)).ToString("dd/MM/yyyy"))</div> </th>
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        <th style="width: 80px;"><div>Thứ 4</div><div>@((date1.AddDays(i)).ToString("dd/MM/yyyy"))</div> </th>
+                                        break;
+                                    }
+                                case 4:
+                                    {
+                                        <th style="width: 80px;"><div>Thứ 5</div><div>@((date1.AddDays(i)).ToString("dd/MM/yyyy"))</div> </th>
+                                        break;
+                                    }
+                                case 5:
+                                    {
+                                        <th style="width: 80px;"><div>Thứ 6</div><div>@((date1.AddDays(i)).ToString("dd/MM/yyyy"))</div> </th>
+                                        break;
+                                    }
+                                case 6:
+                                    {
+                                        <th style="width: 80px;"><div>Thứ 7</div><div>@((date1.AddDays(i)).ToString("dd/MM/yyyy"))</div> </th>
+                                        break;
+                                    }
+                            }
+
+
+                        }
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var item in Model)
+                {
+                    if (item.ProgramsPackagePrice != null)
+                    {
+                        <tr>
+                            <td rowspan="@(item.ProgramsPackagePrice!=null? item.ProgramsPackagePrice.Count +1 :1)">@(++index)</td>
+
+                        </tr>
+
+                        foreach (var item2 in item.ProgramsPackagePrice)
+                        {
+                            <tr>
+                                <td><a class="blue" href="javascript:;" onclick="_ProgramsPackage.ProgramsDetail2('@Model[0].Id', '1', '@item2.RoomType', '@item2.ProgramName')">@item2.RoomType</a></td>
+                                @for (int i = 0; i <= (date2 - date1).Days; i++)
+                                {
+                                    var dateWeek = (date1.AddDays(i));
+                                    var Week = (int)((date1.AddDays(i)).DayOfWeek);
+                                    switch (Week)
+                                    {
+                                        case 0:
+                                            {
+                                                if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                {
+                                                    var data = item2.ProgramsPackage.Where(s => Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "0");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 0,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        var data2 = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "0");
+                                                        if (data2 != null)
+                                                        {
+                                                            <td>
+                                                                @data2.Price.ToString("N0") &nbsp; &nbsp;
+                                                                @if (ViewBag.Status == 1)
+                                                                {
+
+                                                                    <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data2.id, '@dateWeek',@data2.Price, 1,@ViewBag.id, '@data2.RoomType', '@data2.PackageCode')" title="Sửa giá">
+                                                                        <i class="fa fa-edit"></i>
+                                                                    </a>
+                                                                }
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>0</td>
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+
+                                                    var data = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "0");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 1,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>0</td>
+
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        case 1:
+                                            {
+                                                if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                {
+                                                    var data = item2.ProgramsPackage.Where(s => Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "2");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0") &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price,0,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        var data2 = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "2");
+                                                        if (data2 != null)
+                                                        {
+                                                            <td>
+                                                                @data2.Price.ToString("N0")
+                                                                &nbsp; &nbsp;
+                                                                @if (ViewBag.Status == 1)
+                                                                {
+
+                                                                    <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data2.id, '@dateWeek',@data2.Price, 1,@ViewBag.id,'@data2.RoomType', '@data2.PackageCode')" title="Sửa giá">
+                                                                        <i class="fa fa-edit"></i>
+                                                                    </a>
+                                                                }
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>0</td>
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var data = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "2");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0") &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 1,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>0</td>
+                                                    }
+                                                }
+
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                {
+                                                    var data = item2.ProgramsPackage.Where(s => Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "3");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 0,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        var data2 = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "3");
+                                                        if (data2 != null)
+                                                        {
+                                                            <td>
+                                                                @data2.Price.ToString("N0")
+                                                                &nbsp; &nbsp;
+                                                                @if (ViewBag.Status == 1)
+                                                                {
+
+                                                                    <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data2.id, '@dateWeek',@data2.Price, 1,@ViewBag.id,'@data2.RoomType', '@data2.PackageCode')" title="Sửa giá">
+                                                                        <i class="fa fa-edit"></i>
+                                                                    </a>
+                                                                }
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>0</td>
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var data = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "3");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 1,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>0</td>
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        case 3:
+                                            {
+                                                if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                {
+                                                    var data = item2.ProgramsPackage.Where(s => Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "4");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 0,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        var data2 = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "4");
+                                                        if (data2 != null)
+                                                        {
+                                                            <td>
+                                                                @data2.Price.ToString("N0")
+                                                                &nbsp; &nbsp;
+                                                                @if (ViewBag.Status == 1)
+                                                                {
+
+                                                                    <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data2.id, '@dateWeek',@data2.Price, 1,@ViewBag.id,'@data2.RoomType', '@data2.PackageCode')" title="Sửa giá">
+                                                                        <i class="fa fa-edit"></i>
+                                                                    </a>
+                                                                }
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>0</td>
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var data = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "4");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 1,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>0</td>
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        case 4:
+                                            {
+
+                                                if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                {
+                                                    var data = item2.ProgramsPackage.Where(s => Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "5");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 0,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        var data2 = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "5");
+                                                        if (data2 != null)
+                                                        {
+                                                            <td>
+                                                                @data2.Price.ToString("N0")
+                                                                &nbsp; &nbsp;
+                                                                @if (ViewBag.Status == 1)
+                                                                {
+
+                                                                    <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data2.id, '@dateWeek',@data2.Price, 1,@ViewBag.id,'@data2.RoomType', '@data2.PackageCode')" title="Sửa giá">
+                                                                        <i class="fa fa-edit"></i>
+                                                                    </a>
+                                                                }
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>0</td>
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var data = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "5");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 1,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>0</td>
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        case 5:
+                                            {
+                                                if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                {
+                                                    var data = item2.ProgramsPackage.Where(s => Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "6");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 0,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        var data2 = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "6");
+                                                        if (data2 != null)
+                                                        {
+                                                            <td>
+                                                                @data2.Price.ToString("N0")
+                                                                &nbsp; &nbsp;
+                                                                @if (ViewBag.Status == 1)
+                                                                {
+
+                                                                    <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data2.id, '@dateWeek',@data2.Price, 1,@ViewBag.id,'@data2.RoomType', '@data2.PackageCode')" title="Sửa giá">
+                                                                        <i class="fa fa-edit"></i>
+                                                                    </a>
+                                                                }
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>0</td>
+                                                        }
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    var data = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "6");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 1,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>0</td>
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        case 6:
+                                            {
+                                                if (item2.ProgramsPackage != null && item2.ProgramsPackage.Count > 0)
+                                                {
+                                                    var data = item2.ProgramsPackage.Where(s => Convert.ToDateTime(s.ApplyDate) == dateWeek && s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "7");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 0,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        var data2 = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "7");
+                                                        if (data2 != null)
+                                                        {
+                                                            <td>
+                                                                @data2.Price.ToString("N0")
+                                                                &nbsp; &nbsp;
+                                                                @if (ViewBag.Status == 1)
+                                                                {
+
+                                                                    <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data2.id, '@dateWeek',@data2.Price, 1,@ViewBag.id,'@data2.RoomType', '@data2.PackageCode')" title="Sửa giá">
+                                                                        <i class="fa fa-edit"></i>
+                                                                    </a>
+                                                                }
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>0</td>
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var data = item2.ProgramsPackageDaily.Where(s => s.OpenStatus == 0 && Convert.ToDateTime(s.ToDate) >= dateWeek && dateWeek >= Convert.ToDateTime(s.FromDate)).OrderByDescending(s => s.FromDate).FirstOrDefault(s => s.WeekDay == "7");
+                                                    if (data != null)
+                                                    {
+                                                        <td>
+                                                            @data.Price.ToString("N0")
+                                                            &nbsp; &nbsp;
+                                                            @if (ViewBag.Status == 1)
+                                                            {
+
+                                                                <a class="cursor-pointer" onclick="_DetailPrograms.Edit(@data.id, '@dateWeek',@data.Price, 1,@ViewBag.id,'@data.RoomType', '@data.PackageCode')" title="Sửa giá">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>0</td>
+                                                    }
+                                                }
+
+                                                break;
+                                            }
+                                    }
+                                }
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td rowspan="@(item.ProgramsPackagePrice!=null? item.ProgramsPackagePrice.Count +1:1)">@(++index)</td>
+                            <td rowspan="@(item.ProgramsPackagePrice!=null? item.ProgramsPackagePrice.Count +1:1)">@item.ProgramName</td>
+                            <td></td>
+                        </tr>
+                    }
+
+                }
+            }
+        </tbody>
+    </table>
+}

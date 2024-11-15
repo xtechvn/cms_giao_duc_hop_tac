@@ -1,0 +1,106 @@
+﻿@using Entities.Models
+@{
+    var Client_type = (List<AllCode>)ViewBag.CLIENT_TYPE;
+}
+<section class="" style=" overflow-x: hidden;">
+    <div class="row-main container">
+        <h2 class="txt_18 bold mb20">Bảng giá khách sạn</h2>
+        <div class="flex fillter-donhang ">
+
+            <div class="form-group mb10 mr-2" style="min-width:365px">
+                <select class="select2 client-select main-staff-select" id="SupplierID" multiple="multiple" style="width:100% !important">
+                </select>
+
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width:365px">
+                <select class="select2 client-select main-staff-select" id="Hotel" multiple="multiple" style="width:100% !important">
+                </select>
+
+            </div>
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <div class="datepicker-wrap" style="width:100%">
+                        <input class="form-control date text-left filter_date_daterangepicker" id="ApplyDate" type="text"
+                               name="ApplyDate" style="min-width: 180px !important" placeholder="Thời gian lưu trú " />
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-group mb10 mr-2" style="min-width:265px">
+                <select class="form-control" id="ClientType" style="background: white;">
+                    <option value="-1">Tất cả loại khách hàng(Giá Net)</option>
+                    @foreach (var item in Client_type)
+                    {
+                        <option value="@item.CodeValue">@item.Description</option>
+                    }
+
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2"style="min-width:265px">
+                <select class="form-control" id="Type" style="background: white;">
+                    <option value="1">Tổng giá các ngày</option>
+                    <option value="2">Giá trung bình một ngày</option>
+                </select>
+            </div>
+           
+    
+            <div class="mb10 mr-2">
+
+                <button type="button" class="btn btn-default bg-main" onclick="_ProgramsPriceHotel.SearchData();" fdprocessedid="8eh03">
+                    <svg class="icon-svg" style="vertical-align: sub;">
+                        <use xlink:href="/images/icons/icon.svg#search"></use>
+                    </svg>
+                    Tìm kiếm
+                </button>
+
+
+            </div>
+        </div>
+
+        <div id="grid_data">
+            <img src="/images/icons/loading.gif" style=" width: 100px; height: 100px; margin-left:46%;" id="imgLoading" />
+        </div>
+    </div>
+</section>
+@section scripts {
+
+    <script type="text/javascript" src="~/js/daterangepicker.js"></script>
+    <script type="text/javascript" src="/modules/ProgramsPriceHotel.js"></script>
+    <script>
+        $('#ApplyDate').daterangepicker({
+            autoUpdateInput: false,
+            autoApply: true,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+
+
+        $('#ApplyDate').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove = false;
+        });
+        $('#ApplyDate').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove = true;
+        });
+        $('#ApplyDate2').daterangepicker({
+            autoUpdateInput: false,
+            autoApply: true,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+
+
+        $('#ApplyDate2').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            isPickerApprove2 = false;
+        });
+        $('#ApplyDate2').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove2 = true;
+        });
+    </script>
+}

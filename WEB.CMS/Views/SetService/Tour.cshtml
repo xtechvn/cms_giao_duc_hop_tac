@@ -1,0 +1,269 @@
+﻿@using Entities.Models
+@using Entities.ViewModels.Tour
+@{
+    ViewData["Title"] = "Đặt dịch vụ Tour";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var BOOKING_HOTEL = (List<AllCode>)ViewBag.BOOKING_HOTEL;
+    var BOOKING_HOTEL2 = (List<AllCode>)ViewBag.BOOKING_HOTEL2;
+    var ORGANIZING_TYPE = (List<AllCode>)ViewBag.ORGANIZING_TYPE;
+    var TOUR_TYPE = (List<AllCode>)ViewBag.TOUR_TYPE;
+    var CountTourByStatus = (List<CountTourviewModel>)ViewBag.CountTourByStatus;
+}
+<section style=" overflow-x: hidden;">
+    <div class="row-main container">
+        <h2 class="title_page mb20">Danh sách dịch vụ tour</h2>
+        <div class="flex fillter-donhang">
+            <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                <select class="select2 client-select main-staff-select" id="ServiceCode" multiple="multiple" style="width:100% !important" placeholder="Mã dịch vụ">
+                </select>
+
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                <select class="select2 client-select main-staff-select" id="OrderNo" multiple="multiple" style="width:100% !important" placeholder="Mã đơn hàng">
+                </select>
+
+            </div>
+            <div class="multiple-select form-group mb10 mr-2">
+                <div class="multiple-select form-group mb10 mr-2" style=" width: 200px;    margin-top: 10px;">
+                    <div class="select-btn select-btn-StatusBooking-type" id="select-btn-StatusBooking-type">
+                        <span class="btn-text-StatusBooking-type">Tất cả trạng thái</span>
+                        <span class="arrow-dwn">
+                            <i class="fa fa-angle-down"></i>
+                        </span>
+                    </div>
+
+                    <ul class="list-items" id="list-item-StatusBooking">
+                        @if (BOOKING_HOTEL2 != null && BOOKING_HOTEL2.Count > 0)
+                        {
+                            @foreach (var item in BOOKING_HOTEL2)
+                            {
+                                if (item.CodeValue != 0)
+                                {
+                                    <li class="item item-StatusBooking-type" id="StatusBooking_type_@item.CodeValue">
+                                        <span class="checkbox" id="checkbox_StatusBooking_type_@item.CodeValue">
+                                            <i class="fa fa-check"></i>
+                                        </span>
+                                        <span class="item-text" id="StatusBooking_type_text_@item.CodeValue">@item.Description</span>
+                                    </li>
+                                }
+
+                            }
+                        }
+
+                    </ul>
+                </div>
+            </div>
+            <div class="multiple-select form-group mb10 mr-2">
+                <div class="multiple-select form-group mb10 mr-2" style=" width: 200px;    margin-top: 10px;">
+                    <div class="select-btn select-btn-TourType-type" id="select-btn-TourType-type">
+                        <span class="btn-text-TourType-type">Tất cả loại tour</span>
+                        <span class="arrow-dwn">
+                            <i class="fa fa-angle-down"></i>
+                        </span>
+                    </div>
+
+                    <ul class="list-items" id="list-item-TourType">
+                        @if (TOUR_TYPE != null && TOUR_TYPE.Count > 0)
+                        {
+                            @foreach (var item in TOUR_TYPE)
+                            {
+                                <li class="item item-TourType-type" id="TourType_type_@item.CodeValue">
+                                    <span class="checkbox" id="checkbox_TourType_type_@item.CodeValue">
+                                        <i class="fa fa-check"></i>
+                                    </span>
+                                    <span class="item-text" id="TourType_type_text_@item.CodeValue">@item.Description</span>
+                                </li>
+                            }
+                        }
+
+
+
+                    </ul>
+                </div>
+            </div>
+            <div class="multiple-select form-group mb10 mr-2">
+                <div class="multiple-select form-group mb10 mr-2" style=" width: 220px;    margin-top: 10px;">
+                    <div class="select-btn select-btn-OrganizingType-type" id="select-btn-OrganizingType-type">
+                        <span class="btn-text-OrganizingType-type">Tất cả hình thức tổ chức</span>
+                        <span class="arrow-dwn">
+                            <i class="fa fa-angle-down"></i>
+                        </span>
+                    </div>
+
+                    <ul class="list-items" id="list-item-OrganizingType">
+                        @if(ORGANIZING_TYPE!=null&& ORGANIZING_TYPE.Count>0){
+                          @foreach (var item in ORGANIZING_TYPE)
+                            {
+                            <li class="item item-OrganizingType-type" id="OrganizingType_type_@item.CodeValue">
+                                <span class="checkbox" id="checkbox_OrganizingType_type_@item.CodeValue">
+                                    <i class="fa fa-check"></i>
+                                </span>
+                                <span class="item-text" id="OrganizingType_type_text_@item.CodeValue">@item.Description</span>
+                            </li>
+                            }
+                        }
+
+
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <input class="form-control date text-left filter_date_daterangepicker" id="StartDate" type="text"
+                           name="datetimeApprove" style="min-width: 180px !important" placeholder="Ngày check in" />
+
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <input class="form-control date text-left filter_date_daterangepicker" id="EndDate" type="text"
+                           name="datetimeApprove2" style="min-width: 180px !important" placeholder="Ngày check out" />
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 220px;">
+
+                <select class="select2 client-select main-staff-select" id="UserCreate" multiple="multiple" style="width:100% !important">
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2">
+                <div class="datepicker-wrap" style="width:100%">
+                    <input class="form-control date text-left filter_date_daterangepicker" id="CreateDate" type="text"
+                           name="datetimeApprove3" style="min-width: 180px !important" placeholder="Ngày tạo" />
+                </div>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 220px;">
+
+                <select class="select2 client-select main-staff-select" id="SalerId" multiple="multiple" style="width:100% !important">
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 220px;">
+
+                <select class="select2 client-select main-staff-select" id="OperatorId" multiple="multiple" style="width:100% !important">
+                </select>
+            </div>
+            <div class="form-group mb10 mr-2" style="min-width: 220px;">
+                <select class="select2 client-select main-staff-select" id="BookingCode" style="width:100% !important">
+                </select>
+            </div>
+            <div class="row-main-head mb10 mr-2" style="display:none">
+                <div class="down-up">
+                    <a class="btn btn-default onclick" href="javascript:;">
+                        <i class="fa fa-bars"></i>
+                        <i class="fa fa-caret-down"></i>
+                    </a>
+                    <div class="form-down" style="display: none;">
+                        <label class="check-list mb10 mr25">
+                            <input type="checkbox" checked="">
+                            <span class="checkmark"></span>
+                            Hình thức
+                        </label>
+                        <label class="check-list mb10 mr25">
+                            <input type="checkbox">
+                            <span class="checkmark"></span>
+                            Mã đơn
+                        </label>
+                        <label class="check-list mb10 mr25">
+                            <input type="checkbox">
+                            <span class="checkmark"></span>
+                            Ngày bắt đầu
+                        </label>
+                        <label class="check-list mb10 mr25">
+                            <input type="checkbox">
+                            <span class="checkmark"></span>
+                            Ngày kết thúc
+                        </label>
+                        <label class="check-list mb10 mr25">
+                            <input type="checkbox">
+                            <span class="checkmark"></span>
+                            Nhãn đơn
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="mb10 mr-2">
+                <button class="btn-search btn-default" type="button" onclick="_SetServiceTour.Export()" id="btnExport">
+                    <i class="fa fa-file-excel-o" id="icon-export" title="Xuất excel">
+                    </i>
+                </button>
+                <button type="button" class="btn btn-default bg-main" onclick="_SetServiceTour.SearchData()">
+                    <svg class="icon-svg" style="vertical-align: sub;">
+                        <use xlink:href="/images/icons/icon.svg#search"></use>
+                    </svg>
+                    Tìm kiếm
+                </button>
+            </div>
+        </div>
+        <div class="line-bottom" style="padding-bottom: 0;">
+            <div class="row">
+                <div class="tab-default col-md-9 mb0 mt10">
+                    <a href="javascript:;" onclick="_SetServiceTour.OnSearchStatus(-1)" id="StatusBookingAll" class="active">Tất cả (0)</a>
+                    @if (CountTourByStatus != null && CountTourByStatus.Count > 0)
+                    {
+                        @foreach (var i in CountTourByStatus)
+                        {
+                            if (i.Status != 0)
+                            {
+
+                                <a href="javascript:;" onclick="_SetServiceTour.OnSearchStatus(@i.Status)" id="StatusBooking_@i.Status">@i.StatusName (@i.Total)</a>
+                            }
+
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        <div id="grid_data_Search">
+            <img src="/images/icons/loading.gif" style=" width: 100px; height: 100px; margin-left:46%;" id="imgLoading_Search" />
+        </div>
+    </div>
+</section>
+@section scripts {
+    <script type="text/javascript" src="~/js/zebra_datepicker.min.js"></script>
+    <script type="text/javascript" src="/modules/SetServiceTour.js"></script>
+    <script>
+        $('input[name="datetimeApprove"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="datetimeApprove"]').on('cancel.daterangepicker', function (ev, picker) {
+            $('#StartDate').val('');
+            isPickerApprove = false;
+        });
+        $('input[name="datetimeApprove"]').on('apply.daterangepicker', function (ev, picker) {
+            $('#StartDate').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove = true;
+        });
+        $('input[name="datetimeApprove2"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="datetimeApprove2"]').on('cancel.daterangepicker', function (ev, picker) {
+            $('#EndDate').val('');
+            isPickerApprove2 = false;
+        });
+        $('input[name="datetimeApprove2"]').on('apply.daterangepicker', function (ev, picker) {
+            $('#EndDate').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove2 = true;
+        });
+        $('input[name="datetimeApprove3"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="datetimeApprove3"]').on('cancel.daterangepicker', function (ev, picker) {
+            $('#CreateDate').val('');
+            isPickerApprove3 = false;
+        });
+        $('input[name="datetimeApprove3"]').on('apply.daterangepicker', function (ev, picker) {
+            $('#CreateDate').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            isPickerApprove3 = true;
+        });
+    </script>
+}

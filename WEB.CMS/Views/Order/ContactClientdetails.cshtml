@@ -1,0 +1,51 @@
+﻿@using Entities.Models
+@using Entities.ViewModels.CustomerManager
+@{ Layout = null;}
+@model ContactClient
+<form id="ContactClient_Detail" onsubmit="return false">
+    @if(ViewBag.id != 0){
+    <div class="row">
+        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Họ và tên <sup class="red">*</sup></label></div>
+        <div class="col-md-8 mb10">
+            <input type="text" class="form-control" value="@Model.Name" asp-for="@Model.Name">
+            <input type="text" class="form-control" value="@Model.ClientId" asp-for="@Model.ClientId" style="display:none">
+            <input type="text" class="form-control" value="@Model.OrderId" asp-for="@Model.OrderId" style="display:none">
+            <input type="text" class="form-control" value="@Model.Id" asp-for="@Model.Id" style="display:none">
+        </div>
+        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Điện thoai <sup class="red">*</sup></label></div>
+        <div class="col-md-8 mb10">
+            <input type="text" class="form-control" value="@Model.Mobile" asp-for="@Model.Mobile">
+        </div>
+        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Email <sup class="red">*</sup></label></div>
+        <div class="col-md-8 mb10">
+            <input type="text" class="form-control" value="@Model.Email" asp-for="@Model.Email">
+        </div>
+    </div>
+    <div class="text-right">
+        <button onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+        <button onclick="_ordersCMS.SetupContactClient()" class="btn btn-default">Lưu</button>
+    </div>
+    }else{
+    <div class="row">
+        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Họ và tên <sup class="red">*</sup></label></div>
+        <div class="col-md-8 mb10">
+            <input type="text" class="form-control"  asp-for="@Model.Name">
+            <input type="text" class="form-control" value="@ViewBag.ClientId" asp-for="@Model.ClientId" style="display:none">
+            <input type="text" class="form-control" value="@ViewBag.orderId" asp-for="@Model.OrderId" style="display:none">
+            <input type="text" class="form-control"  asp-for="@Model.Id" style="display:none">
+        </div>
+        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Điện thoai <sup class="red">*</sup></label></div>
+        <div class="col-md-8 mb10">
+            <input type="text" class="form-control"  asp-for="@Model.Mobile">
+        </div>
+        <div class="col-md-4 mb10"><label class="lbl mt5 mb0">Email <sup class="red">*</sup></label></div>
+        <div class="col-md-8 mb10">
+            <input type="text" class="form-control" asp-for="@Model.Email">
+        </div>
+    </div>
+    <div class="text-right">
+        <button onclick="$.magnificPopup.close();" class="btn btn-default btn btn-default cancel">Bỏ qua</button>
+        <button onclick="_orderDetail.SetupContactClient()" class="btn btn-default">Thêm</button>
+    </div>
+    }
+</form>

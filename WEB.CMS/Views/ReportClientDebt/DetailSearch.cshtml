@@ -1,0 +1,49 @@
+﻿@using Entities.Models
+@using Entities.ViewModels
+@using Entities.ViewModels.Report
+@{
+    Layout = null;
+    int index = 0;
+    GenericViewModel<ReportDetailClientDebtViewModel> model = (GenericViewModel<ReportDetailClientDebtViewModel>)ViewBag.Model;
+    ReportClientDebtViewModel sum_model = (ReportClientDebtViewModel)ViewBag.SumModel;
+    ReportDetailClientDebtSearchModel search_model = (ReportDetailClientDebtSearchModel)ViewBag.SearchModel;
+
+    index = (model.CurrentPage - 1) * model.PageSize;
+    double opening_credit = (double)ViewBag.OpeningCredit;
+    double current_amount_credit = (sum_model.AmountCredit != null ? (double)sum_model.AmountCredit : 0) - (sum_model.AmountDebit != null ? (double)sum_model.AmountDebit : 0);
+
+}
+
+@if (model.ListData != null && model.ListData.Count > 0)
+{
+    @foreach (var item in model.ListData)
+    {
+        <tr>
+            <td>@(++index)</td>
+            <td style="text-align: right;">@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+            <td style="text-align: right;">@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+            <td style="text-align: right;">@item.LicenceNo</td>
+            <td style="text-align: right;">@item.BillNo</td>
+            <td style="text-align: right;">@item.Description</td>
+            <td style="text-align: right;">@item.DebtAccount</td>
+            <td style="text-align: right;">@item.CorrespondingAccount</td>
+
+            <td style="text-align: right;" class="item-amount-debit">@((item.AmountDebit != null ? (double)item.AmountDebit : 0).ToString("N0"))</td>
+            <td style="text-align: right;" class="item-amount-credit">@((item.AmountCredit != null ? (double)item.AmountCredit : 0).ToString("N0"))</td>
+            @{
+                opening_credit = opening_credit + (item.AmountDebit != null ? (double)item.AmountDebit : 0) - (item.AmountCredit != null ? (double)item.AmountCredit : 0);
+            }
+            <td style="text-align: right; ">@(opening_credit.ToString("N0"))</td>
+            <td style="text-align: right; "></td>
+        </tr>
+    }
+}
+<script>
+    _report_client_debt_detail.searchModel.OpeningCredit =  @opening_credit
+</script>
+@if (model.CurrentPage >= model.TotalPage || model.ListData == null || model.ListData.Count <= 0)
+{
+    <script>
+        $('#view-more-tr').remove()
+    </script>
+}

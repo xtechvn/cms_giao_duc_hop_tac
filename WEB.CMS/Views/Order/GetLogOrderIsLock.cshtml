@@ -1,0 +1,44 @@
+﻿@using Entities.ViewModels;
+@{
+    var i = 0;
+    Double Amount = 0;
+}
+@model List<OrderBookClosingRequestViewModel>
+<div class="table-responsive table-default table-gray wrap_bg wrap_bg_no-padding">
+    @if (Model != null && Model.Count > 0)
+    {
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã đơn hàng</th>
+                    <th>Ngày thực hiện</th>
+                    <th>Số tiền khóa sổ</th>
+                    <th>Người khóa sổ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var item = 0; item < Model.Count; item++)
+                {
+                    Amount = Amount + Model[item].Amount;
+                    i++;
+                    <tr>
+                        <td>@i</td>
+                        <td>@Model[item].OrderNo</td>
+                        <td>@Model[item].UpdatedDate.ToString("dd/MM/yyyy  hh:mm:ss")</td>
+                        <td>@Model[item].Amount.ToString("N0")</td>
+                        <td>@Model[item].UserFinalize</td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Đơn hàng này chưa chốt sổ</p>
+    }
+
+</div>
+
